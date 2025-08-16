@@ -135,6 +135,7 @@ export function createRealisticPlanet({
     }, []);
 
     // Create custom atmosphere material
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const atmosphereMaterial = useMemo(() => {
       if (!hasAtmosphere) return null;
       
@@ -151,7 +152,7 @@ export function createRealisticPlanet({
         side: THREE.BackSide,
         depthWrite: false
       });
-    }, [hasAtmosphere, atmosphereColor, surfaceColor]);
+    }, []);
 
     useFrame((state) => {
       if (meshRef.current) {
