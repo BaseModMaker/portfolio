@@ -75,15 +75,16 @@ function Sun() {
 
 // Planets component
 function Planets() {
+  const orbitConstant = 0.1; // Define the orbit constant here
   const planets = [
-    { name: 'Mercury', orbitRadius: 2, size: 0.1, color: '#8C7853', orbitSpeed: 0.04, rotationSpeed: 0.02 },
-    { name: 'Venus', orbitRadius: 3, size: 0.15, color: '#FFC649', orbitSpeed: 0.03, rotationSpeed: 0.015 },
-    { name: 'Earth', orbitRadius: 4, size: 0.16, color: '#6B93D6', orbitSpeed: 0.02, rotationSpeed: 0.01 },
-    { name: 'Mars', orbitRadius: 5.5, size: 0.12, color: '#CD5C5C', orbitSpeed: 0.015, rotationSpeed: 0.008 },
-    { name: 'Jupiter', orbitRadius: 8, size: 0.5, color: '#D8CA9D', orbitSpeed: 0.01, rotationSpeed: 0.012 },
-    { name: 'Saturn', orbitRadius: 11, size: 0.4, color: '#FAD5A5', orbitSpeed: 0.008, rotationSpeed: 0.01 },
-    { name: 'Uranus', orbitRadius: 14, size: 0.25, color: '#4FD0E7', orbitSpeed: 0.006, rotationSpeed: 0.007 },
-    { name: 'Neptune', orbitRadius: 16, size: 0.24, color: '#4B70DD', orbitSpeed: 0.005, rotationSpeed: 0.006 }
+    { name: 'Mercury', orbitRadius: 2, size: 0.1, color: '#8C7853', orbitSpeed: 0.04 * orbitConstant, rotationSpeed: 0.02 * orbitConstant },
+    { name: 'Venus', orbitRadius: 3, size: 0.15, color: '#FFC649', orbitSpeed: 0.03 * orbitConstant, rotationSpeed: 0.015 * orbitConstant },
+    { name: 'Earth', orbitRadius: 4, size: 0.16, color: '#6B93D6', orbitSpeed: 0.02 * orbitConstant, rotationSpeed: 0.01 * orbitConstant },
+    { name: 'Mars', orbitRadius: 5.5, size: 0.12, color: '#CD5C5C', orbitSpeed: 0.015 * orbitConstant, rotationSpeed: 0.008 * orbitConstant },
+    { name: 'Jupiter', orbitRadius: 8, size: 0.5, color: '#D8CA9D', orbitSpeed: 0.01 * orbitConstant, rotationSpeed: 0.012 * orbitConstant },
+    { name: 'Saturn', orbitRadius: 11, size: 0.4, color: '#FAD5A5', orbitSpeed: 0.008 * orbitConstant, rotationSpeed: 0.01 * orbitConstant },
+    { name: 'Uranus', orbitRadius: 14, size: 0.25, color: '#4FD0E7', orbitSpeed: 0.006 * orbitConstant, rotationSpeed: 0.007 * orbitConstant },
+    { name: 'Neptune', orbitRadius: 16, size: 0.24, color: '#4B70DD', orbitSpeed: 0.005 * orbitConstant, rotationSpeed: 0.006 * orbitConstant }
   ];
 
   return (
@@ -138,7 +139,9 @@ function SolarSystem({ isVisible = true }) {
       overflow: 'hidden'
     }}>
       <Canvas 
-        camera={{ position: [0, 20, 25], fov: 65 }}
+      // FOV: zoom level (smaller more zoomed in)
+      // Position: camera position in 3D space
+        camera={{ position: [0, 25, 30], fov: 40 }}
       >
         <ambientLight intensity={0.2} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
@@ -146,14 +149,15 @@ function SolarSystem({ isVisible = true }) {
         <Planets />
         
         <OrbitControls 
-          target={[0, -2, 0]}
+        // Sun's position on screen
+          target={[0, -4, 0]}
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
           autoRotate={true}
           autoRotateSpeed={0.5}
-          minDistance={8}
-          maxDistance={60}
+          minDistance={5}
+          maxDistance={40}
           dampingFactor={0.05}
           enableDamping={true}
         />
