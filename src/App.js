@@ -1,22 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
+import RotatingCube from './components/RotatingCube';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Interactive 3D Cube</h1>
+        <p>Use your mouse to rotate, zoom, and pan around the cube!</p>
+        <RotatingCube />
+        <div style={{ marginTop: '20px', color: '#888' }}>
+          <p>• Left click + drag: Rotate view</p>
+          <p>• Right click + drag: Pan view</p>
+          <p>• Scroll wheel: Zoom in/out</p>
+        </div>
       </header>
     </div>
   );

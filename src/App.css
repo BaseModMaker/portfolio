@@ -22,10 +22,17 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 20px;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+/* Ensure canvas containers don't have overflow issues */
+canvas {
+  display: block;
+  outline: none;
 }
 
 @keyframes App-logo-spin {
