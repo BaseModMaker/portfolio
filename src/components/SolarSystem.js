@@ -138,7 +138,7 @@ function SolarSystem({ isVisible = true }) {
       overflow: 'hidden'
     }}>
       <Canvas 
-        camera={{ position: [0, 10, 20], fov: 60 }}
+        camera={{ position: [0, 20, 25], fov: 65 }}
       >
         <ambientLight intensity={0.2} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
@@ -146,14 +146,14 @@ function SolarSystem({ isVisible = true }) {
         <Planets />
         
         <OrbitControls 
-          target={[0, 0, 0]}
+          target={[0, -2, 0]}
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
           autoRotate={true}
           autoRotateSpeed={0.5}
-          minDistance={5}
-          maxDistance={50}
+          minDistance={8}
+          maxDistance={60}
           dampingFactor={0.05}
           enableDamping={true}
         />
