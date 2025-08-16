@@ -14,11 +14,11 @@ function getRingAppearance(isSelected, hovered, planetName) {
     appearance = { 
       color: '#ff6b6b', 
       opacity: 1.0,
-      lineColor: '#ff6b6b',
-      labelBorderColor: '#ff6b6b',
-      labelBgColor: 'rgba(255, 107, 107, 0.15)',
-      labelFontColor: '#ff6b6b',
-      labelInnerBorderColor: 'rgba(255, 107, 107, 0.3)',
+      lineColor: 'rgba(255, 107, 107, 0)',
+      labelBorderColor: 'rgba(255, 107, 107, 0)',
+      labelBgColor: 'rgba(255, 107, 107, 0)',
+      labelFontColor: 'rgba(255, 107, 107, 0)',
+      labelInnerBorderColor: 'rgba(255, 107, 107, 0)',
     };
   } else if (hovered) {
     appearance = { 
@@ -49,7 +49,6 @@ function getRingAppearance(isSelected, hovered, planetName) {
     document.documentElement.style.setProperty(`--label-bg-color-${planetName}`, appearance.labelBgColor);
     document.documentElement.style.setProperty(`--label-font-color-${planetName}`, appearance.labelFontColor);
     document.documentElement.style.setProperty(`--label-inner-border-color-${planetName}`, appearance.labelInnerBorderColor);
-    document.documentElement.style.setProperty(`--label-left-alignment-${planetName}`, '-300px');
   }
 
   return appearance;

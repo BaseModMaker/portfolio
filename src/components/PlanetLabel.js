@@ -35,7 +35,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize }, ref) => {
           className="planet-connection-line"
           style={{
             position: 'absolute',
-            left: `var(--label-left-alignment-${planetName}, -300px)`,
+            left: `${(-360 + (planetSize * 100))}px`, // 360 center of planet - size to get to the right edge
             top: '50%',
             width: 'auto',
             right: '250px',
