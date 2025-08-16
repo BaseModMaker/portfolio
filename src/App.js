@@ -1,5 +1,5 @@
 import './App.css';
-import RotatingBrain from './components/RotatingBrain';
+import SolarSystem from './components/SolarSystem';
 
 function App() {
   return (
@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <h1>Interactive 3D Brain Model</h1>
         <p>Use your mouse to rotate, zoom, and pan around the brain model!</p>
-        <RotatingBrain />
+        <SolarSystem />
         <div style={{ marginTop: '20px', color: '#888' }}>
           <p>• Left click + drag: Rotate view</p>
           <p>• Right click + drag: Pan view</p>
