@@ -37,25 +37,55 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
 }
 
 // Orbit ring component
-function OrbitRing({ radius }) {
+function OrbitRing({ radius, planetName }) {
   const ringRef = useRef();
+  const collisionRef = useRef();
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     if (ringRef.current) {
       const geometry = new THREE.RingGeometry(radius - 0.02, radius + 0.02, 64);
       const material = new THREE.MeshBasicMaterial({
-        color: '#64ffda',
+        color: hovered ? '#ffffff' : '#64ffda',
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.3
+        opacity: hovered ? 0.8 : 0.3
       });
       ringRef.current.geometry = geometry;
       ringRef.current.material = material;
       ringRef.current.rotation.x = Math.PI / 2;
     }
-  }, [radius]);
 
-  return <mesh ref={ringRef} />;
+    // Create invisible collision ring that's much thicker for easier selection
+    if (collisionRef.current) {
+      const collisionGeometry = new THREE.RingGeometry(radius - 0.6, radius + 0.6, 64);
+      const collisionMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+      collisionRef.current.geometry = collisionGeometry;
+      collisionRef.current.material = collisionMaterial;
+      collisionRef.current.rotation.x = Math.PI / 2;
+      // Offset the collision ring slightly above the visible ring to prevent Z-fighting
+      collisionRef.current.position.y = 0.01;
+    }
+  }, [radius, hovered]);
+
+  return (
+    <group>
+      {/* Visible ring */}
+      <mesh ref={ringRef} />
+      
+      {/* Invisible collision detection ring */}
+      <mesh 
+        ref={collisionRef}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      />
+    </group>
+  );
 }
 
 // Sun component using realistic planet generator
@@ -96,7 +126,11 @@ function Planets() {
       
       {/* Orbit rings */}
       {planets.map((planet, index) => (
-        <OrbitRing key={`ring-${index}`} radius={planet.orbitRadius} />
+        <OrbitRing 
+          key={`ring-${index}`} 
+          radius={planet.orbitRadius}
+          planetName={planet.name}
+        />
       ))}
       
       {/* Planets */}
