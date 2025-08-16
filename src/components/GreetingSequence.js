@@ -10,6 +10,7 @@ function GreetingSequence({ onComplete }) {
   const [canAdvance, setCanAdvance] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [typewriterInterval, setTypewriterInterval] = useState(null);
+  const [manualAdvance, setManualAdvance] = useState(false);
   
   const greetingTexts = useMemo(() => [
     "Hello there, welcome to my portfolio!",
@@ -18,6 +19,12 @@ function GreetingSequence({ onComplete }) {
   ], []);
 
   useEffect(() => {
+    // Don't run useEffect if we manually advanced
+    if (manualAdvance) {
+      setManualAdvance(false);
+      return;
+    }
+
     // Start showing text after a brief delay
     const textTimer = setTimeout(() => {
       setShowText(true);
@@ -48,10 +55,10 @@ function GreetingSequence({ onComplete }) {
           clearInterval(typeWriter);
         };
       }
-    }, 500);
+    }, textIndex === 0 ? 500 : 0);
 
     return () => clearTimeout(textTimer);
-  }, [textIndex, greetingTexts]);
+  }, [textIndex, greetingTexts, manualAdvance]);
 
   const handleClick = () => {
     // If currently typing, skip to full text
@@ -67,9 +74,18 @@ function GreetingSequence({ onComplete }) {
     if (!canAdvance) return;
     
     if (textIndex < greetingTexts.length - 1) {
+      // Clear any existing interval
+      if (typewriterInterval) {
+        clearInterval(typewriterInterval);
+        setTypewriterInterval(null);
+      }
+      
+      // Simply advance to next text and let useEffect handle the typing
       setTextIndex(textIndex + 1);
       setCurrentText('');
       setCanAdvance(false);
+      setIsTyping(false);
+      // Remove setManualAdvance(true) to let useEffect run normally
     } else {
       // Start fade out sequence
       setFadeOut(true);
