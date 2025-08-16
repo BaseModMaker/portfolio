@@ -9,6 +9,7 @@ function GreetingSequence({ onComplete }) {
   const [isTyping, setIsTyping] = useState(false);
   const [canAdvance, setCanAdvance] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [typewriterInterval, setTypewriterInterval] = useState(null);
   
   const greetingTexts = useMemo(() => [
     "Hello there, welcome to my portfolio!",
@@ -36,8 +37,11 @@ function GreetingSequence({ onComplete }) {
             clearInterval(typeWriter);
             setIsTyping(false);
             setCanAdvance(true);
+            setTypewriterInterval(null);
           }
         }, 50);
+
+        setTypewriterInterval(typeWriter);
 
         return () => {
           clearTimeout(textTimer);
@@ -50,7 +54,17 @@ function GreetingSequence({ onComplete }) {
   }, [textIndex, greetingTexts]);
 
   const handleClick = () => {
-    if (!canAdvance || isTyping) return;
+    // If currently typing, skip to full text
+    if (isTyping && typewriterInterval) {
+      clearInterval(typewriterInterval);
+      setCurrentText(greetingTexts[textIndex]);
+      setIsTyping(false);
+      setCanAdvance(true);
+      setTypewriterInterval(null);
+      return;
+    }
+
+    if (!canAdvance) return;
     
     if (textIndex < greetingTexts.length - 1) {
       setTextIndex(textIndex + 1);

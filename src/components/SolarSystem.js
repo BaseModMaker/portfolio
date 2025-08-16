@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import GreetingSequence from './GreetingSequence';
 
 // Planet component
 function Planet({ position, size, color, orbitRadius, orbitSpeed, rotationSpeed }) {
@@ -113,62 +112,53 @@ function Planets() {
 }
 
 // Main component
-function SolarSystem() {
-  const [showSolarSystem, setShowSolarSystem] = useState(false);
-  const [greetingComplete, setGreetingComplete] = useState(false);
+function SolarSystem({ isVisible = true }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
 
-  const handleGreetingComplete = () => {
-    setGreetingComplete(true);
-    setTimeout(() => {
-      setShowSolarSystem(true);
+  useEffect(() => {
+    if (isVisible) {
       setTimeout(() => {
         setSystemOpacity(1);
       }, 100);
-    }, 200);
-  };
+    }
+  }, [isVisible]);
+
+  if (!isVisible) return null;
 
   return (
-    <>
-      {!greetingComplete && (
-        <GreetingSequence onComplete={handleGreetingComplete} />
-      )}
-      
-      {showSolarSystem && (
-        <div style={{ 
-          width: '100vw', 
-          height: '100vh',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          opacity: systemOpacity,
-          transition: 'opacity 1.5s ease-in',
-          overflow: 'hidden'
-        }}>
-          <Canvas 
-            camera={{ position: [0, 10, 20], fov: 60 }}
-          >
-            <ambientLight intensity={0.2} />
-            <directionalLight position={[10, 10, 5]} intensity={0.5} />
-            
-            <Planets />
-            
-            <OrbitControls 
-              target={[0, 0, 0]}
-              enablePan={true}
-              enableZoom={true}
-              enableRotate={true}
-              autoRotate={true}
-              autoRotateSpeed={0.5}
-              minDistance={5}
-              maxDistance={50}
-              dampingFactor={0.05}
-              enableDamping={true}
-            />
-          </Canvas>
-        </div>
-      )}
-    </>
+    <div style={{ 
+      width: '100vw', 
+      height: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      opacity: systemOpacity,
+      transition: 'opacity 1.5s ease-in',
+      background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
+      overflow: 'hidden'
+    }}>
+      <Canvas 
+        camera={{ position: [0, 10, 20], fov: 60 }}
+      >
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[10, 10, 5]} intensity={0.5} />
+        
+        <Planets />
+        
+        <OrbitControls 
+          target={[0, 0, 0]}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          autoRotate={true}
+          autoRotateSpeed={0.5}
+          minDistance={5}
+          maxDistance={50}
+          dampingFactor={0.05}
+          enableDamping={true}
+        />
+      </Canvas>
+    </div>
   );
 }
 
