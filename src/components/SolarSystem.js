@@ -64,18 +64,12 @@ function Sun() {
   
   const RealisticSun = createRealisticPlanet({
     size: 1,
-    rotationSpeed: 0.01,
+    rotationSpeed: 0.0005,
     surfaceRoughness: 0.1,
     metalness: 0.0,
     emissive: '#FF6600',
     emissiveIntensity: 0.8,
     surfaceColor: '#FFA500'
-  });
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.01;
-    }
   });
 
   return (
@@ -163,8 +157,7 @@ function SolarSystem({ isVisible = true }) {
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
-          autoRotate={true}
-          autoRotateSpeed={0.5}
+          autoRotate={false}
           minDistance={5}
           maxDistance={40}
           dampingFactor={0.05}
