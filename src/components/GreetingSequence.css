@@ -12,6 +12,11 @@
   transition: opacity 1s ease-out;
   cursor: pointer;
   overflow: hidden;
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .greeting-container.fade-out {
@@ -103,6 +108,11 @@
   text-align: left;
   overflow: hidden;
   word-wrap: break-word;
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .text-cursor {
@@ -111,6 +121,11 @@
   align-self: center;
   transition: opacity 0.3s ease;
   height: 20px;
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .text-cursor.visible {
