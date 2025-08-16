@@ -1,9 +1,55 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { createRealisticPlanet } from './PlanetGenerator';
+import PlanetLabel from './PlanetLabel';
 import planetsData from '../data/planetsData.json';
+
+// Function to determine ring, line, and label colors based on state
+function getRingAppearance(isSelected, hovered, planetName) {
+  let appearance;
+
+  if (isSelected) {
+    appearance = { 
+      color: '#ff6b6b', 
+      opacity: 1.0,
+      lineColor: '#ff6b6b',
+      labelBorderColor: '#ff6b6b',
+      labelBgColor: 'rgba(255, 107, 107, 0.15)',
+      labelFontColor: '#ff6b6b'
+    };
+  } else if (hovered) {
+    appearance = { 
+      color: '#ffffff', 
+      opacity: 0.8,
+      lineColor: '#ffffff',
+      labelBorderColor: '#ffffff',
+      labelBgColor: 'rgba(255, 255, 255, 0.1)',
+      labelFontColor: '#ffffff'
+    };
+  } else {
+    appearance = { 
+      color: '#64ffda', 
+      opacity: 0.3,
+      lineColor: '#64ffda',
+      labelBorderColor: '#64ffda',
+      labelBgColor: 'rgba(100, 255, 218, 0.1)',
+      labelFontColor: '#64ffda'
+    };
+  }
+
+  // Update CSS variables for this planet
+  if (planetName) {
+    document.documentElement.style.setProperty(`--line-color-${planetName}`, appearance.lineColor);
+    document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
+    document.documentElement.style.setProperty(`--label-bg-color-${planetName}`, appearance.labelBgColor);
+    document.documentElement.style.setProperty(`--label-font-color-${planetName}`, appearance.labelFontColor);
+  }
+
+  return appearance;
+}
+
 
 // Camera controller component
 function CameraController({ followingPlanet, planets, planetRefs }) {
@@ -147,9 +193,80 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
   );
 }
 
+// Connection line component
+function ConnectionLine({ planetRef, labelRef, planetSize, planetName, isSelected, hovered }) {
+  const lineRef = useRef();
+
+  const lineGeometry = useMemo(() => {
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array([
+      0, 0, 0,  // Start point (planet edge)
+      0, 0, 0   // End point (label edge)
+    ]);
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    return geometry;
+  }, []);
+
+  const lineMaterial = useMemo(() => {
+    const appearance = getRingAppearance(isSelected, hovered, planetName);
+    // Set CSS custom property for this planet's line color
+    document.documentElement.style.setProperty(`--line-color-${planetName}`, appearance.lineColor);
+    
+    return new THREE.LineBasicMaterial({
+      color: appearance.lineColor,
+      transparent: true,
+      opacity: 0.8,
+      linewidth: 2
+    });
+  }, [isSelected, hovered, planetName]);
+
+  // Update material color when state changes
+  useEffect(() => {
+    if (lineRef.current) {
+      const appearance = getRingAppearance(isSelected, hovered, planetName);
+      lineRef.current.material.color.setStyle(appearance.lineColor);
+      document.documentElement.style.setProperty(`--line-color-${planetName}`, appearance.lineColor);
+    }
+  }, [isSelected, hovered, planetName]);
+
+  useFrame(() => {
+    if (!planetRef.current || !labelRef.current || !lineRef.current) return;
+
+    // Get world positions
+    const planetWorldPos = new THREE.Vector3();
+    const labelWorldPos = new THREE.Vector3();
+    
+    planetRef.current.getWorldPosition(planetWorldPos);
+    labelRef.current.getWorldPosition(labelWorldPos);
+
+    // Calculate edge connection points
+    const planetEdgePos = planetWorldPos.clone();
+    planetEdgePos.x += planetSize; // Right edge of planet
+
+    const labelEdgePos = labelWorldPos.clone();
+    labelEdgePos.x -= 1.5; // Left edge of label
+
+    // Update line geometry
+    const positions = lineRef.current.geometry.attributes.position.array;
+    positions[0] = planetEdgePos.x;
+    positions[1] = planetEdgePos.y;
+    positions[2] = planetEdgePos.z;
+    positions[3] = labelEdgePos.x;
+    positions[4] = labelEdgePos.y;
+    positions[5] = labelEdgePos.z;
+    
+    lineRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  return <line ref={lineRef} geometry={lineGeometry} material={lineMaterial} />;
+}
+
 // Planet component using realistic planet generator
-function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered }) {
   const orbitRef = useRef();
+  const labelOrbitRef = useRef();
+  const actualPlanetRef = useRef();
+  const labelRef = useRef();
   
   // Create the realistic planet component
   const RealisticPlanet = createRealisticPlanet({
@@ -163,17 +280,67 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
     if (orbitRef.current) {
       orbitRef.current.rotation.y = startAngle;
     }
+    if (labelOrbitRef.current) {
+      labelOrbitRef.current.rotation.y = startAngle;
+    }
   }, [startAngle]);
+
+  // Update the parent ref when actualPlanetRef changes
+  useEffect(() => {
+    if (actualPlanetRef.current && planetRef) {
+      planetRef(actualPlanetRef.current);
+    }
+  }, [planetRef]);
 
   useFrame((state) => {
     if (orbitRef.current) {
       orbitRef.current.rotation.y += orbitSpeed;
     }
+    // Keep label orbit in sync with planet orbit
+    if (labelOrbitRef.current) {
+      labelOrbitRef.current.rotation.y += orbitSpeed;
+    }
   });
 
+  // Calculate label orbit offset - shift to the right
+  const labelOrbitOffset = 5; // 5 units of orbit radius to the right
+
+  // Set CSS custom property for label border color
+  useEffect(() => {
+    const appearance = getRingAppearance(isSelected, hovered, planetName);
+    document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
+  }, [isSelected, hovered, planetName]);
+
   return (
-    <group ref={orbitRef}>
-      <RealisticPlanet ref={planetRef} position={[orbitRadius, 0, 0]} />
+    <group>
+      {/* Planet orbit */}
+      <group ref={orbitRef}>
+        <group position={[orbitRadius, 0, 0]}>
+          <RealisticPlanet ref={actualPlanetRef} />
+        </group>
+      </group>
+      
+      {/* Label orbit - offset to the right */}
+      <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
+        <group position={[orbitRadius, 0, 0]}>
+          <PlanetLabel 
+            ref={labelRef}
+            planetRef={actualPlanetRef} 
+            planetName={planetName}
+            planetSize={size}
+          />
+        </group>
+      </group>
+
+      {/* Connection line at root level */}
+      <ConnectionLine 
+        planetRef={actualPlanetRef}
+        labelRef={labelRef}
+        planetSize={size}
+        planetName={planetName}
+        isSelected={isSelected}
+        hovered={hovered}
+      />
     </group>
   );
 }
@@ -187,11 +354,12 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected }) {
   useEffect(() => {
     if (ringRef.current) {
       const geometry = new THREE.RingGeometry(radius - 0.02, radius + 0.02, 64);
+      const appearance = getRingAppearance(isSelected, hovered, planetName);
       const material = new THREE.MeshBasicMaterial({
-        color: isSelected ? '#ff6b6b' : (hovered ? '#ffffff' : '#64ffda'),
+        color: appearance.color,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: isSelected ? 1.0 : (hovered ? 0.8 : 0.3)
+        opacity: appearance.opacity
       });
       ringRef.current.geometry = geometry;
       ringRef.current.material = material;
@@ -285,6 +453,9 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
           rotationSpeed={planet.rotationSpeed}
           startAngle={planet.startAngle}
           planetProps={planet.props}
+          planetName={planet.name}
+          isSelected={followingPlanet === planet.name}
+          hovered={false}
           planetRef={(el) => {
             if (el && planetRefs.current) {
               planetRefs.current[planet.name] = el;
