@@ -2,6 +2,52 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
+// Custom atmosphere shader
+const atmosphereVertexShader = `
+  varying vec3 vNormal;
+  varying vec3 vPositionW;
+  varying vec3 vViewDirection;
+  
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vPositionW = worldPosition.xyz;
+    vViewDirection = normalize(cameraPosition - worldPosition.xyz);
+    
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const atmosphereFragmentShader = `
+  uniform vec3 sunPosition;
+  uniform vec3 atmosphereColor;
+  uniform float atmosphereIntensity;
+  
+  varying vec3 vNormal;
+  varying vec3 vPositionW;
+  varying vec3 vViewDirection;
+  
+  void main() {
+    // Calculate fresnel effect
+    float fresnel = dot(vNormal, vViewDirection);
+    fresnel = pow(1.0 - fresnel, 2.0);
+    
+    // Calculate light direction
+    vec3 lightDirection = normalize(sunPosition - vPositionW);
+    
+    // Calculate how much light hits this part of atmosphere
+    float lightIntensity = max(dot(vNormal, lightDirection), 0.0);
+    
+    // Create scattering effect
+    float scattering = pow(lightIntensity, 0.5);
+    
+    // Combine effects
+    float atmosphereStrength = fresnel * (0.3 + 0.7 * scattering);
+    
+    gl_FragColor = vec4(atmosphereColor, atmosphereStrength * atmosphereIntensity);
+  }
+`;
+
 // Function to create a realistic planet
 export function createRealisticPlanet({
   size,
@@ -88,12 +134,37 @@ export function createRealisticPlanet({
       return texture;
     }, []);
 
+    // Create custom atmosphere material
+    const atmosphereMaterial = useMemo(() => {
+      if (!hasAtmosphere) return null;
+      
+      return new THREE.ShaderMaterial({
+        vertexShader: atmosphereVertexShader,
+        fragmentShader: atmosphereFragmentShader,
+        uniforms: {
+          sunPosition: { value: new THREE.Vector3(0, 0, 0) },
+          atmosphereColor: { value: new THREE.Color(atmosphereColor || surfaceColor) },
+          atmosphereIntensity: { value: 0.8 }
+        },
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        depthWrite: false
+      });
+    }, [hasAtmosphere, atmosphereColor, surfaceColor]);
+
     useFrame((state) => {
       if (meshRef.current) {
         meshRef.current.rotation.y += rotationSpeed;
       }
       if (atmosphereRef.current) {
         atmosphereRef.current.rotation.y += rotationSpeed * 0.5;
+        
+        // Update sun position for atmosphere shader
+        if (atmosphereMaterial && atmosphereMaterial.uniforms) {
+          // Sun is at origin (0,0,0) in our solar system
+          atmosphereMaterial.uniforms.sunPosition.value.set(0, 0, 0);
+        }
       }
     });
 
@@ -113,18 +184,10 @@ export function createRealisticPlanet({
           />
         </mesh>
 
-        {/* Atmosphere */}
-        {hasAtmosphere && (
-          <mesh ref={atmosphereRef}>
-            <sphereGeometry args={[size * 1.02, 32, 16]} />
-            <meshStandardMaterial
-              color={atmosphereColor || surfaceColor}
-              transparent={true}
-              opacity={0.05}
-              side={THREE.FrontSide}
-              blending={THREE.AdditiveBlending}
-              depthWrite={false}
-            />
+        {/* Realistic Atmosphere */}
+        {hasAtmosphere && atmosphereMaterial && (
+          <mesh ref={atmosphereRef} material={atmosphereMaterial}>
+            <sphereGeometry args={[size * 1.15, 32, 16]} />
           </mesh>
         )}
 
