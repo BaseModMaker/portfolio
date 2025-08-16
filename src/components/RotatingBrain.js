@@ -1,9 +1,10 @@
-import React, { useRef, Suspense, useEffect } from 'react';
+import React, { useRef, Suspense, useEffect, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { TextureLoader } from 'three';
+import GreetingSequence from './GreetingSequence';
 
 // Brain model component
 function BrainModel() {
@@ -60,43 +61,64 @@ function BrainModel() {
 
 // Main component with canvas and controls
 function RotatingBrain() {
+  const [showBrain, setShowBrain] = useState(false);
+  const [greetingComplete, setGreetingComplete] = useState(false);
+
+  const handleGreetingComplete = () => {
+    setGreetingComplete(true);
+    setTimeout(() => {
+      setShowBrain(true);
+    }, 500);
+  };
+
   return (
-    <div style={{ 
-      width: '100%', 
-      height: '500px'
-    }}>
-      <Canvas 
-        camera={{ position: [0, 0, 8], fov: 60 }}
-      >
-        {/* Ambient light for general illumination */}
-        <ambientLight intensity={0.6} />
-        
-        {/* Directional light for shadows and depth */}
-        <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
-        
-        {/* Point lights for better brain illumination */}
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#64ffda" />
-        <pointLight position={[10, 10, 10]} intensity={0.5} color="#ff6b9d" />
-        
-        {/* The rotating brain */}
-        <Suspense fallback={null}>
-          <BrainModel />
-        </Suspense>
-        
-        {/* OrbitControls for mouse interaction */}
-        <OrbitControls 
-          target={[0, 1, 0]}
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-          autoRotate={true}
-          minDistance={3}
-          maxDistance={20}
-          dampingFactor={0.05}
-          enableDamping={true}
-        />
-      </Canvas>
-    </div>
+    <>
+      {!greetingComplete && (
+        <GreetingSequence onComplete={handleGreetingComplete} />
+      )}
+      
+      {showBrain && (
+        <div style={{ 
+          width: '100%', 
+          height: '500px',
+          opacity: showBrain ? 1 : 0,
+          transition: 'opacity 1s ease-in'
+        }}>
+          <Canvas 
+            camera={{ position: [0, 0, 8], fov: 60 }}
+          >
+            {/* Ambient light for general illumination */}
+            <ambientLight intensity={0.6} />
+            
+            {/* Directional light for shadows and depth */}
+            <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
+            
+            {/* Point lights for better brain illumination */}
+            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#64ffda" />
+            <pointLight position={[10, 10, 10]} intensity={0.5} color="#ff6b9d" />
+            
+            {/* The rotating brain */}
+            <Suspense fallback={null}>
+              <BrainModel />
+            </Suspense>
+            
+            {/* OrbitControls for mouse interaction */}
+            <OrbitControls 
+              target={[0, 1, 0]}
+              enablePan={true}
+              enableZoom={true}
+              enableRotate={true}
+              autoRotate={true}
+              minDistance={3}
+              maxDistance={20}
+              dampingFactor={0.05}
+              enableDamping={true}
+            />
+          </Canvas>
+        </div>
+      )}
+    </>
   );
 }
+
 export default RotatingBrain;
