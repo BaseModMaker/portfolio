@@ -2,18 +2,18 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { createRealisticPlanet, planetConfigs } from './PlanetGenerator';
+import { createRealisticPlanet } from './PlanetGenerator';
+import planetsData from '../data/planetsData.json';
 
 // Planet component using realistic planet generator
-function Planet({ position, size, color, orbitRadius, orbitSpeed, rotationSpeed, planetType }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, planetProps }) {
   const orbitRef = useRef();
   
   // Create the realistic planet component
   const RealisticPlanet = createRealisticPlanet({
     size,
-    color,
     rotationSpeed,
-    ...planetConfigs[planetType]
+    ...planetProps
   });
 
   useFrame((state) => {
@@ -57,9 +57,12 @@ function Sun() {
   
   const RealisticSun = createRealisticPlanet({
     size: 1,
-    color: '#FFA500',
     rotationSpeed: 0.01,
-    ...planetConfigs.sun
+    surfaceRoughness: 0.1,
+    metalness: 0.0,
+    emissive: '#FF6600',
+    emissiveIntensity: 0.8,
+    surfaceColor: '#FFA500'
   });
 
   useFrame((state) => {
@@ -79,16 +82,11 @@ function Sun() {
 // Planets component
 function Planets() {
   const orbitConstant = 0.1;
-  const planets = [
-    { name: 'Mercury', orbitRadius: 2, size: 0.1, color: '#8C7853', orbitSpeed: 0.04 * orbitConstant, rotationSpeed: 0.02 * orbitConstant, type: 'mercury' },
-    { name: 'Venus', orbitRadius: 3, size: 0.15, color: '#FFC649', orbitSpeed: 0.03 * orbitConstant, rotationSpeed: 0.015 * orbitConstant, type: 'venus' },
-    { name: 'Earth', orbitRadius: 4, size: 0.16, color: '#6B93D6', orbitSpeed: 0.02 * orbitConstant, rotationSpeed: 0.01 * orbitConstant, type: 'earth' },
-    { name: 'Mars', orbitRadius: 5.5, size: 0.12, color: '#CD5C5C', orbitSpeed: 0.015 * orbitConstant, rotationSpeed: 0.008 * orbitConstant, type: 'mars' },
-    { name: 'Jupiter', orbitRadius: 8, size: 0.5, color: '#D8CA9D', orbitSpeed: 0.01 * orbitConstant, rotationSpeed: 0.012 * orbitConstant, type: 'jupiter' },
-    { name: 'Saturn', orbitRadius: 11, size: 0.4, color: '#FAD5A5', orbitSpeed: 0.008 * orbitConstant, rotationSpeed: 0.01 * orbitConstant, type: 'saturn' },
-    { name: 'Uranus', orbitRadius: 14, size: 0.25, color: '#4FD0E7', orbitSpeed: 0.006 * orbitConstant, rotationSpeed: 0.007 * orbitConstant, type: 'uranus' },
-    { name: 'Neptune', orbitRadius: 16, size: 0.24, color: '#4B70DD', orbitSpeed: 0.005 * orbitConstant, rotationSpeed: 0.006 * orbitConstant, type: 'neptune' }
-  ];
+  const planets = planetsData.planets.map(planet => ({
+    ...planet,
+    orbitSpeed: planet.orbitSpeed * orbitConstant,
+    rotationSpeed: planet.rotationSpeed * orbitConstant
+  }));
 
   return (
     <>
@@ -106,10 +104,9 @@ function Planets() {
           key={index}
           orbitRadius={planet.orbitRadius}
           size={planet.size}
-          color={planet.color}
           orbitSpeed={planet.orbitSpeed}
           rotationSpeed={planet.rotationSpeed}
-          planetType={planet.type}
+          planetProps={planet.props}
         />
       ))}
     </>

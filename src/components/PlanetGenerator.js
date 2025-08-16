@@ -5,8 +5,7 @@ import * as THREE from 'three';
 // Function to create a realistic planet
 export function createRealisticPlanet({
   size,
-  color,
-  surfaceColor = color,
+  surfaceColor,
   atmosphereColor = null,
   hasAtmosphere = false,
   hasRings = false,
@@ -106,7 +105,7 @@ export function createRealisticPlanet({
           <meshStandardMaterial
             map={surfaceTexture}
             normalMap={normalTexture}
-            color={color}
+            color={surfaceColor}
             roughness={surfaceRoughness}
             metalness={metalness}
             emissive={emissive}
@@ -119,7 +118,7 @@ export function createRealisticPlanet({
           <mesh ref={atmosphereRef}>
             <sphereGeometry args={[size * 1.02, 32, 16]} />
             <meshStandardMaterial
-              color={atmosphereColor || color}
+              color={atmosphereColor || surfaceColor}
               transparent={true}
               opacity={0.05}
               side={THREE.FrontSide}
@@ -147,69 +146,3 @@ export function createRealisticPlanet({
 
   return RealisticPlanet;
 }
-
-// Predefined planet configurations
-export const planetConfigs = {
-  mercury: {
-    hasAtmosphere: false,
-    surfaceRoughness: 0.9,
-    metalness: 0.3,
-    surfaceColor: '#8C7853'
-  },
-  venus: {
-    hasAtmosphere: true,
-    atmosphereColor: '#FFA500',
-    surfaceRoughness: 0.3,
-    metalness: 0.1,
-    surfaceColor: '#FFC649'
-  },
-  earth: {
-    hasAtmosphere: true,
-    atmosphereColor: '#87CEEB',
-    surfaceRoughness: 0.7,
-    metalness: 0.2,
-    surfaceColor: '#6B93D6'
-  },
-  mars: {
-    hasAtmosphere: false,
-    surfaceRoughness: 0.8,
-    metalness: 0.1,
-    surfaceColor: '#CD5C5C'
-  },
-  jupiter: {
-    hasAtmosphere: false,
-    surfaceRoughness: 0.4,
-    metalness: 0.0,
-    surfaceColor: '#D8CA9D'
-  },
-  saturn: {
-    hasAtmosphere: false,
-    hasRings: true,
-    ringColor: '#DDD',
-    surfaceRoughness: 0.4,
-    metalness: 0.0,
-    surfaceColor: '#FAD5A5'
-  },
-  uranus: {
-    hasAtmosphere: false,
-    hasRings: true,
-    ringColor: '#888',
-    surfaceRoughness: 0.3,
-    metalness: 0.0,
-    surfaceColor: '#4FD0E7'
-  },
-  neptune: {
-    hasAtmosphere: false,
-    surfaceRoughness: 0.3,
-    metalness: 0.0,
-    surfaceColor: '#4B70DD'
-  },
-  sun: {
-    hasAtmosphere: false,
-    surfaceRoughness: 0.1,
-    metalness: 0.0,
-    emissive: '#FF6600',
-    emissiveIntensity: 0.8,
-    surfaceColor: '#FFA500'
-  }
-};
