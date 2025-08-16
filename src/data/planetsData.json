@@ -96,7 +96,8 @@
       "rotationSpeed": 0.007,
       "startAngle": 3.5,
       "props": {
-        "hasAtmosphere": false,
+        "hasAtmosphere": true,
+        "atmosphereColor": "#87CEEB",
         "hasRings": true,
         "ringColor": "#888",
         "surfaceRoughness": 0.3,
@@ -112,7 +113,8 @@
       "rotationSpeed": 0.006,
       "startAngle": 1.8,
       "props": {
-        "hasAtmosphere": false,
+        "hasAtmosphere": true,
+        "atmosphereColor": "#87CEEB",
         "surfaceRoughness": 0.3,
         "metalness": 0.0,
         "surfaceColor": "#4B70DD"

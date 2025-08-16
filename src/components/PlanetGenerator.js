@@ -48,6 +48,69 @@ const atmosphereFragmentShader = `
   }
 `;
 
+// Custom ring shader for realistic rings
+const ringVertexShader = `
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vPositionW;
+  varying float vDistanceFromCenter;
+  
+  void main() {
+    vUv = uv;
+    vNormal = normalize(normalMatrix * normal);
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    vPositionW = worldPosition.xyz;
+    
+    // Calculate distance from center for ring effects
+    vec2 center = vec2(0.5, 0.5);
+    vDistanceFromCenter = distance(uv, center);
+    
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const ringFragmentShader = `
+  uniform vec3 sunPosition;
+  uniform vec3 ringColor;
+  uniform float ringOpacity;
+  uniform vec3 planetPosition;
+  uniform float planetRadius;
+  
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vPositionW;
+  varying float vDistanceFromCenter;
+  
+  void main() {
+    // Create ring texture with gaps and density variations
+    float ringDensity = sin(vDistanceFromCenter * 50.0) * 0.3 + 0.7;
+    float ringGaps = step(0.8, sin(vDistanceFromCenter * 200.0));
+    ringDensity *= (1.0 - ringGaps * 0.9);
+    
+    // Calculate lighting from sun - but keep minimum lighting
+    vec3 lightDirection = normalize(sunPosition - vPositionW);
+    float lightIntensity = max(dot(vNormal, lightDirection), 0.3); // Minimum 0.3 instead of 0.0
+    
+    // Calculate shadow from planet - simplified to avoid complete disappearance
+    float shadowFactor = 1.0;
+    vec3 planetToRing = vPositionW - planetPosition;
+    float planetDistance = length(planetToRing);
+    
+    // Only apply shadow if very close to planet
+    if (planetDistance < planetRadius * 2.0) {
+      shadowFactor = 0.5; // Partial shadow instead of complete darkness
+    }
+    
+    // Combine all effects with consistent base opacity
+    float finalOpacity = ringDensity * (0.4 + 0.6 * lightIntensity) * shadowFactor * ringOpacity;
+    
+    // Add some color variation based on distance
+    vec3 finalColor = ringColor * (0.7 + 0.3 * sin(vDistanceFromCenter * 30.0));
+    
+    gl_FragColor = vec4(finalColor, finalOpacity);
+  }
+`;
+
 // Function to create a realistic planet
 export function createRealisticPlanet({
   size,
@@ -154,6 +217,27 @@ export function createRealisticPlanet({
       });
     }, []);
 
+    // Create custom ring material
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const ringMaterial = useMemo(() => {
+      if (!hasRings) return null;
+      
+      return new THREE.ShaderMaterial({
+        vertexShader: ringVertexShader,
+        fragmentShader: ringFragmentShader,
+        uniforms: {
+          sunPosition: { value: new THREE.Vector3(0, 0, 0) },
+          ringColor: { value: new THREE.Color(ringColor) },
+          ringOpacity: { value: 0.7 },
+          planetPosition: { value: new THREE.Vector3(0, 0, 0) },
+          planetRadius: { value: size }
+        },
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+    }, []);
+
     useFrame((state) => {
       if (meshRef.current) {
         meshRef.current.rotation.y += rotationSpeed;
@@ -163,9 +247,19 @@ export function createRealisticPlanet({
         
         // Update sun position for atmosphere shader
         if (atmosphereMaterial && atmosphereMaterial.uniforms) {
-          // Sun is at origin (0,0,0) in our solar system
           atmosphereMaterial.uniforms.sunPosition.value.set(0, 0, 0);
         }
+      }
+      if (ringsRef.current && ringMaterial && ringMaterial.uniforms) {
+        // Update uniforms for ring shader
+        ringMaterial.uniforms.sunPosition.value.set(0, 0, 0);
+        // Get world position of the planet for shadow calculations
+        const worldPosition = new THREE.Vector3();
+        meshRef.current.getWorldPosition(worldPosition);
+        ringMaterial.uniforms.planetPosition.value.copy(worldPosition);
+        
+        // Slow ring rotation
+        ringsRef.current.rotation.z += rotationSpeed * 0.1;
       }
     });
 
@@ -192,16 +286,10 @@ export function createRealisticPlanet({
           </mesh>
         )}
 
-        {/* Rings */}
-        {hasRings && (
-          <mesh ref={ringsRef} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[size * 1.5, size * 2.5, 64]} />
-            <meshBasicMaterial
-              color={ringColor}
-              transparent={true}
-              opacity={0.6}
-              side={THREE.DoubleSide}
-            />
+        {/* Realistic Rings */}
+        {hasRings && ringMaterial && (
+          <mesh ref={ringsRef} rotation={[Math.PI / 2, 0, 0]} material={ringMaterial}>
+            <ringGeometry args={[size * 1.3, size * 2.8, 128]} />
           </mesh>
         )}
       </group>
