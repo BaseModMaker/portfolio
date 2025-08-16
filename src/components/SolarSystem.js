@@ -6,7 +6,7 @@ import { createRealisticPlanet } from './PlanetGenerator';
 import planetsData from '../data/planetsData.json';
 
 // Planet component using realistic planet generator
-function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, planetProps }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps }) {
   const orbitRef = useRef();
   
   // Create the realistic planet component
@@ -15,6 +15,13 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, planet
     rotationSpeed,
     ...planetProps
   });
+
+  // Set initial rotation based on startAngle
+  useEffect(() => {
+    if (orbitRef.current) {
+      orbitRef.current.rotation.y = startAngle;
+    }
+  }, [startAngle]);
 
   useFrame((state) => {
     if (orbitRef.current) {
@@ -106,6 +113,7 @@ function Planets() {
           size={planet.size}
           orbitSpeed={planet.orbitSpeed}
           rotationSpeed={planet.rotationSpeed}
+          startAngle={planet.startAngle}
           planetProps={planet.props}
         />
       ))}

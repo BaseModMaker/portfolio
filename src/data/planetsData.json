@@ -6,6 +6,7 @@
       "size": 0.1,
       "orbitSpeed": 0.04,
       "rotationSpeed": 0.02,
+      "startAngle": 0,
       "props": {
         "hasAtmosphere": false,
         "surfaceRoughness": 0.9,
@@ -19,6 +20,7 @@
       "size": 0.15,
       "orbitSpeed": 0.03,
       "rotationSpeed": 0.015,
+      "startAngle": 1.2,
       "props": {
         "hasAtmosphere": true,
         "atmosphereColor": "#FFA500",
@@ -33,6 +35,7 @@
       "size": 0.16,
       "orbitSpeed": 0.02,
       "rotationSpeed": 0.01,
+      "startAngle": 2.8,
       "props": {
         "hasAtmosphere": true,
         "atmosphereColor": "#87CEEB",
@@ -47,6 +50,7 @@
       "size": 0.12,
       "orbitSpeed": 0.015,
       "rotationSpeed": 0.008,
+      "startAngle": 4.1,
       "props": {
         "hasAtmosphere": false,
         "surfaceRoughness": 0.8,
@@ -60,6 +64,7 @@
       "size": 0.5,
       "orbitSpeed": 0.01,
       "rotationSpeed": 0.012,
+      "startAngle": 5.7,
       "props": {
         "hasAtmosphere": false,
         "surfaceRoughness": 0.4,
@@ -73,6 +78,7 @@
       "size": 0.4,
       "orbitSpeed": 0.008,
       "rotationSpeed": 0.01,
+      "startAngle": 0.9,
       "props": {
         "hasAtmosphere": false,
         "hasRings": true,
@@ -88,6 +94,7 @@
       "size": 0.25,
       "orbitSpeed": 0.006,
       "rotationSpeed": 0.007,
+      "startAngle": 3.5,
       "props": {
         "hasAtmosphere": false,
         "hasRings": true,
@@ -103,6 +110,7 @@
       "size": 0.24,
       "orbitSpeed": 0.005,
       "rotationSpeed": 0.006,
+      "startAngle": 1.8,
       "props": {
         "hasAtmosphere": false,
         "surfaceRoughness": 0.3,
