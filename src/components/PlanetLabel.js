@@ -30,14 +30,31 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize }, ref) => {
           userSelect: 'none'
         }}
       >
+        {/* Connection line as HTML element */}
+        <div 
+          className="planet-connection-line"
+          style={{
+            position: 'absolute',
+            left: `var(--label-left-alignment-${planetName}, -300px)`,
+            top: '50%',
+            width: 'auto',
+            right: '250px',
+            height: '2px',
+            backgroundColor: `var(--line-color-${planetName}, #64ffda)`,
+            transform: 'translateY(-50%)',
+            opacity: 0.8,
+            zIndex: -1
+          }}
+        />
+        
         <div className="rpg-textbox" style={{ 
           position: 'relative',
           width: 'auto',
           minWidth: '200px'
         }}>
           <div className="textbox-content" style={{
-            background: 'rgba(26, 26, 46, 0.9)',
-            border: `3px solid var(--label-border-color-${planetName}, #64ffda)`,
+            background: `var(--label-bg-color-${planetName}, rgba(26, 26, 46, 0.9))`,
+            border: `3px solid var(--label-inner-border-color-${planetName}, #64ffda)`,
             borderRadius: '12px',
             padding: '0.75rem 1rem',
             minHeight: 'auto',
@@ -45,7 +62,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize }, ref) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            boxShadow: `0 0 20px var(--label-border-color-${planetName}, #64ffda)33, inset 0 2px 0 rgba(255, 255, 255, 0.1)`,
+            boxShadow: `0 0 20px var(--label-border-color-${planetName}, #64ffda)33, inset 0 2px 0 rgba(255, 0, 0, 0.1)`,
             position: 'relative',
             margin: '0',
             boxSizing: 'border-box',
@@ -58,12 +75,12 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize }, ref) => {
               left: '8px',
               right: '8px',
               bottom: '8px',
-              border: `1px solid var(--label-border-color-${planetName}, #64ffda)4D`,
+              border: `1px solid var(--label-inner-border-color-${planetName}, rgba(100, 255, 218, 0.3))`,
               borderRadius: '8px',
               pointerEvents: 'none'
             }} />
             <p className="greeting-text" style={{
-              color: '#ffffff',
+              color: 'var(--label-font-color-' + planetName + ', #ffffff)',
               fontFamily: "'Courier New', monospace",
               fontSize: '2rem',
               lineHeight: '1.4',
