@@ -136,10 +136,14 @@ function SolarSystem() {
       
       {showSolarSystem && (
         <div style={{ 
-          width: '100%', 
+          width: '100vw', 
           height: '100vh',
+          position: 'fixed',
+          top: 0,
+          left: 0,
           opacity: systemOpacity,
-          transition: 'opacity 1.5s ease-in'
+          transition: 'opacity 1.5s ease-in',
+          overflow: 'hidden'
         }}>
           <Canvas 
             camera={{ position: [0, 10, 20], fov: 60 }}
@@ -161,17 +165,6 @@ function SolarSystem() {
               dampingFactor={0.05}
               enableDamping={true}
             />
-            
-            {/* Background stars */}
-            <mesh>
-              <sphereGeometry args={[100, 32, 32]} />
-              <meshBasicMaterial 
-                color="#000011" 
-                side={THREE.BackSide}
-                transparent
-                opacity={0.8}
-              />
-            </mesh>
           </Canvas>
         </div>
       )}
