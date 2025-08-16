@@ -8,6 +8,7 @@ function GreetingSequence({ onComplete }) {
   const [textIndex, setTextIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [canAdvance, setCanAdvance] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
   
   const greetingTexts = useMemo(() => [
     "Hello there, welcome to my portfolio!",
@@ -56,10 +57,13 @@ function GreetingSequence({ onComplete }) {
       setCurrentText('');
       setCanAdvance(false);
     } else {
-      // Complete sequence
-      setShowGreeting(false);
+      // Start fade out sequence
+      setFadeOut(true);
       setTimeout(() => {
-        onComplete();
+        setShowGreeting(false);
+        setTimeout(() => {
+          onComplete();
+        }, 500);
       }, 1000);
     }
   };
@@ -68,13 +72,13 @@ function GreetingSequence({ onComplete }) {
 
   return (
     <div 
-      className={`greeting-container ${!showGreeting ? 'fade-out' : ''}`}
+      className={`greeting-container ${fadeOut ? 'fade-out' : ''}`}
       onClick={handleClick}
     >
       <div className="greeting-content">
         {showText && (
-          <div className="rpg-textbox">
-            <div className="character-image">
+          <div className={`rpg-textbox ${fadeOut ? 'fade-out' : ''}`}>
+            <div className={`character-image ${fadeOut ? 'fade-out' : ''}`}>
               <img 
                 src="/portfolio/basile/basile_wave.png" 
                 alt="Basile greeting" 

@@ -32,18 +32,30 @@
   animation: fadeInUp 0.5s ease-out;
   position: relative;
   width: 100%;
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.rpg-textbox.fade-out {
+  opacity: 0;
+  transform: translateY(30px);
 }
 
 .character-image {
   position: absolute;
-  top: -155px;
-  left: -20px;
+  top: -307px;
+  left: -50px;
   z-index: 10;
   animation: fadeInUp 1s ease-out;
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.character-image.fade-out {
+  opacity: 0;
+  transform: translateY(30px) scale(0.8);
 }
 
 .basile-image {
-  width: 180px;
+  width: 300px;
   height: auto;
   /* border-radius: 50%; */
   /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); */

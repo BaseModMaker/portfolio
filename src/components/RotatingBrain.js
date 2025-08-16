@@ -63,12 +63,16 @@ function BrainModel() {
 function RotatingBrain() {
   const [showBrain, setShowBrain] = useState(false);
   const [greetingComplete, setGreetingComplete] = useState(false);
+  const [brainOpacity, setBrainOpacity] = useState(0);
 
   const handleGreetingComplete = () => {
     setGreetingComplete(true);
     setTimeout(() => {
       setShowBrain(true);
-    }, 500);
+      setTimeout(() => {
+        setBrainOpacity(1);
+      }, 100);
+    }, 200);
   };
 
   return (
@@ -81,8 +85,8 @@ function RotatingBrain() {
         <div style={{ 
           width: '100%', 
           height: '500px',
-          opacity: showBrain ? 1 : 0,
-          transition: 'opacity 1s ease-in'
+          opacity: brainOpacity,
+          transition: 'opacity 1.5s ease-in'
         }}>
           <Canvas 
             camera={{ position: [0, 0, 8], fov: 60 }}
