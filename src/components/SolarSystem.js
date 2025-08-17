@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
 import planetsData from '../data/planetsData.json';
+import RepositoryList from './RepositoryList';
+import SpaceshipDashboard from './SpaceshipDashboard';
 
 // Function to determine ring, line, and label colors based on state
 function getRingAppearance(isSelected, hovered, planetName) {
@@ -397,6 +399,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
 function SolarSystem({ isVisible = true }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
+  const [showDashboard, setShowDashboard] = useState(false);
   const planetRefs = useRef({});
 
   const orbitConstant = 0.1;
@@ -416,6 +419,12 @@ function SolarSystem({ isVisible = true }) {
 
   const handlePlanetSelect = (planetName) => {
     setFollowingPlanet(planetName);
+    setShowDashboard(!!planetName); // Show dashboard when a planet is selected
+  };
+
+  const handleCloseDashboard = () => {
+    setShowDashboard(false);
+    setFollowingPlanet(null);
   };
 
   if (!isVisible) return null;
@@ -451,6 +460,12 @@ function SolarSystem({ isVisible = true }) {
           planetRefs={planetRefs}
         />
       </Canvas>
+      
+      <SpaceshipDashboard 
+        isVisible={showDashboard}
+        planetName={followingPlanet}
+        onClose={handleCloseDashboard}
+      />
     </div>
   );
 }
