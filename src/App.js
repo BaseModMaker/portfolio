@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import SolarSystem from './components/SolarSystem';
 import GreetingSequence from './components/GreetingSequence';
+import SpaceMusic from './components/SpaceMusic';
 
 function App() {
   const [greetingComplete, setGreetingComplete] = useState(false);
@@ -17,6 +18,10 @@ function App() {
           <GreetingSequence onComplete={handleGreetingComplete} />
         )}
         <SolarSystem isVisible={greetingComplete} />
+        <SpaceMusic 
+          isPlaying={true}
+          volume={0.2}
+        />
       </header>
     </div>
   );

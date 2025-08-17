@@ -1,0 +1,83 @@
+.music-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.mute-toggle-btn {
+  background: transparent;
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  color: rgba(100, 255, 218, 0.3);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.mute-toggle-btn:hover {
+  border-color: rgba(100, 255, 218, 0.5);
+  color: rgba(100, 255, 218, 0.7);
+  background: rgba(100, 255, 218, 0.05);
+}
+
+/* Hide controls when dashboard is open */
+.spaceship-dashboard ~ .music-controls {
+  opacity: 0.3;
+}
+
+.spaceship-dashboard ~ .music-controls:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .music-controls {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .mute-toggle-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Hide controls when dashboard is open */
+.spaceship-dashboard ~ .music-controls {
+  opacity: 0.3;
+}
+
+.spaceship-dashboard ~ .music-controls:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .music-controls {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .play-music-btn {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+  
+  .mute-toggle-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}

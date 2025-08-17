@@ -9,7 +9,6 @@ import RepositoryList from './RepositoryList';
 import SpaceshipDashboard from './SpaceshipDashboard';
 
 // TODO
-// space music
 // add more planets
 // camera to sun if click too fast
 
