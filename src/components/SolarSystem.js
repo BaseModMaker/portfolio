@@ -10,7 +10,7 @@ import SpaceshipDashboard from './SpaceshipDashboard';
 
 // TODO
 // 1: readme DONE
-// 2: favicon
+// 2: favicon DONE
 // 3: planet labels shouldn't appear on selection
 // 4: space music
 // 5: make intro wait longer before appearing
