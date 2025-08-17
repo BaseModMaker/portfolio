@@ -8,6 +8,14 @@ import planetsData from '../data/planetsData.json';
 import RepositoryList from './RepositoryList';
 import SpaceshipDashboard from './SpaceshipDashboard';
 
+// TODO
+// 1: readme DONE
+// 2: favicon
+// 3: planet labels shouldn't appear on selection
+// 4: space music
+// 5: make intro wait longer before appearing
+// 6: add more planets
+
 // Function to determine ring, line, and label colors based on state
 function getRingAppearance(isSelected, hovered, planetName) {
   let appearance;
