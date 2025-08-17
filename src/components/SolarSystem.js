@@ -1,9 +1,65 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { createRealisticPlanet } from './PlanetGenerator';
+import PlanetLabel from './PlanetLabel';
 import planetsData from '../data/planetsData.json';
+import RepositoryList from './RepositoryList';
+import SpaceshipDashboard from './SpaceshipDashboard';
+
+// Function to determine ring, line, and label colors based on state
+function getRingAppearance(isSelected, hovered, planetName) {
+  let appearance;
+
+  if (isSelected) {
+    appearance = { 
+      color: '#ff6b6b', 
+      opacity: 1.0,
+      lineColor: 'rgba(255, 107, 107, 0)',
+      labelBorderColor: 'rgba(255, 107, 107, 0)',
+      labelBgColor: 'rgba(255, 107, 107, 0)',
+      labelFontColor: 'rgba(255, 107, 107, 0)',
+      labelInnerBorderColor: 'rgba(255, 107, 107, 0)',
+      labelBorderShadowColor: 'rgba(255, 107, 107, 0)'
+    };
+  } else if (hovered) {
+    appearance = { 
+      color: 'rgba(100, 255, 218, 1)',
+      opacity: 0.8,
+      lineColor: 'rgba(100, 255, 218, 1)',
+      labelBorderColor: 'rgba(100, 255, 218, 1)',
+      labelBgColor: 'rgba(26, 26, 46, 0.9)',
+      labelFontColor: '#ffffff',
+      labelInnerBorderColor: 'rgba(100, 255, 218, 0.3)',
+      labelBorderShadowColor: 'rgba(100, 255, 218, 0.3)'
+    };
+  } else {
+    appearance = { 
+      color: 'rgba(100, 255, 218, 0)', 
+      opacity: 0.3,
+      lineColor: 'rgba(100, 255, 218, 0)',
+      labelBorderColor: 'rgba(100, 255, 218, 0)',
+      labelBgColor: 'rgba(26, 26, 46, 0)',
+      labelFontColor: 'rgba(100, 255, 218, 0)',
+      labelInnerBorderColor: 'rgba(100, 255, 218, 0)',
+      labelBorderShadowColor: 'rgba(100, 255, 218, 0)'
+    };
+  }
+
+  // Update CSS variables for this planet
+  if (planetName) {
+    document.documentElement.style.setProperty(`--line-color-${planetName}`, appearance.lineColor);
+    document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
+    document.documentElement.style.setProperty(`--label-bg-color-${planetName}`, appearance.labelBgColor);
+    document.documentElement.style.setProperty(`--label-font-color-${planetName}`, appearance.labelFontColor);
+    document.documentElement.style.setProperty(`--label-inner-border-color-${planetName}`, appearance.labelInnerBorderColor);
+    document.documentElement.style.setProperty(`--label-border-shadow-color-${planetName}`, appearance.labelBorderShadowColor);
+  }
+
+  return appearance;
+}
+
 
 // Camera controller component
 function CameraController({ followingPlanet, planets, planetRefs }) {
@@ -148,8 +204,11 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
 }
 
 // Planet component using realistic planet generator
-function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered }) {
   const orbitRef = useRef();
+  const labelOrbitRef = useRef();
+  const actualPlanetRef = useRef();
+  const labelRef = useRef();
   
   // Create the realistic planet component
   const RealisticPlanet = createRealisticPlanet({
@@ -163,17 +222,57 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
     if (orbitRef.current) {
       orbitRef.current.rotation.y = startAngle;
     }
+    if (labelOrbitRef.current) {
+      labelOrbitRef.current.rotation.y = startAngle;
+    }
   }, [startAngle]);
+
+  // Update the parent ref when actualPlanetRef changes
+  useEffect(() => {
+    if (actualPlanetRef.current && planetRef) {
+      planetRef(actualPlanetRef.current);
+    }
+  }, [planetRef]);
 
   useFrame((state) => {
     if (orbitRef.current) {
       orbitRef.current.rotation.y += orbitSpeed;
     }
+    // Keep label orbit in sync with planet orbit
+    if (labelOrbitRef.current) {
+      labelOrbitRef.current.rotation.y += orbitSpeed;
+    }
   });
 
+  // Calculate label orbit offset - shift to the right
+  const labelOrbitOffset = 5; // 5 units of orbit radius to the right
+
+  // Set CSS custom property for label border color
+  useEffect(() => {
+    const appearance = getRingAppearance(isSelected, hovered, planetName);
+    document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
+  }, [isSelected, hovered, planetName]);
+
   return (
-    <group ref={orbitRef}>
-      <RealisticPlanet ref={planetRef} position={[orbitRadius, 0, 0]} />
+    <group>
+      {/* Planet orbit */}
+      <group ref={orbitRef}>
+        <group position={[orbitRadius, 0, 0]}>
+          <RealisticPlanet ref={actualPlanetRef} />
+        </group>
+      </group>
+      
+      {/* Label orbit - offset to the right */}
+      <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
+        <group position={[orbitRadius, 0, 0]}>
+          <PlanetLabel 
+            ref={labelRef}
+            planetRef={actualPlanetRef} 
+            planetName={planetName}
+            planetSize={size}
+          />
+        </group>
+      </group>
     </group>
   );
 }
@@ -187,11 +286,12 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected }) {
   useEffect(() => {
     if (ringRef.current) {
       const geometry = new THREE.RingGeometry(radius - 0.02, radius + 0.02, 64);
+      const appearance = getRingAppearance(isSelected, hovered, planetName);
       const material = new THREE.MeshBasicMaterial({
-        color: isSelected ? '#ff6b6b' : (hovered ? '#ffffff' : '#64ffda'),
+        color: appearance.color,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: isSelected ? 1.0 : (hovered ? 0.8 : 0.3)
+        opacity: appearance.opacity
       });
       ringRef.current.geometry = geometry;
       ringRef.current.material = material;
@@ -285,6 +385,9 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
           rotationSpeed={planet.rotationSpeed}
           startAngle={planet.startAngle}
           planetProps={planet.props}
+          planetName={planet.name}
+          isSelected={followingPlanet === planet.name}
+          hovered={false}
           planetRef={(el) => {
             if (el && planetRefs.current) {
               planetRefs.current[planet.name] = el;
@@ -300,6 +403,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
 function SolarSystem({ isVisible = true }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
+  const [showDashboard, setShowDashboard] = useState(false);
   const planetRefs = useRef({});
 
   const orbitConstant = 0.1;
@@ -319,6 +423,12 @@ function SolarSystem({ isVisible = true }) {
 
   const handlePlanetSelect = (planetName) => {
     setFollowingPlanet(planetName);
+    setShowDashboard(!!planetName); // Show dashboard when a planet is selected
+  };
+
+  const handleCloseDashboard = () => {
+    setShowDashboard(false);
+    setFollowingPlanet(null);
   };
 
   if (!isVisible) return null;
@@ -354,6 +464,12 @@ function SolarSystem({ isVisible = true }) {
           planetRefs={planetRefs}
         />
       </Canvas>
+      
+      <SpaceshipDashboard 
+        isVisible={showDashboard}
+        planetName={followingPlanet}
+        onClose={handleCloseDashboard}
+      />
     </div>
   );
 }

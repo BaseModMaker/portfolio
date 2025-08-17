@@ -85,18 +85,6 @@
   box-sizing: border-box;
 }
 
-.textbox-content::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
-  border: 1px solid rgba(100, 255, 218, 0.3);
-  border-radius: 8px;
-  pointer-events: none;
-}
-
 .greeting-text {
   color: #ffffff;
   font-family: 'Courier New', monospace;

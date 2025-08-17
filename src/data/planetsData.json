@@ -1,7 +1,7 @@
 {
   "planets": [
     {
-      "name": "Mercury",
+      "name": "portfolio",
       "orbitRadius": 2,
       "size": 0.1,
       "orbitSpeed": 0.04,
@@ -15,7 +15,7 @@
       }
     },
     {
-      "name": "Venus",
+      "name": "sprite-stacking",
       "orbitRadius": 3,
       "size": 0.15,
       "orbitSpeed": 0.03,
@@ -30,7 +30,7 @@
       }
     },
     {
-      "name": "Earth",
+      "name": "ant-online-simulator",
       "orbitRadius": 4,
       "size": 0.16,
       "orbitSpeed": 0.02,
@@ -45,7 +45,7 @@
       }
     },
     {
-      "name": "Mars",
+      "name": "image-to-mosaic-template",
       "orbitRadius": 5.5,
       "size": 0.12,
       "orbitSpeed": 0.015,
@@ -59,7 +59,7 @@
       }
     },
     {
-      "name": "Jupiter",
+      "name": "CommitGenerator",
       "orbitRadius": 8,
       "size": 0.5,
       "orbitSpeed": 0.01,
@@ -73,7 +73,7 @@
       }
     },
     {
-      "name": "Saturn",
+      "name": "Multi-Smelter",
       "orbitRadius": 11,
       "size": 0.4,
       "orbitSpeed": 0.008,
@@ -89,7 +89,7 @@
       }
     },
     {
-      "name": "Uranus",
+      "name": "SuperRepairPoint",
       "orbitRadius": 14,
       "size": 0.25,
       "orbitSpeed": 0.006,
@@ -106,7 +106,7 @@
       }
     },
     {
-      "name": "Neptune",
+      "name": "MusicMod",
       "orbitRadius": 16,
       "size": 0.24,
       "orbitSpeed": 0.005,
