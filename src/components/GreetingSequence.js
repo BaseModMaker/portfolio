@@ -18,6 +18,62 @@ function GreetingSequence({ onComplete }) {
     "Let's explore together..."
   ], []);
 
+  // Function to highlight specific words
+  const highlightWords = (text) => {
+    const wordsToHighlight = ['portfolio', 'Basile', 'explore'];
+    let highlightedText = text;
+    
+    wordsToHighlight.forEach(word => {
+      const regex = new RegExp(`\\b${word}\\b`, 'gi');
+      highlightedText = highlightedText.replace(regex, `<span class="highlight-word">${word}</span>`);
+    });
+    
+    return highlightedText;
+  };
+
+  // Function to get highlighting for partial text during typing
+  const getPartialHighlight = (fullText, currentIndex) => {
+    const wordsToHighlight = ['portfolio', 'Basile', 'explore'];
+    const currentText = fullText.substring(0, currentIndex);
+    let result = '';
+    let i = 0;
+    
+    while (i < currentText.length) {
+      let foundWord = false;
+      
+      // Check if we're at the start of a word to highlight
+      for (const word of wordsToHighlight) {
+        const wordStart = i;
+        const wordEnd = i + word.length;
+        
+        // Check if this position starts with the highlight word (case insensitive)
+        if (wordEnd <= fullText.length && 
+            fullText.substring(wordStart, wordEnd).toLowerCase() === word.toLowerCase() &&
+            (wordStart === 0 || !/\w/.test(fullText[wordStart - 1])) && // word boundary before
+            (wordEnd === fullText.length || !/\w/.test(fullText[wordEnd]))) { // word boundary after
+          
+          // Check how much of this word we've typed so far
+          const typedWordLength = Math.min(word.length, currentText.length - wordStart);
+          
+          if (typedWordLength > 0) {
+            const typedPortion = fullText.substring(wordStart, wordStart + typedWordLength);
+            result += `<span class="highlight-word">${typedPortion}</span>`;
+            i = wordStart + typedWordLength;
+            foundWord = true;
+            break;
+          }
+        }
+      }
+      
+      if (!foundWord) {
+        result += currentText[i];
+        i++;
+      }
+    }
+    
+    return result;
+  };
+
   useEffect(() => {
     // Don't run useEffect if we manually advanced
     if (manualAdvance) {
@@ -38,13 +94,16 @@ function GreetingSequence({ onComplete }) {
         
         const typeWriter = setInterval(() => {
           if (charIndex < text.length) {
-            setCurrentText(text.substring(0, charIndex + 1));
             charIndex++;
+            const partialText = getPartialHighlight(text, charIndex);
+            setCurrentText(partialText);
           } else {
             clearInterval(typeWriter);
             setIsTyping(false);
             setCanAdvance(true);
             setTypewriterInterval(null);
+            // Ensure final text has proper highlighting
+            setCurrentText(highlightWords(text));
           }
         }, 50);
 
@@ -64,7 +123,7 @@ function GreetingSequence({ onComplete }) {
     // If currently typing, skip to full text
     if (isTyping && typewriterInterval) {
       clearInterval(typewriterInterval);
-      setCurrentText(greetingTexts[textIndex]);
+      setCurrentText(highlightWords(greetingTexts[textIndex]));
       setIsTyping(false);
       setCanAdvance(true);
       setTypewriterInterval(null);
@@ -116,7 +175,10 @@ function GreetingSequence({ onComplete }) {
               />
             </div>
             <div className="textbox-content">
-              <p className="greeting-text">{currentText}</p>
+              <p 
+                className="greeting-text" 
+                dangerouslySetInnerHTML={{ __html: currentText }}
+              />
               <div className={`text-cursor ${canAdvance ? 'visible' : 'hidden'}`}>▼</div>
             </div>
           </div>

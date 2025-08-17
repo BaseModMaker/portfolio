@@ -103,6 +103,11 @@
   user-select: none;
 }
 
+.highlight-word {
+  color: #64ffda;
+  font-weight: bold;
+}
+
 .text-cursor {
   color: #64ffda;
   font-size: 1rem;
