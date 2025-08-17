@@ -5,7 +5,7 @@ function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
   const audioRef = useRef();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -31,38 +31,47 @@ function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
     };
   }, [volume]);
 
-  // Auto-start music when loaded
+  // Listen for first user interaction
+  useEffect(() => {
+    if (hasUserInteracted) return;
+
+    const handleFirstInteraction = () => {
+      setHasUserInteracted(true);
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+    document.addEventListener('touchstart', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, [hasUserInteracted]);
+
+  // Start music when loaded and user has interacted
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !isLoaded || hasStarted) return;
+    if (!audio || !isLoaded || !hasUserInteracted) return;
 
     if (isPlaying && !isMuted) {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.then(() => {
-          setHasStarted(true);
-        }).catch(error => {
-          console.log('Autoplay prevented by browser:', error);
-          // Try to play on user interaction
-          const handleUserInteraction = () => {
-            audio.play().then(() => {
-              setHasStarted(true);
-            }).catch(console.error);
-            document.removeEventListener('click', handleUserInteraction);
-            document.removeEventListener('keydown', handleUserInteraction);
-          };
-          
-          document.addEventListener('click', handleUserInteraction);
-          document.addEventListener('keydown', handleUserInteraction);
+        playPromise.catch(error => {
+          console.log('Failed to play music:', error);
         });
       }
     }
-  }, [isLoaded, isPlaying, isMuted, hasStarted]);
+  }, [isLoaded, hasUserInteracted, isPlaying, isMuted]);
 
   // Handle play/pause when props change
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !hasStarted) return;
+    if (!audio || !hasUserInteracted) return;
 
     if (isPlaying && !isMuted) {
       if (audio.paused) {
@@ -73,7 +82,7 @@ function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
         audio.pause();
       }
     }
-  }, [isPlaying, isMuted, hasStarted]);
+  }, [isPlaying, isMuted, hasUserInteracted]);
 
   const handleToggleMute = () => {
     const audio = audioRef.current;
@@ -83,11 +92,9 @@ function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
     setIsMuted(newMutedState);
     audio.muted = newMutedState;
 
-    // If unmuting and not started yet, try to start
-    if (!newMutedState && !hasStarted && isPlaying) {
-      audio.play().then(() => {
-        setHasStarted(true);
-      }).catch(console.error);
+    // If unmuting and user has interacted, try to start
+    if (!newMutedState && hasUserInteracted && isPlaying) {
+      audio.play().catch(console.error);
     }
   };
 
