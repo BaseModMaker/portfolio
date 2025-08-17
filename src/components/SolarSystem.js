@@ -13,7 +13,7 @@ import SpaceshipDashboard from './SpaceshipDashboard';
 // 2: favicon DONE
 // 3: planet labels shouldn't appear on selection DONE 
 // 4: space music
-// 5: make intro wait longer before appearing
+// 5: make intro wait longer before appearing DONE
 // 6: add more planets
 // 7: camera to sun if click too fast
 // 8: labels get desynced after dashboard visit

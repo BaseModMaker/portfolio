@@ -11,6 +11,8 @@ function GreetingSequence({ onComplete }) {
   const [fadeOut, setFadeOut] = useState(false);
   const [typewriterInterval, setTypewriterInterval] = useState(null);
   const [manualAdvance, setManualAdvance] = useState(false);
+  const [initialWaiting, setInitialWaiting] = useState(true);
+  const [initialWaitTimer, setInitialWaitTimer] = useState(null);
   
   const greetingTexts = useMemo(() => [
     "Hello there, welcome to my portfolio!",
@@ -74,7 +76,26 @@ function GreetingSequence({ onComplete }) {
     return result;
   };
 
+  // Start initial wait timer on component mount
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setInitialWaiting(false);
+    }, 2000); // Wait before showing greeting
+
+    setInitialWaitTimer(timer);
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, []);
+
+  // Handle the typing animation
+  useEffect(() => {
+    // Don't run if still in initial waiting period
+    if (initialWaiting) return;
+
     // Don't run useEffect if we manually advanced
     if (manualAdvance) {
       setManualAdvance(false);
@@ -117,9 +138,19 @@ function GreetingSequence({ onComplete }) {
     }, textIndex === 0 ? 500 : 0);
 
     return () => clearTimeout(textTimer);
-  }, [textIndex, greetingTexts, manualAdvance]);
+  }, [textIndex, greetingTexts, manualAdvance, initialWaiting]);
 
   const handleClick = () => {
+    // If in initial waiting period, skip the wait
+    if (initialWaiting) {
+      if (initialWaitTimer) {
+        clearTimeout(initialWaitTimer);
+        setInitialWaitTimer(null);
+      }
+      setInitialWaiting(false);
+      return;
+    }
+
     // If currently typing, skip to full text
     if (isTyping && typewriterInterval) {
       clearInterval(typewriterInterval);
@@ -161,27 +192,31 @@ function GreetingSequence({ onComplete }) {
 
   return (
     <div 
-      className={`greeting-container ${fadeOut ? 'fade-out' : ''}`}
+      className={`greeting-container ${fadeOut ? 'fade-out' : ''} ${initialWaiting ? 'waiting' : ''}`}
       onClick={handleClick}
     >
       <div className="greeting-content">
-        {showText && (
-          <div className={`rpg-textbox ${fadeOut ? 'fade-out' : ''}`}>
-            <div className={`character-image ${fadeOut ? 'fade-out' : ''}`}>
-              <img 
-                src="/portfolio/basile/basile_wave.png" 
-                alt="Basile greeting" 
-                className="basile-image"
-              />
+        {initialWaiting ? (
+          <div></div>
+        ) : (
+          showText && (
+            <div className={`rpg-textbox ${fadeOut ? 'fade-out' : ''}`}>
+              <div className={`character-image ${fadeOut ? 'fade-out' : ''}`}>
+                <img 
+                  src="/portfolio/basile/basile_wave.png" 
+                  alt="Basile greeting" 
+                  className="basile-image"
+                />
+              </div>
+              <div className="textbox-content">
+                <p 
+                  className="greeting-text" 
+                  dangerouslySetInnerHTML={{ __html: currentText }}
+                />
+                <div className={`text-cursor ${canAdvance ? 'visible' : 'hidden'}`}>▼</div>
+              </div>
             </div>
-            <div className="textbox-content">
-              <p 
-                className="greeting-text" 
-                dangerouslySetInnerHTML={{ __html: currentText }}
-              />
-              <div className={`text-cursor ${canAdvance ? 'visible' : 'hidden'}`}>▼</div>
-            </div>
-          </div>
+          )
         )}
       </div>
     </div>
