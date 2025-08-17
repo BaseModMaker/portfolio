@@ -11,13 +11,15 @@ import SpaceshipDashboard from './SpaceshipDashboard';
 // TODO
 // 1: readme DONE
 // 2: favicon DONE
-// 3: planet labels shouldn't appear on selection
+// 3: planet labels shouldn't appear on selection DONE 
 // 4: space music
 // 5: make intro wait longer before appearing
 // 6: add more planets
+// 7: camera to sun if click too fast
+// 8: labels get desynced after dashboard visit
 
 // Function to determine ring, line, and label colors based on state
-function getRingAppearance(isSelected, hovered, planetName) {
+function getRingAppearance(isSelected, hovered, planetName, followingPlanet) {
   let appearance;
 
   if (isSelected) {
@@ -31,7 +33,20 @@ function getRingAppearance(isSelected, hovered, planetName) {
       labelInnerBorderColor: 'rgba(255, 107, 107, 0)',
       labelBorderShadowColor: 'rgba(255, 107, 107, 0)'
     };
-  } else if (hovered) {
+  } else if (hovered && followingPlanet) {
+    // When following a planet, show a different hover color to indicate jump targets
+    appearance = { 
+      color: 'rgba(100, 255, 218, 1)', // Cyan color for jump targets
+      opacity: 0.6,
+      lineColor: 'rgba(100, 255, 218, 0)',
+      labelBorderColor: 'rgba(100, 255, 218, 0)',
+      labelBgColor: 'rgba(26, 26, 46, 0)',
+      labelFontColor: 'rgba(100, 255, 218, 0)',
+      labelInnerBorderColor: 'rgba(100, 255, 218, 0)',
+      labelBorderShadowColor: 'rgba(100, 255, 218, 0)'
+    };
+  } else if (hovered && !followingPlanet) {
+    // Normal hover when not following any planet
     appearance = { 
       color: 'rgba(100, 255, 218, 1)',
       opacity: 0.8,
@@ -212,7 +227,7 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
 }
 
 // Planet component using realistic planet generator
-function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered, followingPlanet }) {
   const orbitRef = useRef();
   const labelOrbitRef = useRef();
   const actualPlanetRef = useRef();
@@ -257,9 +272,12 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
 
   // Set CSS custom property for label border color
   useEffect(() => {
-    const appearance = getRingAppearance(isSelected, hovered, planetName);
+    const appearance = getRingAppearance(isSelected, hovered, planetName, followingPlanet);
     document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
-  }, [isSelected, hovered, planetName]);
+  }, [isSelected, hovered, planetName, followingPlanet]);
+
+  // Determine if labels should be visible (hide when following any planet)
+  const showLabels = !followingPlanet;
 
   return (
     <group>
@@ -270,23 +288,25 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
         </group>
       </group>
       
-      {/* Label orbit - offset to the right */}
-      <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
-        <group position={[orbitRadius, 0, 0]}>
-          <PlanetLabel 
-            ref={labelRef}
-            planetRef={actualPlanetRef} 
-            planetName={planetName}
-            planetSize={size}
-          />
+      {/* Label orbit - offset to the right - only show when not following any planet */}
+      {showLabels && (
+        <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
+          <group position={[orbitRadius, 0, 0]}>
+            <PlanetLabel 
+              ref={labelRef}
+              planetRef={actualPlanetRef} 
+              planetName={planetName}
+              planetSize={size}
+            />
+          </group>
         </group>
-      </group>
+      )}
     </group>
   );
 }
 
 // Orbit ring component
-function OrbitRing({ radius, planetName, onPlanetSelect, isSelected }) {
+function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPlanet }) {
   const ringRef = useRef();
   const collisionRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -294,7 +314,7 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected }) {
   useEffect(() => {
     if (ringRef.current) {
       const geometry = new THREE.RingGeometry(radius - 0.02, radius + 0.02, 64);
-      const appearance = getRingAppearance(isSelected, hovered, planetName);
+      const appearance = getRingAppearance(isSelected, hovered, planetName, followingPlanet);
       const material = new THREE.MeshBasicMaterial({
         color: appearance.color,
         side: THREE.DoubleSide,
@@ -320,11 +340,20 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected }) {
       collisionRef.current.rotation.x = Math.PI / 2;
       collisionRef.current.position.y = 0.01;
     }
-  }, [radius, hovered, isSelected]);
+  }, [radius, hovered, isSelected, followingPlanet]);
 
   const handleClick = (e) => {
     e.stopPropagation();
     onPlanetSelect(isSelected ? null : planetName);
+  };
+
+  // Allow hover for all rings when following a planet (to show jump targets)
+  const handlePointerEnter = () => {
+    setHovered(true);
+  };
+
+  const handlePointerLeave = () => {
+    setHovered(false);
   };
 
   return (
@@ -335,8 +364,8 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected }) {
       {/* Invisible collision detection ring */}
       <mesh 
         ref={collisionRef}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
         onClick={handleClick}
       />
     </group>
@@ -380,6 +409,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
           planetName={planet.name}
           onPlanetSelect={onPlanetSelect}
           isSelected={followingPlanet === planet.name}
+          followingPlanet={followingPlanet}
         />
       ))}
       
@@ -396,6 +426,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
           planetName={planet.name}
           isSelected={followingPlanet === planet.name}
           hovered={false}
+          followingPlanet={followingPlanet}
           planetRef={(el) => {
             if (el && planetRefs.current) {
               planetRefs.current[planet.name] = el;
