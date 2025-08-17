@@ -31,8 +31,8 @@ function getRingAppearance(isSelected, hovered, planetName) {
       labelBorderColor: 'rgba(100, 255, 218, 1)',
       labelBgColor: 'rgba(26, 26, 46, 0.9)',
       labelFontColor: '#ffffff',
-      labelInnerBorderColor: 'rgba(100, 255, 218, 0.3)',
-      labelBorderShadowColor: 'rgba(100, 255, 218, 0.3)'
+      labelInnerBorderColor: 'rgba(100, 255, 218, 0.7)',
+      labelBorderShadowColor: 'rgba(100, 255, 219, 0.7)'
     };
   } else {
     appearance = { 

@@ -116,3 +116,9 @@ canvas {
     transform: rotate(360deg);
   }
 }
+
+/* Global connection line styles */
+.planet-connection-line-global {
+  transition: all 0.1s ease-out;
+  /* box-shadow: 0 0 5px rgba(100, 255, 218, 0.3); */
+}
