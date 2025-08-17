@@ -125,10 +125,11 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize }, ref) => {
       height: '2px',
       transformOrigin: '0 50%',
       transform: `rotate(${connectionLine.angle}deg)`,
-      backgroundColor: `var(--line-color-${planetName}, #64ffda)`,
+      backgroundColor: `var(--line-color-${planetName}, rgba(100, 255, 218, 1))`,
       opacity: '0.8',
       zIndex: '999',
-      pointerEvents: 'none'
+      pointerEvents: 'none',
+      boxShadow: `0 0 10px var(--line-color-${planetName}, rgba(100, 255, 218, 1))`,
     });
 
     // Cleanup function
