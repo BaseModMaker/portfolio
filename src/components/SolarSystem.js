@@ -9,14 +9,9 @@ import RepositoryList from './RepositoryList';
 import SpaceshipDashboard from './SpaceshipDashboard';
 
 // TODO
-// 1: readme DONE
-// 2: favicon DONE
-// 3: planet labels shouldn't appear on selection DONE 
-// 4: space music
-// 5: make intro wait longer before appearing DONE
-// 6: add more planets
-// 7: camera to sun if click too fast
-// 8: labels get desynced after dashboard visit
+// space music
+// add more planets
+// camera to sun if click too fast
 
 // Function to determine ring, line, and label colors based on state
 function getRingAppearance(isSelected, hovered, planetName, followingPlanet) {
@@ -261,9 +256,9 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
     if (orbitRef.current) {
       orbitRef.current.rotation.y += orbitSpeed;
     }
-    // Keep label orbit in sync with planet orbit
+    // Always keep label orbit in sync with planet orbit, even when labels are hidden
     if (labelOrbitRef.current) {
-      labelOrbitRef.current.rotation.y += orbitSpeed;
+      labelOrbitRef.current.rotation.y = orbitRef.current.rotation.y;
     }
   });
 
@@ -288,19 +283,19 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
         </group>
       </group>
       
-      {/* Label orbit - offset to the right - only show when not following any planet */}
-      {showLabels && (
-        <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
-          <group position={[orbitRadius, 0, 0]}>
+      {/* Label orbit - always render but conditionally show content to maintain sync */}
+      <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
+        <group position={[orbitRadius, 0, 0]}>
+          {showLabels && (
             <PlanetLabel 
               ref={labelRef}
               planetRef={actualPlanetRef} 
               planetName={planetName}
               planetSize={size}
             />
-          </group>
+          )}
         </group>
-      )}
+      </group>
     </group>
   );
 }
