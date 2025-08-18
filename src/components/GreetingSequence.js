@@ -9,6 +9,7 @@ function GreetingSequence({ onComplete }) {
   const [isTyping, setIsTyping] = useState(false);
   const [canAdvance, setCanAdvance] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [avatarTransforming, setAvatarTransforming] = useState(false);
   const [typewriterInterval, setTypewriterInterval] = useState(null);
   const [manualAdvance, setManualAdvance] = useState(false);
   const [initialWaiting, setInitialWaiting] = useState(true);
@@ -175,16 +176,17 @@ function GreetingSequence({ onComplete }) {
       setCurrentText('');
       setCanAdvance(false);
       setIsTyping(false);
-      // Remove setManualAdvance(true) to let useEffect run normally
     } else {
-      // Start fade out sequence
+      // Start avatar transformation animation
+      setAvatarTransforming(true);
       setFadeOut(true);
+      
       setTimeout(() => {
         setShowGreeting(false);
         setTimeout(() => {
           onComplete();
-        }, 500);
-      }, 1000);
+        }, 100);
+      }, 2000); // Wait for avatar transformation to complete
     }
   };
 
@@ -201,7 +203,7 @@ function GreetingSequence({ onComplete }) {
         ) : (
           showText && (
             <div className={`rpg-textbox ${fadeOut ? 'fade-out' : ''}`}>
-              <div className={`character-image ${fadeOut ? 'fade-out' : ''}`}>
+              <div className={`character-image ${fadeOut ? 'fade-out' : ''} ${avatarTransforming ? 'transforming-to-button' : ''}`}>
                 <img 
                   src="/portfolio/basile/basile_wave.png" 
                   alt="Basile greeting" 
