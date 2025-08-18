@@ -1,146 +1,162 @@
-# 🚀 React Pages Template
+# 🌌 Interactive Solar System Portfolio
 
 [![React](https://img.shields.io/badge/React-19.1.1-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://basemodmaker.github.io/React-Pages-Template/)
+[![Three.js](https://img.shields.io/badge/Three.js-Fiber-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://basemodmaker.github.io/portfolio/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 
-> A clean, modern React template with GitHub Pages deployment ready to go! Perfect for quickly spinning up React projects with automated deployment.
+> 🚀 **An immersive 3D portfolio experience where each planet represents a GitHub repository, complete with interactive exploration and spaceship-style dashboards.**
 
-## ✨ Features
+![Portfolio Preview](https://img.shields.io/badge/Status-Live%20Demo-success?style=for-the-badge)
 
-- 🎯 **React 19** - Latest React with modern features
-- 🚀 **GitHub Pages Ready** - Automated deployment with gh-pages
-- 🧪 **Testing Suite** - Pre-configured Jest and React Testing Library
-- 📱 **Responsive Design** - Mobile-first approach
-- ⚡ **Fast Development** - Hot reload and instant feedback
-- 🔧 **Zero Configuration** - Works out of the box
-- 📦 **Optimized Build** - Production-ready bundling
+---
 
-## 🎯 Quick Start
+## ✨ What is This?
+
+This is not your typical portfolio website. Instead of boring static pages, explore my projects through an **interactive solar system** where:
+
+- 🪐 **Each planet is a GitHub repository** - Click to explore project details
+- 🚀 **Spaceship dashboard interface** - Futuristic UI displays repository data
+- 🌟 **Real-time GitHub integration** - Live data from the GitHub API
+- 🎮 **3D exploration** - Navigate through space with smooth camera controls
+- ⚡ **RPG-style interactions** - Engaging greeting sequence and planet labels
+
+---
+
+## 🎯 Features
+
+### 🌌 Immersive 3D Experience
+- **Realistic Planets** - Procedurally generated surfaces with atmospheres and rings
+- **Dynamic Lighting** - Animated sun with realistic shadows and glow effects
+- **Smooth Navigation** - Orbital camera controls with animated transitions
+
+### 🚀 Interactive Portfolio
+- **GitHub Integration** - Automatically fetches repository data via GitHub API
+- **Spaceship Dashboard** - Sci-fi interface showing project statistics and details
+- **Project Exploration** - View languages, commits, stars, and technical details
+- **Live Repository Data** - Real-time information including recent commits
+
+### 🎨 Modern UI/UX
+- **RPG-Style Greeting** - Character introduction with typewriter effects
+- **Smooth Animations** - Polished transitions and hover effects
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **React 19** | Core framework with modern hooks |
+| **Three.js + Fiber** | 3D graphics and animations |
+| **GitHub API** | Real-time repository data |
+| **Custom Shaders** | Realistic planet atmospheres and rings |
+| **CSS3 Animations** | UI transitions and effects |
+| **GitHub Pages** | Deployment and hosting |
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-
 - Node.js (v16 or higher)
 - npm or yarn
 - Git
 
 ### Installation
+```bash
+# Clone the repository
+git clone https://github.com/BaseModMaker/portfolio.git
+cd portfolio
 
-1. **Use this template** or clone the repository:
-   ```bash
-   git clone https://github.com/BaseModMaker/React-Pages-Template.git
-   cd React-Pages-Template
-   ```
+# Install dependencies
+npm install
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+# Start development server
+npm start
 
-3. **Start development server:**
-   ```bash
-   npm start
-   ```
-
-4. **Open your browser** and navigate to `http://localhost:3000`
-
-## 🚀 Deployment
-
-This template is configured for seamless GitHub Pages deployment:
-
-1. **Build and deploy:**
-   ```bash
-   npm run deploy
-   ```
-
-2. **That's it!** Your app will be live at `https://yourusername.github.io/your-repo-name`
-
-### Deployment Configuration
-
-- Update the `homepage` field in `package.json` to match your GitHub Pages URL
-- Push to your main branch
-- Run `npm run deploy` to build and deploy to the `gh-pages` branch
-
-## 📁 Project Structure
-
-```
-React-Pages-Template/
-├── public/                 # Static assets
-│   ├── index.html         # HTML template
-│   ├── favicon.ico        # Favicon
-│   └── manifest.json      # PWA manifest
-├── src/                   # Source code
-│   ├── App.js            # Main App component
-│   ├── App.css           # App styles
-│   ├── index.js          # Entry point
-│   └── index.css         # Global styles
-├── build/                # Production build (generated)
-├── package.json          # Dependencies and scripts
-└── README.md            # This file
+# Open browser to http://localhost:3000
 ```
 
-## 🛠️ Available Scripts
+### Deployment
+```bash
+# Build and deploy to GitHub Pages
+npm run deploy
+```
 
-| Command | Description |
-|---------|-------------|
-| `npm start` | Starts development server on port 3000 |
-| `npm run build` | Creates optimized production build |
-| `npm test` | Runs test suite in watch mode |
-| `npm run deploy` | Builds and deploys to GitHub Pages |
-| `npm run eject` | Ejects from Create React App (irreversible) |
+---
+
+## 🎮 How to Explore
+
+1. **🎬 Watch the Greeting** - Meet Basile and learn about the portfolio
+2. **🌌 Navigate the Solar System** - Use mouse/touch to orbit around
+3. **🪐 Click a Planet** - Select any planet to explore the repository
+4. **📊 View Project Data** - Examine code languages, commits, and statistics
+5. **🔗 Visit Projects** - Click links to view live demos or GitHub repos
+
+---
 
 ## 🎨 Customization
 
-### Updating the Homepage URL
+### Adding New Projects
+Update `src/data/planetsData.json` with your repository names:
 
-1. Open `package.json`
-2. Update the `homepage` field:
-   ```json
-   {
-     "homepage": "https://yourusername.github.io/your-repo-name"
-   }
-   ```
-
-### Adding Your Content
-
-1. Edit `src/App.js` to customize your main component
-2. Modify `src/App.css` for styling
-3. Update `public/index.html` for meta tags and title
-4. Replace `public/favicon.ico` with your own favicon
-
-## 🧪 Testing
-
-Run the test suite:
-```bash
-npm test
+```json
+{
+  "name": "your-repo-name",
+  "orbitRadius": 4,
+  "size": 0.16,
+  "props": {
+    "surfaceColor": "#6B93D6",
+    "hasAtmosphere": true
+  }
+}
 ```
 
-The template includes:
-- Jest for unit testing
-- React Testing Library for component testing
-- Example test in `src/App.test.js`
+### GitHub Configuration
+Update your GitHub username in `src/services/githubService.js`:
 
-## 📦 Built With
+```javascript
+const GITHUB_USERNAME = 'YourUsername';
+```
 
-- **React 19.1.1** - UI Library
-- **Create React App** - Build toolchain
-- **GitHub Pages** - Hosting platform
-- **Jest** - Testing framework
-- **React Testing Library** - Testing utilities
+### Visual Styling
+- **Colors**: Modify CSS variables in component files
+- **Planets**: Adjust properties in `planetsData.json`
+- **UI Elements**: Customize styles in component CSS files
+
+---
+
+## 🌐 Live Demo
+
+**[🚀 Explore the Solar System Portfolio](https://basemodmaker.github.io/portfolio/)**
+
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+---
+
 ## 🙏 Acknowledgments
 
-- Created with [Create React App](https://github.com/facebook/create-react-app)
-- Deployed with [gh-pages](https://github.com/tschaub/gh-pages)
-- Icons from [React Icons](https://react-icons.github.io/react-icons/)
+- **Three.js Community** - For the amazing 3D library
+- **React Three Fiber** - For React integration with Three.js
+- **GitHub API** - For providing repository data
+- **Space Inspiration** - For the cosmic theme and aesthetics
 
 ---
 
 <div align="center">
-  <p>⭐ Star this repo if you found it helpful!</p>
-  <p>Made with ❤️ by <a href="https://github.com/BaseModMaker">BaseModMaker</a></p>
+
+### 🌟 **Experience the Future of Portfolios** 🌟
+
+**[Launch into Space →](https://basemodmaker.github.io/portfolio/)**
+
+*Made with ❤️ and lots of ☕ by [Basile](https://github.com/BaseModMaker)*
+
+![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?style=flat-square&logo=react)
+![Powered by Three.js](https://img.shields.io/badge/Powered%20by-Three.js-000000?style=flat-square&logo=three.js)
+![Space Theme](https://img.shields.io/badge/Theme-Space-purple?style=flat-square&logo=rocket)
+
 </div>
