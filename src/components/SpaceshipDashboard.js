@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import planetsData from '../data/planetsData.json';
 import { fetchSpecificRepo, fetchRepoLanguages, fetchRepoCommits } from '../services/githubService';
 import './SpaceshipDashboard.css';
 
@@ -8,6 +9,7 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
   const [commits, setCommits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [projectData, setProjectData] = useState(null);
 
   useEffect(() => {
     if (isVisible && planetName) {
@@ -18,6 +20,19 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
   const loadRepositoryData = async () => {
     setLoading(true);
     setError(null);
+    
+    // First, check if the planet has hardcoded project data
+    const planet = planetsData.planets.find(p => p.name === planetName);
+    
+    if (planet && planet.projectData) {
+      // Use hardcoded data
+      setProjectData(planet.projectData);
+      setRepository(planet.projectData);
+      setLanguages(planet.projectData.languages || {});
+      setCommits(planet.projectData.commits || []);
+      setLoading(false);
+      return;
+    }
     
     try {
       const [repo, langs, recentCommits] = await Promise.all([
@@ -45,18 +60,51 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString();
   };
 
-  const formatSize = (bytes) => {
-    if (bytes === 0) return '0 KB';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  const formatSize = (sizeValue) => {
+    if (!sizeValue) return 'N/A';
+    
+    // If it's already a formatted string (like "0.1MB"), return it
+    if (typeof sizeValue === 'string' && sizeValue.includes('MB')) {
+      return sizeValue;
+    }
+    
+    // If it's a number, format it
+    if (typeof sizeValue === 'number') {
+      if (sizeValue === 0) return '0 KB';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(sizeValue) / Math.log(k));
+      return parseFloat((sizeValue / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    return 'N/A';
   };
 
   const getLanguagePercentages = () => {
+    // Handle hardcoded language string (like "TypeScript 10%, JavaScript 90%")
+    if (repository.language && typeof repository.language === 'string' && repository.language.includes('%')) {
+      const languageString = repository.language;
+      const languageParts = languageString.split(',').map(part => part.trim());
+      
+      return languageParts.map(part => {
+        const match = part.match(/^(.+?)\s+(\d+(?:\.\d+)?)%$/);
+        if (match) {
+          return {
+            language: match[1].trim(),
+            percentage: match[2],
+            bytes: 0 // Not applicable for hardcoded data
+          };
+        }
+        return null;
+      }).filter(Boolean);
+    }
+    
+    // Handle GitHub API language data (object with byte counts)
     const total = Object.values(languages).reduce((sum, bytes) => sum + bytes, 0);
     if (total === 0) return [];
     
@@ -102,19 +150,19 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
               <div className="info-grid">
                 <div className="info-item">
                   <span className="label">NAME:</span>
-                  <span className="value">{repository.name}</span>
+                  <span className="value">{repository.name || planetName || 'N/A'}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">SIZE:</span>
-                  <span className="value">{formatSize(repository.size * 1024)}</span>
+                  <span className="value">{formatSize(repository.size)}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">CREATED:</span>
-                  <span className="value">{formatDate(repository.createdAt)}</span>
+                  <span className="value">{formatDate(repository.created_at || repository.createdAt)}</span>
                 </div>
                 <div className="info-item">
                   <span className="label">UPDATED:</span>
-                  <span className="value">{formatDate(repository.updatedAt)}</span>
+                  <span className="value">{formatDate(repository.updated_at || repository.updatedAt)}</span>
                 </div>
               </div>
             </div>
@@ -130,19 +178,19 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
               <h4>STATISTICS</h4>
               <div className="stats-grid">
                 <div className="stat-item">
-                  <div className="stat-value">{repository.stars}</div>
+                  <div className="stat-value">{repository.stargazers_count || repository.stars || 0}</div>
                   <div className="stat-label">STARS</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-value">{repository.forks}</div>
+                  <div className="stat-value">{repository.forks_count || repository.forks || 0}</div>
                   <div className="stat-label">FORKS</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-value">{repository.watchers}</div>
+                  <div className="stat-value">{repository.watchers_count || repository.watchers || 0}</div>
                   <div className="stat-label">WATCHERS</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-value">{repository.openIssues}</div>
+                  <div className="stat-value">{repository.open_issues_count || repository.openIssues || repository.issues || 0}</div>
                   <div className="stat-label">ISSUES</div>
                 </div>
               </div>
@@ -203,14 +251,16 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
             <div className="info-section">
               <h4>ACTIONS</h4>
               <div className="action-buttons">
-                <a 
-                  href={repository.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="action-btn"
-                >
-                  VIEW ON GITHUB
-                </a>
+                {repository.html_url || repository.url ? (
+                  <a 
+                    href={repository.html_url || repository.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="action-btn"
+                  >
+                    VIEW ON GITHUB
+                  </a>
+                ) : null}
                 {repository.homepage && (
                   <a 
                     href={repository.homepage} 
@@ -221,12 +271,17 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
                     LIVE DEMO
                   </a>
                 )}
-                <button 
-                  onClick={() => navigator.clipboard.writeText(repository.cloneUrl)}
-                  className="action-btn"
-                >
-                  COPY CLONE URL
-                </button>
+                {(repository.clone_url || repository.cloneUrl) && (
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(repository.clone_url || repository.cloneUrl)}
+                    className="action-btn"
+                  >
+                    COPY CLONE URL
+                  </button>
+                )}
+                {!repository.html_url && !repository.url && !repository.homepage && !repository.clone_url && !repository.cloneUrl && (
+                  <p className="no-commits">No actions available</p>
+                )}
               </div>
             </div>
           </div>

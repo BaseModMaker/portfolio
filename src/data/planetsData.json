@@ -90,7 +90,7 @@
     },
     {
       "name": "CommitGenerator",
-      "orbitRadius": 14,
+      "orbitRadius": 12.5,
       "size": 0.25,
       "orbitSpeed": 0.006,
       "rotationSpeed": 0.007,
@@ -103,6 +103,34 @@
         "surfaceRoughness": 0.3,
         "metalness": 0.0,
         "surfaceColor": "#4FD0E7"
+      }
+    },
+    {
+      "name": "Cody",
+      "orbitRadius": 13.2,
+      "size": 0.1,
+      "orbitSpeed": 0.02,
+      "rotationSpeed": 0.03,
+      "startAngle": 1.5,
+      "props": {
+        "hasAtmosphere": true,
+        "atmosphereColor": "#9370DB",
+        "surfaceRoughness": 0.6,
+        "metalness": 0.2,
+        "surfaceColor": "#8A2BE2"
+      },
+      "projectData": {
+        "name": "Cody",
+        "description": "Cody is an AI-powered assistant that helps understanding pdfs. Features include summary generator, chat with a pdf, and an integrated file storage.",
+        "language": "Python 40%, HTML 20%, TypeScript 30%, SCSS 10%",
+        "size": 152400000,
+        "stars": 42,
+        "forks": 8,
+        "watchers": 3,
+        "issues": 0,
+        "topics": ["ai", "pdf-assistant", "typescript", "chat", "document-analysis"],
+        "created_at": "2025-02-15T14:30:00Z",
+        "updated_at": "2025-06-10T11:20:00Z"
       }
     },
     {
