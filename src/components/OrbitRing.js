@@ -1,11 +1,17 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { getRingAppearance } from '../utils/planetAppearance';
+import { useThree } from '@react-three/fiber';
+
+// Global state to track currently hovered ring
+let globalHoveredRing = null;
+let hoverCandidates = new Set();
 
 function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPlanet }) {
   const ringRef = useRef();
   const collisionRef = useRef();
   const [hovered, setHovered] = useState(false);
+  const { raycaster, camera, pointer } = useThree();
 
   useEffect(() => {
     if (ringRef.current) {
@@ -38,18 +44,85 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPl
     }
   }, [radius, hovered, isSelected, followingPlanet]);
 
+  const calculateDistanceToRing = () => {
+    if (!collisionRef.current) return Infinity;
+    
+    // Get world position of ring center
+    const ringCenter = new THREE.Vector3();
+    collisionRef.current.getWorldPosition(ringCenter);
+    
+    // Project to screen coordinates
+    const screenPos = ringCenter.clone().project(camera);
+    
+    // Calculate distance from mouse pointer to ring center in screen space
+    const distance = Math.sqrt(
+      Math.pow(pointer.x - screenPos.x, 2) + 
+      Math.pow(pointer.y - screenPos.y, 2)
+    );
+    
+    return distance;
+  };
+
+  const updateHoverState = () => {
+    if (hoverCandidates.size === 0) {
+      globalHoveredRing = null;
+      return;
+    }
+
+    // Find the closest ring among candidates
+    let closestRing = null;
+    let closestDistance = Infinity;
+
+    hoverCandidates.forEach(candidate => {
+      const distance = candidate.calculateDistanceToRing();
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestRing = candidate;
+      }
+    });
+
+    // Update global hovered ring
+    if (closestRing && closestRing !== globalHoveredRing) {
+      // Unhover previous ring
+      if (globalHoveredRing) {
+        globalHoveredRing.setHovered(false);
+      }
+      // Hover new closest ring
+      globalHoveredRing = closestRing;
+      closestRing.setHovered(true);
+    }
+  };
+
   const handleClick = (e) => {
     e.stopPropagation();
     onPlanetSelect(isSelected ? null : planetName);
   };
 
-  // Allow hover for all rings when following a planet (to show jump targets)
   const handlePointerEnter = () => {
-    setHovered(true);
+    // Add this ring to hover candidates
+    const ringCandidate = {
+      planetName,
+      calculateDistanceToRing,
+      setHovered
+    };
+    hoverCandidates.add(ringCandidate);
+    updateHoverState();
   };
 
   const handlePointerLeave = () => {
-    setHovered(false);
+    // Remove this ring from hover candidates
+    const candidateToRemove = Array.from(hoverCandidates).find(c => c.planetName === planetName);
+    if (candidateToRemove) {
+      hoverCandidates.delete(candidateToRemove);
+      
+      // If this was the hovered ring, clear it
+      if (globalHoveredRing && globalHoveredRing.planetName === planetName) {
+        setHovered(false);
+        globalHoveredRing = null;
+        // Update hover state to potentially select a new closest ring
+        updateHoverState();
+      }
+    }
   };
 
   return (
