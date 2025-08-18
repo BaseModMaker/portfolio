@@ -33,12 +33,14 @@
   background: rgba(100, 255, 218, 0.05);
 }
 
-/* Hide controls when dashboard is open */
-.spaceship-dashboard ~ .music-controls {
+/* Hide controls when dashboard or social menu is open */
+.spaceship-dashboard ~ .music-controls,
+.social-menu-overlay ~ .music-controls {
   opacity: 0.3;
 }
 
-.spaceship-dashboard ~ .music-controls:hover {
+.spaceship-dashboard ~ .music-controls:hover,
+.social-menu-overlay ~ .music-controls:hover {
   opacity: 1;
 }
 
