@@ -10,6 +10,8 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
   const lastLogTime = useRef(0);
   const wasPointingAtSun = useRef(false);
   const wasInDefaultPosition = useRef(false);
+  const currentAnimationId = useRef(null);
+  const pendingPlanet = useRef(null);
 
   // Default camera position for comparison
   const defaultPosition = new THREE.Vector3(0, 25, 30);
@@ -49,6 +51,9 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
     if (isAnimating) return;
     
     setIsAnimating(true);
+    const animationId = Date.now();
+    currentAnimationId.current = animationId;
+    
     const startPos = camera.position.clone();
     const endPos = new THREE.Vector3(0, 25, 30);
     const startTarget = controlsRef.current ? controlsRef.current.target.clone() : new THREE.Vector3();
@@ -59,6 +64,11 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
     const startTime = Date.now();
 
     const animate = () => {
+      // Check if this animation was cancelled
+      if (currentAnimationId.current !== animationId) {
+        return;
+      }
+      
       const elapsed = Date.now() - startTime;
       progress = Math.min(elapsed / duration, 1);
       
@@ -75,7 +85,11 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        setIsAnimating(false);
+        // Only complete if this animation wasn't cancelled
+        if (currentAnimationId.current === animationId) {
+          setIsAnimating(false);
+          currentAnimationId.current = null;
+        }
       }
     };
     
@@ -88,6 +102,9 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
     if (!planet || !planetRef || isAnimating) return;
     
     setIsAnimating(true);
+    const animationId = Date.now();
+    currentAnimationId.current = animationId;
+    
     const startPos = camera.position.clone();
     const startTarget = controlsRef.current ? controlsRef.current.target.clone() : new THREE.Vector3();
     
@@ -96,6 +113,11 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
     const startTime = Date.now();
 
     const animate = () => {
+      // Check if this animation was cancelled
+      if (currentAnimationId.current !== animationId) {
+        return;
+      }
+      
       const elapsed = Date.now() - startTime;
       progress = Math.min(elapsed / duration, 1);
       
@@ -121,7 +143,11 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        setIsAnimating(false);
+        // Only complete if this animation wasn't cancelled
+        if (currentAnimationId.current === animationId) {
+          setIsAnimating(false);
+          currentAnimationId.current = null;
+        }
       }
     };
     
@@ -129,12 +155,35 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
   };
 
   useEffect(() => {
+    // If currently animating, ignore the change and store it as pending
+    if (isAnimating) {
+      pendingPlanet.current = followingPlanet;
+      return;
+    }
+    
+    // Clear any pending planet since we're processing this change
+    pendingPlanet.current = null;
+    
     if (followingPlanet) {
       animateToPlanet(followingPlanet);
-    } else if (!isAnimating) {
+    } else {
       animateToDefault();
     }
   }, [followingPlanet]);
+
+  // Handle pending planet changes when animation completes
+  useEffect(() => {
+    if (!isAnimating && pendingPlanet.current !== null) {
+      const pending = pendingPlanet.current;
+      pendingPlanet.current = null;
+      
+      if (pending) {
+        animateToPlanet(pending);
+      } else {
+        animateToDefault();
+      }
+    }
+  }, [isAnimating]);
 
   return (
     <OrbitControls 

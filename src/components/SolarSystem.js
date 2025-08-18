@@ -8,13 +8,14 @@ import Planets from './Planets';
 // TODO
 // add more planets
 // camera to sun if click too fast
-// add cv and socials
 
 function SolarSystem({ isVisible = true }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
   const planetRefs = useRef({});
+  const lastPlanetChangeTime = useRef(0);
+  const isChangingPlanet = useRef(false);
 
   const orbitConstant = 0.1;
   const planets = planetsData.planets.map(planet => ({
@@ -32,8 +33,23 @@ function SolarSystem({ isVisible = true }) {
   }, [isVisible]);
 
   const handlePlanetSelect = (planetName) => {
+    const now = Date.now();
+    
+    // Prevent rapid planet changes (debounce with 500ms)
+    if (isChangingPlanet.current || (now - lastPlanetChangeTime.current) < 500) {
+      return;
+    }
+    
+    isChangingPlanet.current = true;
+    lastPlanetChangeTime.current = now;
+    
     setFollowingPlanet(planetName);
     setShowDashboard(!!planetName); // Show dashboard when a planet is selected
+    
+    // Reset the changing flag after animation duration
+    setTimeout(() => {
+      isChangingPlanet.current = false;
+    }, 2100); // Slightly longer than animation duration
   };
 
   const handleCloseDashboard = () => {
