@@ -121,6 +121,18 @@
   justify-content: center;
 }
 
+.social-icon-image {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: brightness(0.8) contrast(1.1);
+  transition: filter 0.3s ease;
+}
+
+.social-link:hover .social-icon-image {
+  filter: brightness(1) contrast(1.2);
+}
+
 .social-info {
   flex: 1;
 }
@@ -179,6 +191,11 @@
     font-size: 1.5rem;
     margin-right: 0.8rem;
     width: 40px;
+  }
+  
+  .social-icon-image {
+    width: 24px;
+    height: 24px;
   }
   
   .social-name {

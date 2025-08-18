@@ -7,20 +7,20 @@ function SocialMenu({ isVisible, onClose }) {
   const socialLinks = [
     {
       name: 'GitHub',
-      url: 'https://github.com/basilelt',
-      icon: '🐙',
+      url: 'https://github.com/BaseModMaker',
+      icon: '/portfolio/github.png',
       description: 'Code repositories'
     },
     {
       name: 'LinkedIn',
-      url: 'https://linkedin.com/in/basile-letertre',
-      icon: '💼',
+      url: 'https://www.linkedin.com/in/basile-donnay-programming/',
+      icon: '/portfolio/linkedin.png',
       description: 'Professional network'
     },
     {
       name: 'Email',
-      url: 'mailto:basile.letertre@example.com',
-      icon: '📧',
+      url: 'mailto:basiledonnay4444@gmail.com',
+      icon: '/portfolio/gmail.png',
       description: 'Get in touch'
     },
     {
@@ -48,8 +48,19 @@ function SocialMenu({ isVisible, onClose }) {
                 target={link.url.startsWith('http') ? '_blank' : '_self'}
                 rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
                 className="social-link"
+                download={link.name === 'Resume' ? 'resume.pdf' : undefined}
               >
-                <div className="social-icon">{link.icon}</div>
+                <div className="social-icon">
+                  {link.icon.startsWith('/') ? (
+                    <img 
+                      src={link.icon} 
+                      alt={link.name} 
+                      className="social-icon-image"
+                    />
+                  ) : (
+                    link.icon
+                  )}
+                </div>
                 <div className="social-info">
                   <div className="social-name">{link.name}</div>
                   <div className="social-description">{link.description}</div>
