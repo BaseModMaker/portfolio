@@ -17,6 +17,7 @@
   backdrop-filter: blur(5px);
   opacity: 0;
   animation: fadeInProfile 0.5s ease-out 0.5s forwards;
+  overflow: hidden;
 }
 
 .profile-btn:hover {
@@ -26,10 +27,18 @@
 }
 
 .profile-avatar {
-  width: 35px;
-  height: 35px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center -320%;
+  transform: scale(1.6);
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.profile-btn:hover .profile-avatar {
+  opacity: 1;
 }
 
 @keyframes fadeInProfile {
@@ -61,7 +70,7 @@
   }
   
   .profile-avatar {
-    width: 30px;
-    height: 30px;
+    width: 55px;
+    height: 55px;
   }
 }
