@@ -30,7 +30,7 @@ function getRingAppearance(isSelected, hovered, planetName, followingPlanet) {
   } else if (hovered && followingPlanet) {
     // When following a planet, show a different hover color to indicate jump targets
     appearance = { 
-      color: 'rgba(100, 255, 218, 1)', // Cyan color for jump targets
+      color: '#64ffda', // Use hex instead of rgba for THREE.js
       opacity: 0.6,
       lineColor: 'rgba(100, 255, 218, 0)',
       labelBorderColor: 'rgba(100, 255, 218, 0)',
@@ -42,7 +42,7 @@ function getRingAppearance(isSelected, hovered, planetName, followingPlanet) {
   } else if (hovered && !followingPlanet) {
     // Normal hover when not following any planet
     appearance = { 
-      color: 'rgba(100, 255, 218, 1)',
+      color: '#64ffda', // Use hex instead of rgba for THREE.js
       opacity: 0.8,
       lineColor: 'rgba(100, 255, 218, 1)',
       labelBorderColor: 'rgba(100, 255, 218, 1)',
@@ -53,7 +53,7 @@ function getRingAppearance(isSelected, hovered, planetName, followingPlanet) {
     };
   } else {
     appearance = { 
-      color: 'rgba(100, 255, 218, 0)', 
+      color: '#64ffda', // Use hex color with opacity 0 instead of rgba
       opacity: 0.3,
       lineColor: 'rgba(100, 255, 218, 0)',
       labelBorderColor: 'rgba(100, 255, 218, 0)',
