@@ -1,7 +1,7 @@
 {
   "planets": [
     {
-      "name": "portfolio",
+      "name": "Multi-Smelter",
       "orbitRadius": 2,
       "size": 0.1,
       "orbitSpeed": 0.04,
@@ -15,7 +15,7 @@
       }
     },
     {
-      "name": "sprite-stacking",
+      "name": "Aquarium-Simulator",
       "orbitRadius": 3,
       "size": 0.15,
       "orbitSpeed": 0.03,
@@ -30,7 +30,7 @@
       }
     },
     {
-      "name": "ant-online-simulator",
+      "name": "zangra-galaxy",
       "orbitRadius": 4,
       "size": 0.16,
       "orbitSpeed": 0.02,
@@ -45,7 +45,7 @@
       }
     },
     {
-      "name": "image-to-mosaic-template",
+      "name": "Factory-Simulator",
       "orbitRadius": 5.5,
       "size": 0.12,
       "orbitSpeed": 0.015,
@@ -59,7 +59,7 @@
       }
     },
     {
-      "name": "CommitGenerator",
+      "name": "Maze-Generator",
       "orbitRadius": 8,
       "size": 0.5,
       "orbitSpeed": 0.01,
@@ -73,7 +73,7 @@
       }
     },
     {
-      "name": "Multi-Smelter",
+      "name": "Online-Java-Trainer",
       "orbitRadius": 11,
       "size": 0.4,
       "orbitSpeed": 0.008,
@@ -89,7 +89,7 @@
       }
     },
     {
-      "name": "SuperRepairPoint",
+      "name": "CommitGenerator",
       "orbitRadius": 14,
       "size": 0.25,
       "orbitSpeed": 0.006,
@@ -106,7 +106,7 @@
       }
     },
     {
-      "name": "MusicMod",
+      "name": "image-to-mosaic-template",
       "orbitRadius": 16,
       "size": 0.24,
       "orbitSpeed": 0.005,
@@ -118,6 +118,53 @@
         "surfaceRoughness": 0.3,
         "metalness": 0.0,
         "surfaceColor": "#4B70DD"
+      }
+    },
+    {
+      "name": "ant-online-simulator",
+      "orbitRadius": 18.2,
+      "size": 0.5,
+      "orbitSpeed": 0.004,
+      "rotationSpeed": 0.005,
+      "startAngle": 2.5,
+      "props": {
+        "hasAtmosphere": true,
+        "atmosphereColor": "#FF69B4",
+        "surfaceRoughness": 0.5,
+        "metalness": 0.1,
+        "surfaceColor": "#FFB6C1"
+      }
+    },
+    {
+      "name": "sprite-stacking",
+      "orbitRadius": 20,
+      "size": 0.6,
+      "orbitSpeed": 0.003,
+      "rotationSpeed": 0.004,
+      "startAngle": 0.6,
+      "props": {
+        "hasAtmosphere": true,
+        "atmosphereColor": "#32CD32",
+        "surfaceRoughness": 0.5,
+        "metalness": 0.1,
+        "surfaceColor": "#98FB98",
+        "hasRings": true,
+        "ringColor": "#228B22"
+      }
+    },
+    {
+      "name": "portfolio",
+      "orbitRadius": 21.5,
+      "size": 0.7,
+      "orbitSpeed": 0.002,
+      "rotationSpeed": 0.003,
+      "startAngle": 4.8,
+      "props": {
+        "hasAtmosphere": true,
+        "atmosphereColor": "#8B0000",
+        "surfaceRoughness": 0.5,
+        "metalness": 0.1,
+        "surfaceColor": "#B22222"
       }
     }
   ]

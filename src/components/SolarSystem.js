@@ -5,10 +5,6 @@ import SpaceshipDashboard from './SpaceshipDashboard';
 import CameraController from './CameraController';
 import Planets from './Planets';
 
-// TODO
-// add more planets
-// camera to sun if click too fast
-
 function SolarSystem({ isVisible = true }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);

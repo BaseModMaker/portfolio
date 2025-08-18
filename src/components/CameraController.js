@@ -55,7 +55,7 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
     currentAnimationId.current = animationId;
     
     const startPos = camera.position.clone();
-    const endPos = new THREE.Vector3(0, 25, 30);
+    const endPos = new THREE.Vector3(0, 25, 45); // (x, y, z) where Y is view angle and Z is distance
     const startTarget = controlsRef.current ? controlsRef.current.target.clone() : new THREE.Vector3();
     const endTarget = new THREE.Vector3(0, -4, 0);
     
