@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import planetsData from '../data/planetsData.json';
 import { fetchSpecificRepo, fetchRepoLanguages, fetchRepoCommits } from '../services/githubService';
+import ScanCarousel from './ScanCarousel';
 import './SpaceshipDashboard.css';
 
 function SpaceshipDashboard({ isVisible, planetName, onClose }) {
@@ -10,12 +11,66 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [projectData, setProjectData] = useState(null);
+  const [showScanCarousel, setShowScanCarousel] = useState(false);
+  const [scanImage, setScanImage] = useState(null);
+  const [scanning, setScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
 
   useEffect(() => {
     if (isVisible && planetName) {
       loadRepositoryData();
+      startScan();
+    } else {
+      setScanImage(null);
+      setScanning(false);
+      setScanProgress(0);
     }
   }, [isVisible, planetName]);
+
+  const startScan = async () => {
+    setScanning(true);
+    setScanProgress(0);
+    
+    // Simulate scanning progress
+    const progressInterval = setInterval(() => {
+      setScanProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          loadScanImage();
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 50);
+  };
+
+  const loadScanImage = async () => {
+    try {
+      // Try to load the first scan image for this planet
+      const imagePath = `/portfolio/live-scans/${planetName}-1.jpg`;
+      const img = new Image();
+      img.onload = () => {
+        setScanImage(imagePath);
+        setScanning(false);
+      };
+      img.onerror = () => {
+        // Fallback to PNG if JPG doesn't exist
+        const pngPath = `/portfolio/live-scans/${planetName}-1.png`;
+        const pngImg = new Image();
+        pngImg.onload = () => {
+          setScanImage(pngPath);
+          setScanning(false);
+        };
+        pngImg.onerror = () => {
+          setScanning(false);
+        };
+        pngImg.src = pngPath;
+      };
+      img.src = imagePath;
+    } catch (error) {
+      setScanning(false);
+    }
+  };
 
   const loadRepositoryData = async () => {
     setLoading(true);
@@ -117,183 +172,267 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
       .sort((a, b) => b.bytes - a.bytes);
   };
 
+  const handleScanClick = () => {
+    setShowScanCarousel(true);
+  };
+
+  const handleCloseScanCarousel = () => {
+    setShowScanCarousel(false);
+  };
+
   if (!isVisible) return null;
 
   return (
-    <div className="spaceship-dashboard">
-      {/* Left Panel */}
-      <div className="dashboard-panel left-panel">
-        <div className="panel-header">
-          <h3>REPOSITORY SCAN</h3>
-          <div className="scan-line"></div>
-        </div>
-        
-        {loading && (
-          <div className="loading-screen">
-            <div className="radar-scanner"></div>
-            <p>Scanning repository...</p>
+    <>
+      <div className="spaceship-dashboard">
+        {/* Satellite Scanner Panel */}
+        <div className="dashboard-panel satellite-panel">
+          <div className="panel-header satellite-header">
+            <h3>SATELLITE SCAN</h3>
+            <div className="scan-line"></div>
           </div>
-        )}
-
-        {error && (
-          <div className="error-screen">
-            <div className="error-icon">⚠</div>
-            <p>{error}</p>
-            <button onClick={loadRepositoryData} className="retry-btn">RETRY SCAN</button>
-          </div>
-        )}
-
-        {repository && !loading && (
-          <div className="repo-info">
-            <div className="info-section">
-              <h4>BASIC INFO</h4>
-              <div className="info-grid">
-                <div className="info-item">
-                  <span className="label">NAME:</span>
-                  <span className="value">{repository.name || planetName || 'N/A'}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">SIZE:</span>
-                  <span className="value">{formatSize(repository.size)}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">CREATED:</span>
-                  <span className="value">{formatDate(repository.created_at || repository.createdAt)}</span>
-                </div>
-                <div className="info-item">
-                  <span className="label">UPDATED:</span>
-                  <span className="value">{formatDate(repository.updated_at || repository.updatedAt)}</span>
-                </div>
+          
+          {/* Integrated Satellite Scanner */}
+          <div className="integrated-satellite-scanner">
+            <div className="scanner-info">
+              <div className="scanner-title">
+                <span className="satellite-icon">🛰️</span>
+                LIVE SATELLITE FEED
               </div>
+              <div className="target-info">Target: {planetName}</div>
             </div>
-
-            <div className="info-section">
-              <h4>DESCRIPTION</h4>
-              <p className="description">
-                {repository.description || 'No description available'}
-              </p>
-            </div>
-
-            <div className="info-section">
-              <h4>STATISTICS</h4>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <div className="stat-value">{repository.stargazers_count || repository.stars || 0}</div>
-                  <div className="stat-label">STARS</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-value">{repository.forks_count || repository.forks || 0}</div>
-                  <div className="stat-label">FORKS</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-value">{repository.watchers_count || repository.watchers || 0}</div>
-                  <div className="stat-label">WATCHERS</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-value">{repository.open_issues_count || repository.openIssues || repository.issues || 0}</div>
-                  <div className="stat-label">ISSUES</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Right Panel */}
-      <div className="dashboard-panel right-panel">
-        <div className="panel-header">
-          <h3>TECHNICAL ANALYSIS</h3>
-          <div className="scan-line"></div>
-        </div>
-
-        {repository && !loading && (
-          <div className="technical-info">
-            <div className="info-section">
-              <h4>LANGUAGES</h4>
-              <div className="languages-chart">
-                {getLanguagePercentages().map((lang, index) => (
-                  <div key={lang.language} className="language-bar">
-                    <div className="language-info">
-                      <span className="lang-name">{lang.language}</span>
-                      <span className="lang-percent">{lang.percentage}%</span>
-                    </div>
+            
+            <div className="scan-window" onClick={handleScanClick}>
+              {scanning ? (
+                <div className="scanning-display">
+                  <div className="scan-grid">
+                    {Array.from({ length: 64 }, (_, i) => (
+                      <div 
+                        key={i} 
+                        className={`scan-pixel ${scanProgress > (i / 64) * 100 ? 'scanned' : ''}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="scan-progress">
                     <div className="progress-bar">
                       <div 
-                        className="progress-fill"
-                        style={{ 
-                          width: `${lang.percentage}%`,
-                          backgroundColor: `hsl(${(index * 60) % 360}, 70%, 60%)`
-                        }}
-                      ></div>
+                        className="progress-fill" 
+                        style={{ width: `${scanProgress}%` }}
+                      />
+                    </div>
+                    <div className="progress-text">SCANNING... {Math.round(scanProgress)}%</div>
+                  </div>
+                </div>
+              ) : scanImage ? (
+                <div className="scan-result">
+                  <img src={scanImage} alt={`Scan of ${planetName}`} />
+                  <div className="scan-overlay">
+                    <div className="crosshairs"></div>
+                    <div className="scan-data">
+                      <div className="data-line">SCAN COMPLETE</div>
+                      <div className="data-line">CLICK TO ANALYZE</div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <div className="scan-error">
+                  <div className="error-text">SCAN FAILED</div>
+                  <div className="error-subtext">No satellite data available</div>
+                </div>
+              )}
             </div>
-
-            <div className="info-section">
-              <h4>RECENT COMMITS</h4>
-              <div className="commits-list">
-                {commits.length > 0 ? commits.map((commit, index) => (
-                  <div key={commit.sha} className="commit-item">
-                    <div className="commit-message">{commit.message.split('\n')[0]}</div>
-                    <div className="commit-meta">
-                      <span className="commit-author">{commit.author}</span>
-                      <span className="commit-date">{formatDate(commit.date)}</span>
-                    </div>
-                  </div>
-                )) : (
-                  <p className="no-commits">No recent commits found</p>
-                )}
-              </div>
-            </div>
-
-            <div className="info-section">
-              <h4>ACTIONS</h4>
-              <div className="action-buttons">
-                {repository.html_url || repository.url ? (
-                  <a 
-                    href={repository.html_url || repository.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="action-btn"
-                  >
-                    VIEW ON GITHUB
-                  </a>
-                ) : null}
-                {repository.homepage && (
-                  <a 
-                    href={repository.homepage} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="action-btn"
-                  >
-                    LIVE DEMO
-                  </a>
-                )}
-                {(repository.clone_url || repository.cloneUrl) && (
-                  <button 
-                    onClick={() => navigator.clipboard.writeText(repository.clone_url || repository.cloneUrl)}
-                    className="action-btn"
-                  >
-                    COPY CLONE URL
-                  </button>
-                )}
-                {!repository.html_url && !repository.url && !repository.homepage && !repository.clone_url && !repository.cloneUrl && (
-                  <p className="no-commits">No actions available</p>
-                )}
+            
+            <div className="scanner-status">
+              <div className="status-indicators">
+                <div className={`status-light ${scanning ? 'active' : scanImage ? 'success' : 'error'}`}></div>
+                <span className="status-text">
+                  {scanning ? 'SCANNING' : scanImage ? 'READY' : 'OFFLINE'}
+                </span>
               </div>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Repository Data Panel */}
+        <div className="dashboard-panel left-panel">
+          <div className="panel-header">
+            <h3>REPOSITORY SCAN</h3>
+            <div className="scan-line"></div>
+          </div>
+          
+          {loading && (
+            <div className="loading-screen">
+              <div className="radar-scanner"></div>
+              <p>Scanning repository...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="error-screen">
+              <div className="error-icon">⚠</div>
+              <p>{error}</p>
+              <button onClick={loadRepositoryData} className="retry-btn">RETRY SCAN</button>
+            </div>
+          )}
+
+          {repository && !loading && (
+            <div className="repo-info">
+              <div className="info-section">
+                <h4>BASIC INFO</h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <span className="label">NAME:</span>
+                    <span className="value">{repository.name || planetName || 'N/A'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">SIZE:</span>
+                    <span className="value">{formatSize(repository.size)}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">CREATED:</span>
+                    <span className="value">{formatDate(repository.created_at || repository.createdAt)}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">UPDATED:</span>
+                    <span className="value">{formatDate(repository.updated_at || repository.updatedAt)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h4>DESCRIPTION</h4>
+                <p className="description">
+                  {repository.description || 'No description available'}
+                </p>
+              </div>
+
+              <div className="info-section">
+                <h4>STATISTICS</h4>
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.stargazers_count || repository.stars || 0}</div>
+                    <div className="stat-label">STARS</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.forks_count || repository.forks || 0}</div>
+                    <div className="stat-label">FORKS</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.watchers_count || repository.watchers || 0}</div>
+                    <div className="stat-label">WATCHERS</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.open_issues_count || repository.openIssues || repository.issues || 0}</div>
+                    <div className="stat-label">ISSUES</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Panel */}
+        <div className="dashboard-panel right-panel">
+          <div className="panel-header">
+            <h3>TECHNICAL ANALYSIS</h3>
+            <div className="scan-line"></div>
+          </div>
+
+          {repository && !loading && (
+            <div className="technical-info">
+              <div className="info-section">
+                <h4>LANGUAGES</h4>
+                <div className="languages-chart">
+                  {getLanguagePercentages().map((lang, index) => (
+                    <div key={lang.language} className="language-bar">
+                      <div className="language-info">
+                        <span className="lang-name">{lang.language}</span>
+                        <span className="lang-percent">{lang.percentage}%</span>
+                      </div>
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-fill"
+                          style={{ 
+                            width: `${lang.percentage}%`,
+                            backgroundColor: `hsl(${(index * 60) % 360}, 70%, 60%)`
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h4>RECENT COMMITS</h4>
+                <div className="commits-list">
+                  {commits.length > 0 ? commits.map((commit, index) => (
+                    <div key={commit.sha} className="commit-item">
+                      <div className="commit-message">{commit.message.split('\n')[0]}</div>
+                      <div className="commit-meta">
+                        <span className="commit-author">{commit.author}</span>
+                        <span className="commit-date">{formatDate(commit.date)}</span>
+                      </div>
+                    </div>
+                  )) : (
+                    <p className="no-commits">No recent commits found</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h4>ACTIONS</h4>
+                <div className="action-buttons">
+                  {repository.html_url || repository.url ? (
+                    <a 
+                      href={repository.html_url || repository.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="action-btn"
+                    >
+                      VIEW ON GITHUB
+                    </a>
+                  ) : null}
+                  {repository.homepage && (
+                    <a 
+                      href={repository.homepage} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="action-btn"
+                    >
+                      LIVE DEMO
+                    </a>
+                  )}
+                  {(repository.clone_url || repository.cloneUrl) && (
+                    <button 
+                      onClick={() => navigator.clipboard.writeText(repository.clone_url || repository.cloneUrl)}
+                      className="action-btn"
+                    >
+                      COPY CLONE URL
+                    </button>
+                  )}
+                  {!repository.html_url && !repository.url && !repository.homepage && !repository.clone_url && !repository.cloneUrl && (
+                    <p className="no-commits">No actions available</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Close Button */}
+        <button className="dashboard-close" onClick={onClose}>
+          <span>×</span>
+          <span className="close-label">EXIT SCAN</span>
+        </button>
       </div>
 
-      {/* Close Button */}
-      <button className="dashboard-close" onClick={onClose}>
-        <span>×</span>
-        <span className="close-label">EXIT SCAN</span>
-      </button>
-    </div>
+      <ScanCarousel 
+        planetName={planetName}
+        isVisible={showScanCarousel}
+        onClose={handleCloseScanCarousel}
+      />
+    </>
   );
 }
 

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import planetsData from '../data/planetsData.json';
 import SpaceshipDashboard from './SpaceshipDashboard';
+import ScanCarousel from './ScanCarousel';
 import CameraController from './CameraController';
 import Planets from './Planets';
 
@@ -9,6 +10,7 @@ function SolarSystem({ isVisible = true }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showScanCarousel, setShowScanCarousel] = useState(false);
   const planetRefs = useRef({});
   const lastPlanetChangeTime = useRef(0);
   const isChangingPlanet = useRef(false);
@@ -53,6 +55,10 @@ function SolarSystem({ isVisible = true }) {
     setFollowingPlanet(null);
   };
 
+  const handleCloseScanCarousel = () => {
+    setShowScanCarousel(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -91,6 +97,12 @@ function SolarSystem({ isVisible = true }) {
         isVisible={showDashboard}
         planetName={followingPlanet}
         onClose={handleCloseDashboard}
+      />
+
+      <ScanCarousel 
+        planetName={followingPlanet}
+        isVisible={showScanCarousel}
+        onClose={handleCloseScanCarousel}
       />
     </div>
   );
