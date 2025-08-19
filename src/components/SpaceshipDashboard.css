@@ -11,15 +11,15 @@
 
 .dashboard-panel {
   position: absolute;
-  top: 50px;
+  top: 4vh;
   width: 350px;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 8vh);
   background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(15, 15, 30, 0.98) 100%);
   border: 2px solid #64ffda;
   border-radius: 10px;
   backdrop-filter: blur(10px);
   pointer-events: auto;
-  overflow: hidden;
+  overflow: auto;
   box-shadow: 
     0 0 30px rgba(100, 255, 218, 0.3),
     inset 0 2px 0 rgba(255, 255, 255, 0.1);
@@ -27,8 +27,8 @@
 
 .satellite-panel {
   left: 30px;
-  top: 50px;
-  height: 380px;
+  top: 4vh;
+  height: auto;
   background: linear-gradient(135deg, rgba(0, 40, 20, 0.95) 0%, rgba(0, 20, 10, 0.98) 100%);
   border: 2px solid #00ff88;
   animation: slideInLeft 0.5s ease-out;
@@ -39,8 +39,8 @@
 
 .left-panel {
   left: 30px;
-  top: 450px;
-  height: calc(100vh - 480px);
+  top: 41vh;
+  height: calc(100vh - 42vh - 3vh);
   background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(15, 15, 30, 0.98) 100%);
   border: 2px solid #64ffda;
   animation: slideInLeft 0.5s ease-out 0.1s both;
@@ -149,20 +149,7 @@
 .repo-info, .technical-info {
   padding: 1rem;
   height: calc(100% - 80px);
-  overflow-y: auto;
-}
-
-.repo-info::-webkit-scrollbar, .technical-info::-webkit-scrollbar {
-  width: 6px;
-}
-
-.repo-info::-webkit-scrollbar-track, .technical-info::-webkit-scrollbar-track {
-  background: rgba(100, 255, 218, 0.1);
-}
-
-.repo-info::-webkit-scrollbar-thumb, .technical-info::-webkit-scrollbar-thumb {
-  background: rgba(100, 255, 218, 0.3);
-  border-radius: 3px;
+  overflow-y: hidden;
 }
 
 .info-section {
@@ -185,23 +172,6 @@
 .info-grid {
   display: grid;
   gap: 0.5rem;
-}
-
-.info-grid.compact {
-  gap: 0.3rem;
-}
-
-.info-grid.compact .info-item {
-  padding: 0.2rem 0;
-  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
-}
-
-.info-grid.compact .label {
-  font-size: 0.75rem;
-}
-
-.info-grid.compact .value {
-  font-size: 0.75rem;
 }
 
 .info-item {
@@ -247,6 +217,9 @@
   border: 1px solid rgba(100, 255, 218, 0.2);
   border-radius: 5px;
   background: rgba(100, 255, 218, 0.05);
+  display: grid;
+  /* display the items as a row */
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .stat-value {
@@ -263,6 +236,9 @@
   font-size: 0.7rem;
   opacity: 0.8;
   margin-top: 0.2rem;
+  /* center vertically */
+  display: flex;
+  align-items: center;
 }
 
 .languages-chart {
@@ -405,7 +381,9 @@
 }
 
 .integrated-satellite-scanner {
-  padding: 1rem;
+  padding-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   background: rgba(0, 255, 136, 0.02);
 }
 
@@ -428,8 +406,8 @@
 }
 
 .target-info {
-  color: #88ffaa;
-  font-size: 0.7rem;
+  margin-left: auto; 
+  margin-right: 0;
 }
 
 .scan-window {

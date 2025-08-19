@@ -198,8 +198,18 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
               <div className="scanner-title">
                 <span className="satellite-icon">🛰️</span>
                 LIVE SATELLITE FEED
+                {/* aligned to the right*/}
+                <span className="target-info">
+                  <div className="scanner-status">
+                    <div className="status-indicators">
+                      <div className={`status-light ${scanning ? 'active' : scanImage ? 'success' : 'error'}`}></div>
+                      <span className="status-text">
+                        {scanning ? 'SCANNING' : scanImage ? 'READY' : 'OFFLINE'}
+                      </span>
+                    </div>
+                  </div>
+                </span>
               </div>
-              <div className="target-info">Target: {planetName}</div>
             </div>
             
             <div className="scan-window" onClick={handleScanClick}>
@@ -240,15 +250,6 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
                   <div className="error-subtext">No satellite data available</div>
                 </div>
               )}
-            </div>
-            
-            <div className="scanner-status">
-              <div className="status-indicators">
-                <div className={`status-light ${scanning ? 'active' : scanImage ? 'success' : 'error'}`}></div>
-                <span className="status-text">
-                  {scanning ? 'SCANNING' : scanImage ? 'READY' : 'OFFLINE'}
-                </span>
-              </div>
             </div>
           </div>
         </div>
@@ -318,28 +319,6 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
 
           {repository && !loading && (
             <div className="technical-info">
-              <div className="info-section">
-                <h4>STATISTICS</h4>
-                <div className="stats-grid">
-                  <div className="stat-item">
-                    <div className="stat-value">{repository.stargazers_count || repository.stars || 0}</div>
-                    <div className="stat-label">STARS</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-value">{repository.forks_count || repository.forks || 0}</div>
-                    <div className="stat-label">FORKS</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-value">{repository.watchers_count || repository.watchers || 0}</div>
-                    <div className="stat-label">WATCHERS</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-value">{repository.open_issues_count || repository.openIssues || repository.issues || 0}</div>
-                    <div className="stat-label">ISSUES</div>
-                  </div>
-                </div>
-              </div>
-
               <div className="info-section">
                 <h4>LANGUAGES</h4>
                 <div className="languages-chart">
@@ -414,6 +393,28 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
                   {!repository.html_url && !repository.url && !repository.homepage && !repository.clone_url && !repository.cloneUrl && (
                     <p className="no-commits">No actions available</p>
                   )}
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h4>STATISTICS</h4>
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.stargazers_count || repository.stars || 0}</div>
+                    <div className="stat-label">STARS</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.forks_count || repository.forks || 0}</div>
+                    <div className="stat-label">FORKS</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.watchers_count || repository.watchers || 0}</div>
+                    <div className="stat-label">WATCHERS</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{repository.open_issues_count || repository.openIssues || repository.issues || 0}</div>
+                    <div className="stat-label">ISSUES</div>
+                  </div>
                 </div>
               </div>
             </div>
