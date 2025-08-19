@@ -55,6 +55,8 @@
   color: #88ffaa;
   font-size: 0.9rem;
   margin-top: 2px;
+  /* align to the left */
+  text-align: left;
 }
 
 .carousel-close {
@@ -289,6 +291,184 @@
   font-size: 0.9rem;
 }
 
+.click-hint {
+  font-size: 0.6rem;
+  color: #88ffaa;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+/* Fullscreen Modal Styles */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  z-index: 3000;
+  cursor: pointer;
+}
+
+.fullscreen-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 60px 100px 20px;
+}
+
+.fullscreen-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 68, 68, 0.8);
+  border: 2px solid #ff4444;
+  color: #ffffff;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 3001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-close:hover {
+  background: rgba(255, 68, 68, 1);
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+  transform: scale(1.1);
+}
+
+.fullscreen-nav {
+  background: rgba(0, 255, 136, 0.8);
+  border: 2px solid #00ff88;
+  color: #ffffff;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 3001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-nav:hover:not(:disabled) {
+  background: rgba(0, 255, 136, 1);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+  transform: scale(1.1);
+}
+
+.fullscreen-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.fullscreen-nav.prev {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fullscreen-nav.next {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fullscreen-nav:disabled.prev,
+.fullscreen-nav:disabled.next {
+  transform: translateY(-50%);
+}
+
+.fullscreen-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 90%;
+  max-height: 90%;
+  cursor: default;
+}
+
+.fullscreen-content img {
+  max-width: 100%;
+  max-height: calc(100% - 80px);
+  object-fit: contain;
+  border: 2px solid #00ff88;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+}
+
+.fullscreen-info {
+  margin-top: 20px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
+
+.fullscreen-title {
+  color: #00ff88;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.fullscreen-counter {
+  color: #88ffaa;
+  font-size: 0.9rem;
+}
+
+.fullscreen-thumbnails {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(0, 20, 40, 0.8);
+  border-top: 1px solid rgba(0, 255, 136, 0.3);
+  overflow-x: auto;
+}
+
+.fullscreen-thumbnail {
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(0, 255, 136, 0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.fullscreen-thumbnail:hover {
+  border-color: rgba(0, 255, 136, 0.7);
+  transform: scale(1.05);
+}
+
+.fullscreen-thumbnail.active {
+  border-color: #00ff88;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+  transform: scale(1.1);
+}
+
+.fullscreen-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -318,5 +498,49 @@
   .thumbnail {
     width: 60px;
     height: 60px;
+  }
+  
+  .fullscreen-container {
+    padding: 80px 20px 20px;
+  }
+  
+  .fullscreen-nav {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .fullscreen-nav.prev {
+    left: 10px;
+  }
+  
+  .fullscreen-nav.next {
+    right: 10px;
+  }
+  
+  .fullscreen-close {
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5rem;
+  }
+  
+  .fullscreen-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .fullscreen-thumbnails {
+    padding: 15px;
+    gap: 8px;
+  }
+  
+  .fullscreen-title {
+    font-size: 1rem;
+  }
+  
+  .fullscreen-counter {
+    font-size: 0.8rem;
   }
 }

@@ -2,11 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import planetsData from '../data/planetsData.json';
 import SpaceshipDashboard from './SpaceshipDashboard';
-import ScanCarousel from './ScanCarousel';
 import CameraController from './CameraController';
 import Planets from './Planets';
 
-function SolarSystem({ isVisible = true, onDashboardStateChange }) {
+function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
@@ -49,7 +48,7 @@ function SolarSystem({ isVisible = true, onDashboardStateChange }) {
     if (onDashboardStateChange) {
       onDashboardStateChange(isDashboardOpen);
     }
-    
+
     // Reset the changing flag after animation duration
     setTimeout(() => {
       isChangingPlanet.current = false;
@@ -86,6 +85,11 @@ function SolarSystem({ isVisible = true, onDashboardStateChange }) {
 
   const handleCloseScanCarousel = () => {
     setShowScanCarousel(false);
+
+    // Notify parent about carousel state change
+    if (onCarouselStateChange) {
+      onCarouselStateChange(false);
+    }
   };
 
   if (!isVisible) return null;
@@ -127,12 +131,7 @@ function SolarSystem({ isVisible = true, onDashboardStateChange }) {
         planetName={followingPlanet}
         onClose={handleCloseDashboard}
         onPlanetNavigate={handlePlanetNavigate}
-      />
-
-      <ScanCarousel 
-        planetName={followingPlanet}
-        isVisible={showScanCarousel}
-        onClose={handleCloseScanCarousel}
+        onCarouselStateChange={onCarouselStateChange}
       />
     </div>
   );

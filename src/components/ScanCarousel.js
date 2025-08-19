@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import './ScanCarousel.css';
 
-function ScanCarousel({ planetName, isVisible, onClose }) {
+function ScanCarousel({ planetName, isVisible, onClose, onCarouselStateChange }) {
   const [scanImages, setScanImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [fullscreenIndex, setFullscreenIndex] = useState(null);
 
   useEffect(() => {
     if (isVisible && planetName) {
       loadAllScans();
     }
   }, [isVisible, planetName]);
+
+  // Notify parent when carousel visibility changes
+  useEffect(() => {
+    if (onCarouselStateChange) {
+      onCarouselStateChange(isVisible);
+    }
+  }, [isVisible, onCarouselStateChange]);
 
   const loadAllScans = async () => {
     setLoading(true);
@@ -64,102 +72,205 @@ function ScanCarousel({ planetName, isVisible, onClose }) {
     setCurrentIndex((prev) => (prev - 1 + scanImages.length) % scanImages.length);
   };
 
+  const handleImageClick = () => {
+    setFullscreenIndex(currentIndex);
+  };
+
+  const handleThumbnailClick = (index) => {
+    if (fullscreenIndex !== null) {
+      setFullscreenIndex(index);
+    } else {
+      setCurrentIndex(index);
+    }
+  };
+
+  const closeFullscreen = () => {
+    setFullscreenIndex(null);
+  };
+
+  const nextFullscreenImage = () => {
+    setFullscreenIndex((prev) => (prev + 1) % scanImages.length);
+  };
+
+  const prevFullscreenImage = () => {
+    setFullscreenIndex((prev) => (prev - 1 + scanImages.length) % scanImages.length);
+  };
+
+  // Keyboard navigation for fullscreen
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (fullscreenIndex === null) return;
+
+      switch (e.key) {
+        case 'Escape':
+          closeFullscreen();
+          break;
+        case 'ArrowLeft':
+          prevFullscreenImage();
+          break;
+        case 'ArrowRight':
+          nextFullscreenImage();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenIndex, scanImages.length]);
+
   if (!isVisible) return null;
 
   return (
-    <div className="scan-carousel-overlay">
-      <div className="scan-carousel">
-        <div className="carousel-header">
-          <div className="header-info">
-            <span className="satellite-icon">🛰️</span>
-            <div>
-              <div className="carousel-title">DETAILED SATELLITE ANALYSIS</div>
-              <div className="carousel-subtitle">Target: {planetName}</div>
+    <>
+      <div className="scan-carousel-overlay">
+        <div className="scan-carousel">
+          <div className="carousel-header">
+            <div className="header-info">
+              <span className="satellite-icon">🛰️</span>
+              <div>
+                <div className="carousel-title">DETAILED SATELLITE ANALYSIS</div>
+                <div className="carousel-subtitle">Target: {planetName}</div>
+              </div>
             </div>
+            <button className="carousel-close" onClick={onClose}>×</button>
           </div>
-          <button className="carousel-close" onClick={onClose}>×</button>
-        </div>
-        
-        <div className="carousel-content">
-          {loading ? (
-            <div className="carousel-loading">
-              <div className="loading-spinner"></div>
-              <div className="loading-text">Loading satellite data...</div>
-            </div>
-          ) : scanImages.length > 0 ? (
-            <>
-              <div className="carousel-main">
-                <button 
-                  className="carousel-nav prev" 
-                  onClick={prevImage}
-                  disabled={scanImages.length <= 1}
-                >
-                  ‹
-                </button>
-                
-                <div className="scan-display">
-                  <div className="scan-frame">
-                    <img 
-                      src={scanImages[currentIndex]?.src} 
-                      alt={`Scan ${currentIndex + 1} of ${planetName}`}
-                    />
-                    <div className="scan-overlay-detailed">
-                      <div className="scan-grid-overlay"></div>
-                      <div className="scan-info">
-                        <div className="scan-timestamp">
-                          SCAN {scanImages[currentIndex]?.index.toString().padStart(2, '0')}
+          
+          <div className="carousel-content">
+            {loading ? (
+              <div className="carousel-loading">
+                <div className="loading-spinner"></div>
+                <div className="loading-text">Loading satellite data...</div>
+              </div>
+            ) : scanImages.length > 0 ? (
+              <>
+                <div className="carousel-main">
+                  <button 
+                    className="carousel-nav prev" 
+                    onClick={prevImage}
+                    disabled={scanImages.length <= 1}
+                  >
+                    ‹
+                  </button>
+                  
+                  <div className="scan-display">
+                    <div className="scan-frame">
+                      <img 
+                        src={scanImages[currentIndex]?.src} 
+                        alt={`Scan ${currentIndex + 1} of ${planetName}`}
+                        onClick={handleImageClick}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <div className="scan-overlay-detailed">
+                        <div className="scan-grid-overlay"></div>
+                        <div className="scan-info">
+                          <div className="scan-timestamp">
+                            SCAN {scanImages[currentIndex]?.index.toString().padStart(2, '0')}
+                          </div>
+                          <div className="scan-quality">HIGH RESOLUTION</div>
+                          <div className="click-hint">CLICK TO ENLARGE</div>
                         </div>
-                        <div className="scan-quality">HIGH RESOLUTION</div>
                       </div>
                     </div>
                   </div>
+                  
+                  <button 
+                    className="carousel-nav next" 
+                    onClick={nextImage}
+                    disabled={scanImages.length <= 1}
+                  >
+                    ›
+                  </button>
                 </div>
                 
-                <button 
-                  className="carousel-nav next" 
-                  onClick={nextImage}
-                  disabled={scanImages.length <= 1}
-                >
-                  ›
-                </button>
-              </div>
-              
-              <div className="carousel-thumbnails">
-                {scanImages.map((image, index) => (
-                  <div
-                    key={index}
-                    className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
-                    onClick={() => setCurrentIndex(index)}
-                  >
-                    <img src={image.src} alt={`Thumbnail ${index + 1}`} />
-                    <div className="thumbnail-overlay">
-                      <span>{index + 1}</span>
+                <div className="carousel-thumbnails">
+                  {scanImages.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
+                      onClick={() => handleThumbnailClick(index)}
+                    >
+                      <img src={image.src} alt={`Thumbnail ${index + 1}`} />
+                      <div className="thumbnail-overlay">
+                        <span>{index + 1}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="no-scans">
-              <div className="no-scans-icon">📡</div>
-              <div className="no-scans-text">No satellite data available for {planetName}</div>
-            </div>
-          )}
-        </div>
-        
-        <div className="carousel-footer">
-          <div className="scan-stats">
-            {scanImages.length > 0 && (
-              <>
-                <span>Image {currentIndex + 1} of {scanImages.length}</span>
-                <span>•</span>
-                <span>Satellite Network Active</span>
+                  ))}
+                </div>
               </>
+            ) : (
+              <div className="no-scans">
+                <div className="no-scans-icon">📡</div>
+                <div className="no-scans-text">No satellite data available for {planetName}</div>
+              </div>
             )}
+          </div>
+          
+          <div className="carousel-footer">
+            <div className="scan-stats">
+              {scanImages.length > 0 && (
+                <>
+                  <span>Image {currentIndex + 1} of {scanImages.length}</span>
+                  <span>•</span>
+                  <span>Satellite Network Active</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Fullscreen Modal */}
+      {fullscreenIndex !== null && (
+        <div className="fullscreen-overlay" onClick={closeFullscreen}>
+          <div className="fullscreen-container">
+            <button className="fullscreen-close" onClick={closeFullscreen}>×</button>
+            
+            <button 
+              className="fullscreen-nav prev" 
+              onClick={(e) => { e.stopPropagation(); prevFullscreenImage(); }}
+              disabled={scanImages.length <= 1}
+            >
+              ‹
+            </button>
+            
+            <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
+              <img 
+                src={scanImages[fullscreenIndex]?.src} 
+                alt={`Fullscreen scan ${fullscreenIndex + 1} of ${planetName}`}
+              />
+              <div className="fullscreen-info">
+                <div className="fullscreen-title">
+                  SCAN {scanImages[fullscreenIndex]?.index.toString().padStart(2, '0')} - {planetName}
+                </div>
+                <div className="fullscreen-counter">
+                  {fullscreenIndex + 1} of {scanImages.length}
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              className="fullscreen-nav next" 
+              onClick={(e) => { e.stopPropagation(); nextFullscreenImage(); }}
+              disabled={scanImages.length <= 1}
+            >
+              ›
+            </button>
+          </div>
+          
+          <div className="fullscreen-thumbnails">
+            {scanImages.map((image, index) => (
+              <div
+                key={index}
+                className={`fullscreen-thumbnail ${index === fullscreenIndex ? 'active' : ''}`}
+                onClick={(e) => { e.stopPropagation(); setFullscreenIndex(index); }}
+              >
+                <img src={image.src} alt={`Thumbnail ${index + 1}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

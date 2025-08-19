@@ -4,7 +4,7 @@ import { fetchSpecificRepo, fetchRepoLanguages, fetchRepoCommits } from '../serv
 import ScanCarousel from './ScanCarousel';
 import './SpaceshipDashboard.css';
 
-function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate }) {
+function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, onCarouselStateChange }) {
   const [repository, setRepository] = useState(null);
   const [languages, setLanguages] = useState({});
   const [commits, setCommits] = useState([]);
@@ -471,6 +471,7 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate }
         planetName={planetName}
         isVisible={showScanCarousel}
         onClose={handleCloseScanCarousel}
+        onCarouselStateChange={onCarouselStateChange}
       />
     </>
   );

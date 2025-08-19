@@ -1,8 +1,8 @@
 import React from 'react';
 import './ProfileButton.css';
 
-function ProfileButton({ isVisible, onClick, dashboardOpen = false }) {
-  if (!isVisible) return null;
+function ProfileButton({ isVisible, onClick, dashboardOpen = false, carouselOpen = false }) {
+  if (!isVisible || carouselOpen) return null;
 
   return (
     <button 
