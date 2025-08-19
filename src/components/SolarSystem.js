@@ -50,6 +50,24 @@ function SolarSystem({ isVisible = true }) {
     }, 2100); // Slightly longer than animation duration
   };
 
+  const handlePlanetNavigate = (newPlanetName) => {
+    // Use the same logic as handlePlanetSelect but for navigation
+    const now = Date.now();
+    
+    if (isChangingPlanet.current || (now - lastPlanetChangeTime.current) < 500) {
+      return;
+    }
+    
+    isChangingPlanet.current = true;
+    lastPlanetChangeTime.current = now;
+    
+    setFollowingPlanet(newPlanetName);
+    
+    setTimeout(() => {
+      isChangingPlanet.current = false;
+    }, 2100);
+  };
+
   const handleCloseDashboard = () => {
     setShowDashboard(false);
     setFollowingPlanet(null);
@@ -97,6 +115,7 @@ function SolarSystem({ isVisible = true }) {
         isVisible={showDashboard}
         planetName={followingPlanet}
         onClose={handleCloseDashboard}
+        onPlanetNavigate={handlePlanetNavigate}
       />
 
       <ScanCarousel 

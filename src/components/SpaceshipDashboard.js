@@ -4,7 +4,7 @@ import { fetchSpecificRepo, fetchRepoLanguages, fetchRepoCommits } from '../serv
 import ScanCarousel from './ScanCarousel';
 import './SpaceshipDashboard.css';
 
-function SpaceshipDashboard({ isVisible, planetName, onClose }) {
+function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate }) {
   const [repository, setRepository] = useState(null);
   const [languages, setLanguages] = useState({});
   const [commits, setCommits] = useState([]);
@@ -178,6 +178,24 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
 
   const handleCloseScanCarousel = () => {
     setShowScanCarousel(false);
+  };
+
+  // Get planets list for navigation
+  const planets = planetsData.planets;
+  const currentPlanetIndex = planets.findIndex(p => p.name === planetName);
+
+  const handlePreviousPlanet = () => {
+    if (currentPlanetIndex > 0) {
+      const previousPlanet = planets[currentPlanetIndex - 1];
+      onPlanetNavigate(previousPlanet.name);
+    }
+  };
+
+  const handleNextPlanet = () => {
+    if (currentPlanetIndex < planets.length - 1) {
+      const nextPlanet = planets[currentPlanetIndex + 1];
+      onPlanetNavigate(nextPlanet.name);
+    }
   };
 
   if (!isVisible) return null;
@@ -421,11 +439,32 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
           )}
         </div>
 
-        {/* Close Button */}
-        <button className="dashboard-close" onClick={onClose}>
-          <span>×</span>
-          <span className="close-label">EXIT SCAN</span>
-        </button>
+        {/* Navigation Controls */}
+        <div className="navigation-controls">
+          <button 
+            className={`nav-btn prev-btn ${currentPlanetIndex <= 0 ? 'disabled' : ''}`}
+            onClick={handlePreviousPlanet}
+            disabled={currentPlanetIndex <= 0}
+          >
+            <span>‹</span>
+            <span className="nav-label">PREV</span>
+          </button>
+
+          {/* Close Button */}
+          <button className="dashboard-close" onClick={onClose}>
+            <span>×</span>
+            <span className="close-label">EXIT SCAN</span>
+          </button>
+
+          <button 
+            className={`nav-btn next-btn ${currentPlanetIndex >= planets.length - 1 ? 'disabled' : ''}`}
+            onClick={handleNextPlanet}
+            disabled={currentPlanetIndex >= planets.length - 1}
+          >
+            <span>›</span>
+            <span className="nav-label">NEXT</span>
+          </button>
+        </div>
       </div>
 
       <ScanCarousel 
