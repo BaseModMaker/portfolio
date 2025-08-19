@@ -6,7 +6,7 @@ import ScanCarousel from './ScanCarousel';
 import CameraController from './CameraController';
 import Planets from './Planets';
 
-function SolarSystem({ isVisible = true }) {
+function SolarSystem({ isVisible = true, onDashboardStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
@@ -42,7 +42,13 @@ function SolarSystem({ isVisible = true }) {
     lastPlanetChangeTime.current = now;
     
     setFollowingPlanet(planetName);
-    setShowDashboard(!!planetName); // Show dashboard when a planet is selected
+    const isDashboardOpen = !!planetName;
+    setShowDashboard(isDashboardOpen);
+    
+    // Notify parent about dashboard state change
+    if (onDashboardStateChange) {
+      onDashboardStateChange(isDashboardOpen);
+    }
     
     // Reset the changing flag after animation duration
     setTimeout(() => {
@@ -71,6 +77,11 @@ function SolarSystem({ isVisible = true }) {
   const handleCloseDashboard = () => {
     setShowDashboard(false);
     setFollowingPlanet(null);
+    
+    // Notify parent about dashboard state change
+    if (onDashboardStateChange) {
+      onDashboardStateChange(false);
+    }
   };
 
   const handleCloseScanCarousel = () => {

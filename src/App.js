@@ -10,6 +10,7 @@ function App() {
   const [greetingComplete, setGreetingComplete] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSocialMenu, setShowSocialMenu] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
 
   const handleGreetingComplete = () => {
     setGreetingComplete(true);
@@ -27,20 +28,29 @@ function App() {
     setShowSocialMenu(false);
   };
 
+  const handleDashboardStateChange = (isOpen) => {
+    setDashboardOpen(isOpen);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         {!greetingComplete && (
           <GreetingSequence onComplete={handleGreetingComplete} />
         )}
-        <SolarSystem isVisible={greetingComplete} />
+        <SolarSystem 
+          isVisible={greetingComplete} 
+          onDashboardStateChange={handleDashboardStateChange}
+        />
         <SpaceMusic 
           isPlaying={true}
           volume={0.2}
+          dashboardOpen={dashboardOpen}
         />
         <ProfileButton 
           isVisible={showProfile}
           onClick={handleProfileClick}
+          dashboardOpen={dashboardOpen}
         />
         <SocialMenu 
           isVisible={showSocialMenu}

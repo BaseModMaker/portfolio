@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './SpaceMusic.css';
 
-function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
+function SpaceMusic({ isPlaying = true, volume = 0.3, dashboardOpen = false }) {
   const audioRef = useRef();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -111,7 +111,7 @@ function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
       </audio>
       
       {/* Music Controls */}
-      <div className="music-controls">
+      <div className={`music-controls ${dashboardOpen ? 'dashboard-open' : ''}`}>
         <button 
           className="mute-toggle-btn"
           onClick={handleToggleMute}
