@@ -203,6 +203,8 @@
   line-height: 1.4;
   margin: 0;
   opacity: 0.9;
+  overflow-y: auto;
+  max-height: 119px;
 }
 
 .stats-grid {
