@@ -1,12 +1,12 @@
 import React from 'react';
 import './ProfileButton.css';
 
-function ProfileButton({ isVisible, onClick }) {
-  if (!isVisible) return null;
+function ProfileButton({ isVisible, onClick, dashboardOpen = false, carouselOpen = false }) {
+  if (!isVisible || carouselOpen) return null;
 
   return (
     <button 
-      className="profile-btn"
+      className={`profile-btn ${dashboardOpen ? 'dashboard-open' : ''}`}
       onClick={onClick}
       aria-label="Profile"
     >

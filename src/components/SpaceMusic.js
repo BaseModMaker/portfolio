@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './SpaceMusic.css';
 
-function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
+function SpaceMusic({ isPlaying = true, volume = 0.3, dashboardOpen = false, carouselOpen = false }) {
   const audioRef = useRef();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -110,16 +110,18 @@ function SpaceMusic({ isPlaying = true, volume = 0.3 }) {
         Your browser does not support the audio element.
       </audio>
       
-      {/* Music Controls */}
-      <div className="music-controls">
-        <button 
-          className="mute-toggle-btn"
-          onClick={handleToggleMute}
-          title={isMuted ? "Unmute Music" : "Mute Music"}
-        >
-          {isMuted ? '🔇' : '🔊'}
-        </button>
-      </div>
+      {/* Music Controls - hide when carousel is open */}
+      {!carouselOpen && (
+        <div className={`music-controls ${dashboardOpen ? 'dashboard-open' : ''}`}>
+          <button 
+            className="mute-toggle-btn"
+            onClick={handleToggleMute}
+            title={isMuted ? "Unmute Music" : "Mute Music"}
+          >
+            {isMuted ? '🔇' : '🔊'}
+          </button>
+        </div>
+      )}
     </>
   );
 }
