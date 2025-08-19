@@ -279,7 +279,7 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
             <div className="repo-info">
               <div className="info-section">
                 <h4>BASIC INFO</h4>
-                <div className="info-grid">
+                <div className="info-grid compact">
                   <div className="info-item">
                     <span className="label">NAME:</span>
                     <span className="value">{repository.name || planetName || 'N/A'}</span>
@@ -305,7 +305,19 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
                   {repository.description || 'No description available'}
                 </p>
               </div>
+            </div>
+          )}
+        </div>
 
+        {/* Right Panel */}
+        <div className="dashboard-panel right-panel">
+          <div className="panel-header">
+            <h3>TECHNICAL ANALYSIS</h3>
+            <div className="scan-line"></div>
+          </div>
+
+          {repository && !loading && (
+            <div className="technical-info">
               <div className="info-section">
                 <h4>STATISTICS</h4>
                 <div className="stats-grid">
@@ -327,19 +339,7 @@ function SpaceshipDashboard({ isVisible, planetName, onClose }) {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* Right Panel */}
-        <div className="dashboard-panel right-panel">
-          <div className="panel-header">
-            <h3>TECHNICAL ANALYSIS</h3>
-            <div className="scan-line"></div>
-          </div>
-
-          {repository && !loading && (
-            <div className="technical-info">
               <div className="info-section">
                 <h4>LANGUAGES</h4>
                 <div className="languages-chart">
