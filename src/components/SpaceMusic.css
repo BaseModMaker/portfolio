@@ -7,6 +7,14 @@
   flex-direction: column;
   gap: 10px;
   align-items: flex-end;
+  transition: right 0.5s ease-out, opacity 0.3s ease;
+}
+
+.music-controls.dashboard-open {
+  right: 400px; /* Reduced from 410px to ensure it's visible */
+  z-index: 1300; /* Higher z-index to be above dashboard */
+  animation: slideInWithDashboard 0.5s ease-out;
+  opacity: 1 !important; /* Force visibility when dashboard is open */
 }
 
 .mute-toggle-btn {
@@ -33,13 +41,22 @@
   background: rgba(100, 255, 218, 0.05);
 }
 
-/* Hide controls when dashboard or social menu is open */
-.spaceship-dashboard ~ .music-controls,
+@keyframes slideInWithDashboard {
+  from {
+    right: 20px;
+    opacity: 1;
+  }
+  to {
+    right: 400px;
+    opacity: 1;
+  }
+}
+
+/* Hide controls when social menu is open */
 .social-menu-overlay ~ .music-controls {
   opacity: 0.3;
 }
 
-.spaceship-dashboard ~ .music-controls:hover,
 .social-menu-overlay ~ .music-controls:hover {
   opacity: 1;
 }
@@ -50,31 +67,8 @@
     right: 15px;
   }
   
-  .mute-toggle-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 0.9rem;
-  }
-}
-
-/* Hide controls when dashboard is open */
-.spaceship-dashboard ~ .music-controls {
-  opacity: 0.3;
-}
-
-.spaceship-dashboard ~ .music-controls:hover {
-  opacity: 1;
-}
-
-@media (max-width: 768px) {
-  .music-controls {
-    bottom: 15px;
-    right: 15px;
-  }
-  
-  .play-music-btn {
-    font-size: 0.8rem;
-    padding: 8px 12px;
+  .music-controls.dashboard-open {
+    right: 390px; /* Adjusted for mobile */
   }
   
   .mute-toggle-btn {

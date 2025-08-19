@@ -5,10 +5,11 @@ import SpaceshipDashboard from './SpaceshipDashboard';
 import CameraController from './CameraController';
 import Planets from './Planets';
 
-function SolarSystem({ isVisible = true }) {
+function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showScanCarousel, setShowScanCarousel] = useState(false);
   const planetRefs = useRef({});
   const lastPlanetChangeTime = useRef(0);
   const isChangingPlanet = useRef(false);
@@ -40,17 +41,55 @@ function SolarSystem({ isVisible = true }) {
     lastPlanetChangeTime.current = now;
     
     setFollowingPlanet(planetName);
-    setShowDashboard(!!planetName); // Show dashboard when a planet is selected
+    const isDashboardOpen = !!planetName;
+    setShowDashboard(isDashboardOpen);
     
+    // Notify parent about dashboard state change
+    if (onDashboardStateChange) {
+      onDashboardStateChange(isDashboardOpen);
+    }
+
     // Reset the changing flag after animation duration
     setTimeout(() => {
       isChangingPlanet.current = false;
     }, 2100); // Slightly longer than animation duration
   };
 
+  const handlePlanetNavigate = (newPlanetName) => {
+    // Use the same logic as handlePlanetSelect but for navigation
+    const now = Date.now();
+    
+    if (isChangingPlanet.current || (now - lastPlanetChangeTime.current) < 500) {
+      return;
+    }
+    
+    isChangingPlanet.current = true;
+    lastPlanetChangeTime.current = now;
+    
+    setFollowingPlanet(newPlanetName);
+    
+    setTimeout(() => {
+      isChangingPlanet.current = false;
+    }, 2100);
+  };
+
   const handleCloseDashboard = () => {
     setShowDashboard(false);
     setFollowingPlanet(null);
+    
+    // Notify parent about dashboard state change
+    if (onDashboardStateChange) {
+      onDashboardStateChange(false);
+    }
+  };
+
+  const handleCloseScanCarousel = () => {
+    setShowScanCarousel(false);
+
+    // Notify parent about carousel state change
+    if (onCarouselStateChange) {
+      onCarouselStateChange(false);
+    }
   };
 
   if (!isVisible) return null;
@@ -91,6 +130,8 @@ function SolarSystem({ isVisible = true }) {
         isVisible={showDashboard}
         planetName={followingPlanet}
         onClose={handleCloseDashboard}
+        onPlanetNavigate={handlePlanetNavigate}
+        onCarouselStateChange={onCarouselStateChange}
       />
     </div>
   );
