@@ -175,6 +175,12 @@
   gap: 0.5rem;
 }
 
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1rem;
+}
+
 .info-item {
   display: flex;
   justify-content: space-between;

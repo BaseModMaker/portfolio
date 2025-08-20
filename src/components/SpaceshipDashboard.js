@@ -298,18 +298,18 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
             <div className="repo-info">
               <div className="info-section">
                 <h4>BASIC INFO</h4>
-                <div className="info-grid compact">
+                <div className="info-grid compact-grid">
                   <div className="info-item">
                     <span className="label">NAME:</span>
                     <span className="value">{repository.name || planetName || 'N/A'}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">SIZE:</span>
-                    <span className="value">{formatSize(repository.size)}</span>
-                  </div>
-                  <div className="info-item">
                     <span className="label">CREATED:</span>
                     <span className="value">{formatDate(repository.created_at || repository.createdAt)}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">SIZE:</span>
+                    <span className="value">{formatSize(repository.size)}</span>
                   </div>
                   <div className="info-item">
                     <span className="label">UPDATED:</span>
