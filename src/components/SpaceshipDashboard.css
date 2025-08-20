@@ -690,6 +690,54 @@
   height: calc(100% - 80px);
 }
 
+.tags-container {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.2rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 255, 218, 0.3) transparent;
+}
+
+.tags-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tags-container::-webkit-scrollbar-track {
+  background: rgba(100, 255, 218, 0.1);
+  border-radius: 2px;
+}
+
+.tags-container::-webkit-scrollbar-thumb {
+  background: rgba(100, 255, 218, 0.3);
+  border-radius: 2px;
+}
+
+.tags-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 255, 218, 0.5);
+}
+
+.tag {
+  background: linear-gradient(45deg, rgba(100, 255, 218, 0.1), rgba(100, 255, 218, 0.05));
+  border: 1px solid rgba(100, 255, 218, 0.3);
+  color: #64ffda;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 0 5px rgba(100, 255, 218, 0.3);
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background: linear-gradient(45deg, rgba(100, 255, 218, 0.2), rgba(100, 255, 218, 0.1));
+  border-color: rgba(100, 255, 218, 0.5);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+  transform: translateY(-1px);
+}
+
 @keyframes dashboardActivate {
   from {
     opacity: 0;

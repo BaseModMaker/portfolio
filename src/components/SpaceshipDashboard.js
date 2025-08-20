@@ -198,6 +198,25 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
     }
   };
 
+  const getTags = () => {
+    // Handle hardcoded tags from project data
+    if (repository.topics && Array.isArray(repository.topics)) {
+      return repository.topics;
+    }
+    
+    // Handle GitHub API topics
+    if (repository.topics && typeof repository.topics === 'object') {
+      return Object.keys(repository.topics);
+    }
+    
+    // Handle topics as array from GitHub API
+    if (Array.isArray(repository.topics)) {
+      return repository.topics;
+    }
+    
+    return [];
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -317,6 +336,19 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
                   </div>
                 </div>
               </div>
+
+              {getTags().length > 0 && (
+                <div className="info-section">
+                  <h4>TAGS</h4>
+                  <div className="tags-container">
+                    {getTags().map((tag, index) => (
+                      <span key={index} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="info-section">
                 <h4>DESCRIPTION</h4>
