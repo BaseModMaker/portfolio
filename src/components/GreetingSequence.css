@@ -179,12 +179,12 @@
   }
   
   .character-image {
-    top: -40px;
-    left: -40px;
+    top: -180px; /* Adjusted from -40px to maintain proper relative positioning */
+    left: -20px; /* Adjusted from -40px to keep it centered relative to textbox */
   }
   
   .basile-image {
-    width: 140px;
+    width: 200px; /* Increased from 140px to maintain better proportions */
   }
   
   .greeting-text {
@@ -193,9 +193,9 @@
   
   .textbox-content {
     padding: 1rem 1.5rem;
-    padding-left: 2.5rem;
-    margin-top: 60px;
-    width: 400px;
+    padding-left: 2rem; /* Reduced from 2.5rem */
+    margin-top: 40px; /* Reduced from 60px to match avatar positioning */
+    width: 350px; /* Reduced from 400px to fit mobile screens better */
     min-height: 100px;
   }
 }
