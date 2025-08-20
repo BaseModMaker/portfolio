@@ -20,7 +20,6 @@
   /* Prevent mobile tap highlight */
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  -webkit-appearance: none;
   outline: none;
 }
 
@@ -202,7 +201,13 @@
   }
   
   .greeting-text {
-    font-size: 1rem;
+    font-size: 0.9rem; /* Slightly smaller for better fit */
+    height: auto; /* Remove fixed height to allow text to expand */
+    min-height: 2.4em; /* Minimum height for consistency */
+    overflow: visible; /* Allow text to be fully visible */
+    line-height: 1.4; /* Better line spacing for mobile */
+    word-wrap: break-word;
+    white-space: normal; /* Allow text wrapping */
     /* Prevent tap highlight on text */
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -213,7 +218,8 @@
     padding-left: 2rem;
     margin-top: 20px; /* Reduced to bring textbox closer to avatar */
     width: 320px; /* Slightly smaller for better mobile fit */
-    min-height: 100px;
+    min-height: 80px; /* Reduced minimum height */
+    height: auto; /* Allow height to adjust to content */
     /* Prevent tap highlight on textbox */
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -223,5 +229,9 @@
     /* Prevent tap highlight on entire textbox area */
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+  }
+  
+  .text-cursor {
+    margin-top: 0.5rem; /* Add some space above cursor */
   }
 }
