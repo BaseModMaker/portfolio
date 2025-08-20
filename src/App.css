@@ -1,5 +1,8 @@
 * {
   box-sizing: border-box;
+  /* Prevent mobile tap highlights globally */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 /* Hide scrollbars for all browsers - more aggressive approach */
@@ -68,6 +71,10 @@ footer::-webkit-scrollbar {
   position: fixed;
   top: 0;
   left: 0;
+  /* Prevent tap highlights on main app container */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  outline: none;
 }
 
 .App-logo {
@@ -96,6 +103,10 @@ footer::-webkit-scrollbar {
   margin: 0;
   overflow: hidden;
   position: relative;
+  /* Prevent tap highlights on header */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  outline: none;
 }
 
 /* Ensure canvas containers don't have overflow issues */

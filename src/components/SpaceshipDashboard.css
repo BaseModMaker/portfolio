@@ -175,6 +175,12 @@
   gap: 0.5rem;
 }
 
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1rem;
+}
+
 .info-item {
   display: flex;
   justify-content: space-between;
@@ -684,6 +690,54 @@
   height: calc(100% - 80px);
 }
 
+.tags-container {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.2rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 255, 218, 0.3) transparent;
+}
+
+.tags-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tags-container::-webkit-scrollbar-track {
+  background: rgba(100, 255, 218, 0.1);
+  border-radius: 2px;
+}
+
+.tags-container::-webkit-scrollbar-thumb {
+  background: rgba(100, 255, 218, 0.3);
+  border-radius: 2px;
+}
+
+.tags-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 255, 218, 0.5);
+}
+
+.tag {
+  background: linear-gradient(45deg, rgba(100, 255, 218, 0.1), rgba(100, 255, 218, 0.05));
+  border: 1px solid rgba(100, 255, 218, 0.3);
+  color: #64ffda;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 0 5px rgba(100, 255, 218, 0.3);
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background: linear-gradient(45deg, rgba(100, 255, 218, 0.2), rgba(100, 255, 218, 0.1));
+  border-color: rgba(100, 255, 218, 0.5);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+  transform: translateY(-1px);
+}
+
 @keyframes dashboardActivate {
   from {
     opacity: 0;
@@ -742,31 +796,79 @@
 }
 
 @media (max-width: 768px) {
-  .satellite-panel {
-    left: 10px;
-    width: calc(50vw - 40px);
-    height: 300px;
-  }
-  
-  .left-panel {
-    left: 10px;
-    top: 320px;
-    width: calc(50vw - 40px);
-    height: calc(100vh - 340px);
-  }
-  
-  .scan-window {
-    height: 140px;
-  }
-  
-  .scan-grid {
-    width: 50px;
-    height: 50px;
+  .spaceship-dashboard {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    overflow-y: auto;
+    height: 100vh;
   }
   
   .navigation-controls {
-    gap: 0.5rem;
-    top: 15px;
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    padding: 15px;
+    background: rgba(0, 20, 40, 0.95);
+    border-bottom: 2px solid #64ffda;
+    border-radius: 0;
+    backdrop-filter: blur(10px);
+    order: -1; /* Move to top */
+    justify-content: center;
+    z-index: 1202;
+    flex-shrink: 0; /* Don't shrink */
+  }
+  
+  .dashboard-panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    height: auto;
+    min-height: auto; /* Remove forced min-height */
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    flex-shrink: 0; /* Don't shrink */
+  }
+  
+  .satellite-panel {
+    order: 1;
+    height: auto; /* Let content determine height */
+    animation: slideInTop 0.5s ease-out;
+    border-top: none;
+  }
+  
+  .left-panel {
+    order: 2;
+    height: auto; /* Let content determine height */
+    animation: slideInTop 0.5s ease-out 0.1s both;
+    border-top: none;
+  }
+  
+  .right-panel {
+    order: 3;
+    height: auto; /* Let content determine height */
+    animation: slideInTop 0.5s ease-out 0.2s both;
+    border-top: none;
+    border-bottom: none;
+  }
+  
+  .scan-window {
+    height: 250px;
+    margin: 15px;
+    width: calc(100% - 30px);
+  }
+  
+  .scan-grid {
+    width: 60px;
+    height: 60px;
   }
   
   .nav-btn {
@@ -784,5 +886,142 @@
   
   .close-label {
     font-size: 0.7rem;
+  }
+  
+  .dashboard-close {
+    min-width: 80px;
+  }
+  
+  .repo-info,
+  .technical-info {
+    padding: 1rem;
+    height: auto;
+    overflow-y: visible;
+    max-height: none;
+    min-height: auto; /* Remove forced min-height */
+  }
+  
+  .integrated-satellite-scanner {
+    padding: 1rem;
+    min-height: auto; /* Remove forced min-height */
+  }
+  
+  .info-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .compact-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+  
+  .stat-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 0.8rem;
+  }
+  
+  .stat-label {
+    justify-content: center;
+    margin-top: 0.4rem;
+  }
+  
+  .panel-header {
+    padding: 1.2rem;
+    flex-shrink: 0; /* Don't shrink headers */
+  }
+  
+  .panel-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  /* Ensure full coverage for mobile */
+  .spaceship-dashboard {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+  
+  /* Improve readability on mobile */
+  .description {
+    font-size: 1rem;
+    line-height: 1.6;
+    max-height: none;
+  }
+  
+  .commits-list {
+    max-height: none; /* Let content determine height */
+  }
+  
+  .commit-item {
+    padding: 0.8rem;
+  }
+  
+  .commit-message {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .languages-chart {
+    max-height: none; /* Let content determine height */
+  }
+  
+  .language-bar {
+    margin-bottom: 0.8rem;
+  }
+  
+  .action-buttons {
+    gap: 0.8rem;
+  }
+  
+  .action-btn {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Ensure loading and error screens work properly in mobile */
+  .loading-screen, .error-screen {
+    height: 200px; /* Fixed reasonable height instead of calc */
+    padding: 1rem;
+  }
+  
+  /* Adjust info sections to not take unnecessary space */
+  .info-section:last-child {
+    margin-bottom: 0; /* Remove bottom margin from last section */
+  }
+  
+  /* Ensure scrollable areas work properly */
+  .tags-container {
+    padding: 0.5rem 0;
+  }
+  
+  /* Make sure content areas size appropriately */
+  .repo-info .info-section,
+  .technical-info .info-section {
+    margin-bottom: 1rem;
+  }
+  
+  .repo-info .info-section:last-child,
+  .technical-info .info-section:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

@@ -17,6 +17,11 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  /* Prevent mobile tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-appearance: none;
+  outline: none;
 }
 
 .greeting-container.fade-out {
@@ -176,26 +181,47 @@
 @media (max-width: 768px) {
   .greeting-content {
     padding: 1rem;
+    /* Additional mobile tap prevention */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
   
   .character-image {
-    top: -40px;
-    left: -40px;
+    top: -182px; /* Adjusted to be relative to smaller textbox */
+    left: -30px; /* Moved further left to align with text box edge */
+    /* Prevent tap highlight on image */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
   
   .basile-image {
-    width: 140px;
+    width: 160px; /* Reduced size for better mobile proportion */
+    /* Prevent tap highlight on image */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
   
   .greeting-text {
     font-size: 1rem;
+    /* Prevent tap highlight on text */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
   
   .textbox-content {
     padding: 1rem 1.5rem;
-    padding-left: 2.5rem;
-    margin-top: 60px;
-    width: 400px;
+    padding-left: 2rem;
+    margin-top: 20px; /* Reduced to bring textbox closer to avatar */
+    width: 320px; /* Slightly smaller for better mobile fit */
     min-height: 100px;
+    /* Prevent tap highlight on textbox */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  .rpg-textbox {
+    /* Prevent tap highlight on entire textbox area */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
 }

@@ -198,6 +198,25 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
     }
   };
 
+  const getTags = () => {
+    // Handle hardcoded tags from project data
+    if (repository.topics && Array.isArray(repository.topics)) {
+      return repository.topics;
+    }
+    
+    // Handle GitHub API topics
+    if (repository.topics && typeof repository.topics === 'object') {
+      return Object.keys(repository.topics);
+    }
+    
+    // Handle topics as array from GitHub API
+    if (Array.isArray(repository.topics)) {
+      return repository.topics;
+    }
+    
+    return [];
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -298,18 +317,18 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
             <div className="repo-info">
               <div className="info-section">
                 <h4>BASIC INFO</h4>
-                <div className="info-grid compact">
+                <div className="info-grid compact-grid">
                   <div className="info-item">
                     <span className="label">NAME:</span>
                     <span className="value">{repository.name || planetName || 'N/A'}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">SIZE:</span>
-                    <span className="value">{formatSize(repository.size)}</span>
-                  </div>
-                  <div className="info-item">
                     <span className="label">CREATED:</span>
                     <span className="value">{formatDate(repository.created_at || repository.createdAt)}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="label">SIZE:</span>
+                    <span className="value">{formatSize(repository.size)}</span>
                   </div>
                   <div className="info-item">
                     <span className="label">UPDATED:</span>
@@ -317,6 +336,19 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
                   </div>
                 </div>
               </div>
+
+              {getTags().length > 0 && (
+                <div className="info-section">
+                  <h4>TAGS</h4>
+                  <div className="tags-container">
+                    {getTags().map((tag, index) => (
+                      <span key={index} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="info-section">
                 <h4>DESCRIPTION</h4>
