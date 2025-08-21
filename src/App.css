@@ -136,9 +136,7 @@ canvas {
 
 /* Remove any fade-in animations for labels */
 .rpg-textbox {
-  /* Remove animation: fadeInUp 0.5s ease-out; */
-  animation: none !important;
-  transition: none !important;
+  animation: fadeInUp 0.5s ease-out;
 }
 
 /* Specifically target sun labels to remove animations */
