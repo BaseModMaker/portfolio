@@ -2,7 +2,19 @@
 export function getRingAppearance(isSelected, hovered, planetName, followingPlanet) {
   let appearance;
 
-  if (isSelected) {
+  // Handle sun labels specially
+  if (planetName && planetName.startsWith('sun-')) {
+    appearance = { 
+      color: '#00ff88',
+      opacity: 0, // Ring remains invisible for sun
+      lineColor: 'rgba(0, 255, 136, 0.4)', // Make line visible with reduced opacity
+      labelBorderColor: '#00ff88',
+      labelBgColor: 'rgba(0, 20, 40, 0.95)',
+      labelFontColor: '#00ff88',
+      labelInnerBorderColor: '#00ff88',
+      labelBorderShadowColor: 'rgba(0, 255, 136, 0.3)'
+    };
+  } else if (isSelected) {
     appearance = { 
       color: '#ff6b6b', 
       opacity: 1.0,
@@ -50,8 +62,8 @@ export function getRingAppearance(isSelected, hovered, planetName, followingPlan
     };
   }
 
-  // Update CSS variables for this planet
-  if (planetName) {
+  // Update CSS variables for this planet (skip for sun)
+  if (planetName && !planetName.startsWith('sun-')) {
     document.documentElement.style.setProperty(`--line-color-${planetName}`, appearance.lineColor);
     document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
     document.documentElement.style.setProperty(`--label-bg-color-${planetName}`, appearance.labelBgColor);

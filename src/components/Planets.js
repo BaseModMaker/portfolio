@@ -1,16 +1,39 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import Planet from './Planet';
 import OrbitRing from './OrbitRing';
 import Sun from './Sun';
 
 function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig }) {
+  // Determine if labels should be visible (hide when following any planet, including for sun)
+  const showLabels = !followingPlanet;
+
+  // Track hovered state for sun and planets
+  const [sunHovered, setSunHovered] = useState(false);
+  const [hoveredPlanet, setHoveredPlanet] = useState(null);
+
+  // Callbacks to pass down
+  const handleSunHover = useCallback((hovered) => {
+    setSunHovered(hovered);
+  }, []);
+
+  // Only set hoveredPlanet if hovered, otherwise clear
+  const handlePlanetLabelHover = useCallback((planetNameOrBool) => {
+    if (planetNameOrBool && typeof planetNameOrBool === 'string') {
+      setHoveredPlanet(planetNameOrBool);
+    } else {
+      setHoveredPlanet(null);
+    }
+  }, []);
+
   return (
     <>
-      {/* Sun */}
+      {/* Sun - only show label if no planet label is hovered */}
       <Sun 
         currentSystemName={currentSystemName}
         onSystemMenuOpen={onSystemMenuOpen}
         sunConfig={sunConfig}
+        showLabels={showLabels && !hoveredPlanet}
+        onHover={handleSunHover}
       />
       
       {/* Orbit rings */}
@@ -25,7 +48,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
         />
       ))}
       
-      {/* Planets */}
+      {/* Planets - only show label if sun is not hovered */}
       {planets.map((planet, index) => (
         <Planet
           key={index}
@@ -44,6 +67,8 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
               planetRefs.current[planet.name] = el;
             }
           }}
+          showLabel={showLabels && !sunHovered}
+          onLabelHover={handlePlanetLabelHover}
         />
       ))}
     </>

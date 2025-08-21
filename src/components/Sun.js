@@ -1,9 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Html } from '@react-three/drei';
 import { createRealisticPlanet } from './PlanetGenerator';
+import PlanetLabel from './PlanetLabel';
 
-function Sun({ currentSystemName, onSystemMenuOpen, sunConfig }) {
+function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true, onHover }) {
   const meshRef = useRef();
+  const actualSunRef = useRef();
+  const labelRef = useRef();
   const [hovered, setHovered] = useState(false);
   
   // Reset hover state when system name changes
@@ -26,40 +29,55 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig }) {
     onSystemMenuOpen();
   };
 
+  // Replace hovered state logic:
+  const handlePointerEnter = () => {
+    setHovered(true);
+    if (onHover) onHover(true);
+  };
+  const handlePointerLeave = () => {
+    setHovered(false);
+    if (onHover) onHover(false);
+  };
+
+  // Label positioning - create a fixed offset to the side like planets
+  const labelOffset = 5; // Distance to the side
+  const sunSize = sunConfig?.size || 1;
+
+  // Sun label data for PlanetLabel
+  const sunLabelData = {
+    systemName: currentSystemName,
+    subtitle: 'Click to change system'
+  };
+
   return (
     <group ref={meshRef}>
+      {/* Sun mesh with click handler */}
       <group
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
       >
-        <RealisticSun />
+        <RealisticSun ref={actualSunRef} />
         <pointLight 
           intensity={sunConfig?.lightIntensity || 2} 
           color={sunConfig?.lightColor || "#FFA500"} 
         />
-        
-        {hovered && (
-          <Html
-            center
-            distanceFactor={8}
-            style={{
-              pointerEvents: 'none',
-              userSelect: 'none'
-            }}
-          >
-            <div className="sun-label">
-              <div className="sun-textbox">
-                <div className="sun-content">
-                  <div className="sun-title">{currentSystemName}</div>
-                  <div className="sun-subtitle">Click to change system</div>
-                </div>
-              </div>
-            </div>
-          </Html>
-        )}
       </group>
+
+      {/* Sun label - appears immediately when hovered and showLabels is true */}
+      {showLabels && hovered && (
+        <group position={[labelOffset, 0, 0]}>
+          <PlanetLabel 
+            ref={labelRef}
+            planetRef={actualSunRef} 
+            planetName={`sun-${currentSystemName}`}
+            planetSize={sunSize}
+            isSun={true}
+            sunData={sunLabelData}
+          />
+        </group>
+      )}
     </group>
   );
 }

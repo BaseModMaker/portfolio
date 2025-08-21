@@ -1,15 +1,16 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
 import { getRingAppearance } from '../utils/planetAppearance';
 
-function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered, followingPlanet }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered, followingPlanet, showLabel = true, onLabelHover }) {
   const orbitRef = useRef();
   const labelOrbitRef = useRef();
   const actualPlanetRef = useRef();
   const labelRef = useRef();
-  
+  const [labelHovered, setLabelHovered] = useState(false);
+
   // Create the realistic planet component
   const RealisticPlanet = createRealisticPlanet({
     size,
@@ -33,6 +34,17 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
       planetRef(actualPlanetRef.current);
     }
   }, [planetRef]);
+
+  // Notify parent when label hover changes
+  useEffect(() => {
+    if (onLabelHover) {
+      if (labelHovered) {
+        onLabelHover(planetName);
+      } else {
+        onLabelHover(null);
+      }
+    }
+  }, [labelHovered, planetName, onLabelHover]);
 
   useFrame((state) => {
     if (orbitRef.current) {
@@ -68,12 +80,13 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
       {/* Label orbit - always render but conditionally show content to maintain sync */}
       <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
         <group position={[orbitRadius, 0, 0]}>
-          {showLabels && (
+          {showLabel && (
             <PlanetLabel 
               ref={labelRef}
               planetRef={actualPlanetRef} 
               planetName={planetName}
               planetSize={size}
+              onHover={setLabelHovered}
             />
           )}
         </group>

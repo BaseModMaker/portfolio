@@ -134,6 +134,19 @@ canvas {
   /* box-shadow: 0 0 5px rgba(100, 255, 218, 0.3); */
 }
 
+/* Remove any fade-in animations for labels */
+.rpg-textbox {
+  /* Remove animation: fadeInUp 0.5s ease-out; */
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Specifically target sun labels to remove animations */
+.rpg-textbox * {
+  animation: none !important;
+  transition: none !important;
+}
+
 /* Sun label styles */
 .sun-label {
   position: relative;
