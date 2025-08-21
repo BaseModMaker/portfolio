@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
-const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = false, sunData = null, onHover }, ref) => {
+const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = false, sunData = null, onHover, labelWorldOffset = null }, ref) => {
   const labelRef = useRef();
   const htmlRef = useRef();
   const { camera, size, gl } = useThree();
@@ -15,9 +15,15 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
   useFrame(() => {
     if (!labelRef.current) return;
 
-    // Since we're in our own orbit, position label at origin with slight offset
-    const labelPos = new THREE.Vector3(0, 0, 0);
-    
+    // For sun, use explicit labelWorldOffset if provided
+    let labelPos;
+    if (isSun && labelWorldOffset) {
+      labelPos = new THREE.Vector3(...labelWorldOffset);
+    } else {
+      // Since we're in our own orbit, position label at origin with slight offset
+      labelPos = new THREE.Vector3(0, 0, 0);
+    }
+
     // Update label position
     labelRef.current.position.copy(labelPos);
 
@@ -26,70 +32,69 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
       // Get world position of the label
       const labelWorldPosition = new THREE.Vector3();
       labelRef.current.getWorldPosition(labelWorldPosition);
-      
+
       // Get world position of the planet/sun
       const planetWorldPosition = new THREE.Vector3();
       planetRef.current.getWorldPosition(planetWorldPosition);
-      
+
+      // For sun, adjust the connection line to connect to the right edge
+      let connectPlanetWorldPos;
+      if (isSun && labelWorldOffset) {
+        // Move from sun center to its right edge (positive X)
+        connectPlanetWorldPos = planetWorldPosition.clone().add(new THREE.Vector3(planetSize, 0, 0));
+      } else {
+        // For planets, always connect to the right edge (positive X)
+        connectPlanetWorldPos = planetWorldPosition.clone().add(new THREE.Vector3(planetSize, 0, 0));
+      }
+
       // Project 3D world positions to 2D screen coordinates
       const labelScreenPosition = labelWorldPosition.clone().project(camera);
-      const planetScreenPosition = planetWorldPosition.clone().project(camera);
-      
+      const planetScreenPosition = connectPlanetWorldPos.clone().project(camera);
+
       // Convert normalized device coordinates to screen pixels
       const labelScreenX = (labelScreenPosition.x * 0.5 + 0.5) * size.width;
       const labelScreenY = (labelScreenPosition.y * -0.5 + 0.5) * size.height;
-      
+
       const planetScreenX = (planetScreenPosition.x * 0.5 + 0.5) * size.width;
       const planetScreenY = (planetScreenPosition.y * -0.5 + 0.5) * size.height;
-      
-      // Calculate planet/sun radius in screen pixels
-      const planetRadius3D = planetSize;
-      const planetEdgePosition = planetWorldPosition.clone();
-      planetEdgePosition.x += planetRadius3D;
-      const planetEdgeScreenPosition = planetEdgePosition.project(camera);
-      const planetEdgeScreenX = (planetEdgeScreenPosition.x * 0.5 + 0.5) * size.width;
-      const planetRadiusScreen = Math.abs(planetEdgeScreenX - planetScreenX);
-      
+
       // Get actual label dimensions from DOM element
       const labelElement = htmlRef.current?.querySelector('.rpg-textbox');
       let labelWidth = 200; // fallback
       let labelHeight = 60; // fallback
-      
+
       if (labelElement) {
         const rect = labelElement.getBoundingClientRect();
         labelWidth = rect.width;
         labelHeight = rect.height;
       }
-      
+
       // Calculate edge positions with border consideration
       let planetEdgeX, planetEdgeY, labelEdgeX, labelEdgeY;
-      
+
       // Add border width to get to the actual visual edge
       const borderWidth = 0.25; // border from CSS
-      
-      // Determine which edge to use based on relative positions
-      if (labelScreenX > planetScreenX) {
-        // Label is to the right of planet/sun
-        planetEdgeX = planetScreenX + planetRadiusScreen;
-        // For labels to the right, connect to the actual left edge (including border)
-        labelEdgeX = labelScreenX - (labelWidth / 2) - borderWidth * labelElement.getBoundingClientRect().width;
+
+      if (isSun && labelWorldOffset) {
+        // For sun, always connect from right edge of sun to left edge of label
+        planetEdgeX = planetScreenX;
+        labelEdgeX = labelScreenX - (labelWidth / 2) - borderWidth * labelWidth;
       } else {
-        // Label is to the left of planet/sun
-        planetEdgeX = planetScreenX - planetRadiusScreen;
-        // For labels to the left, connect to the actual right edge (including border)
-        labelEdgeX = labelScreenX + (labelWidth / 2) + borderWidth * labelElement.getBoundingClientRect().width;
+        // For planets, always connect from right edge of planet to left edge of label
+        planetEdgeX = planetScreenX;
+        labelEdgeX = labelScreenX - (labelWidth / 2) - borderWidth * labelWidth;
       }
-      
+
       // Use center Y positions for both
       planetEdgeY = planetScreenY;
       labelEdgeY = labelScreenY;
-      
+
       // Calculate distance and angle for the connection line from edges
       const deltaX = labelEdgeX - planetEdgeX;
       const deltaY = labelEdgeY - planetEdgeY;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-      
+
       // Update connection line data using edge positions
       setConnectionLine({
         planetX: planetEdgeX,
@@ -166,7 +171,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
       <div style={{
         color: '#00ff88',
         fontFamily: "'Courier New', monospace",
-        fontSize: '0.9rem',
+        fontSize: '2rem', // larger for sun
         fontWeight: 'bold',
         margin: '0 0 0.2rem 0',
         textShadow: '0 0 10px rgba(0, 255, 136, 0.5)',
@@ -177,7 +182,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
       <div style={{
         color: '#88ffaa',
         fontFamily: "'Courier New', monospace",
-        fontSize: '0.7rem',
+        fontSize: '1.8rem', // larger for sun
         margin: '0',
         opacity: '0.8',
         whiteSpace: 'nowrap'
@@ -238,14 +243,14 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
         <div className="rpg-textbox" style={{ 
           position: 'relative',
           width: 'auto',
-          minWidth: '200px',
+          minWidth: isSun ? '260px' : '200px', // wider for sun
           animation: 'none'
         }}>
           <div className="textbox-content" style={{
             background: labelOpacity,
             border: `3px solid ${borderColor}`,
             borderRadius: '12px',
-            padding: isSun ? '0.8rem 1rem' : '0.75rem 1rem',
+            padding: isSun ? '1.2rem 1.5rem' : '0.75rem 1rem', // more padding for sun
             minHeight: 'auto',
             width: 'auto',
             display: 'flex',
@@ -255,10 +260,10 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
             position: 'relative',
             margin: '0',
             boxSizing: 'border-box',
-            transform: isSun ? 'scale(1)' : 'scale(1.5)',
+            transform: 'scale(1.5)',
             opacity: '1',
-            animation: 'none', // Remove any animations
-            transition: 'none' // Remove transitions that might cause fade effects
+            animation: 'none',
+            transition: 'none'
           }}>
             {!isSun && (
               <div style={{

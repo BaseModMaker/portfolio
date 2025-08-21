@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Html } from '@react-three/drei';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
 
@@ -39,8 +38,8 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
     if (onHover) onHover(false);
   };
 
-  // Label positioning - create a fixed offset to the side like planets
-  const labelOffset = 5; // Distance to the side
+  // Label positioning - match planet label offset, but closer for sun
+  const labelOrbitOffset = 2.2; // Closer to sun
   const sunSize = sunConfig?.size || 1;
 
   // Sun label data for PlanetLabel
@@ -67,7 +66,7 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
 
       {/* Sun label - appears immediately when hovered and showLabels is true */}
       {showLabels && hovered && (
-        <group position={[labelOffset, 0, 0]}>
+        <group position={[labelOrbitOffset + sunSize, 0, 0]}>
           <PlanetLabel 
             ref={labelRef}
             planetRef={actualSunRef} 
@@ -75,6 +74,7 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
             planetSize={sunSize}
             isSun={true}
             sunData={sunLabelData}
+            labelWorldOffset={[(labelOrbitOffset + sunSize), 0, 0]}
           />
         </group>
       )}
