@@ -64,7 +64,7 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
         />
       </group>
 
-      {/* Sun label - appears immediately when hovered and showLabels is true */}
+      {/* Sun label - appears only when hovered and showLabels is true */}
       {showLabels && hovered && (
         <group position={[labelOrbitOffset + sunSize, 0, 0]}>
           <PlanetLabel 

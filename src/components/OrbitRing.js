@@ -7,7 +7,7 @@ import { useThree } from '@react-three/fiber';
 let globalHoveredRing = null;
 let hoverCandidates = new Set();
 
-function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPlanet }) {
+function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPlanet, disableHighlight = false }) {
   const ringRef = useRef();
   const collisionRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -16,7 +16,8 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPl
   useEffect(() => {
     if (ringRef.current) {
       const geometry = new THREE.RingGeometry(radius - 0.02, radius + 0.02, 64);
-      const appearance = getRingAppearance(isSelected, hovered, planetName, followingPlanet);
+      // If highlight is disabled, force hovered to false for appearance
+      const appearance = getRingAppearance(isSelected, disableHighlight ? false : hovered, planetName, followingPlanet);
       const material = new THREE.MeshBasicMaterial({
         color: appearance.color,
         side: THREE.DoubleSide,
@@ -42,7 +43,28 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPl
       collisionRef.current.rotation.x = Math.PI / 2;
       collisionRef.current.position.y = 0.01;
     }
-  }, [radius, hovered, isSelected, followingPlanet]);
+  }, [radius, hovered, isSelected, followingPlanet, disableHighlight]);
+
+  // --- Reset hover state on solar system change or planetName change ---
+  useEffect(() => {
+    // If the current hovered ring or any hover candidate is not in the new system, clear them
+    if (globalHoveredRing && globalHoveredRing.planetName !== planetName) {
+      globalHoveredRing.setHovered(false);
+      globalHoveredRing = null;
+    }
+    // Remove all hover candidates not matching this planet
+    hoverCandidates.forEach(candidate => {
+      if (candidate.planetName !== planetName) {
+        candidate.setHovered(false);
+        hoverCandidates.delete(candidate);
+      }
+    });
+    // Also, if highlight is disabled, clear hovered state
+    if (disableHighlight && hovered) {
+      setHovered(false);
+    }
+  }, [planetName, disableHighlight]);
+  // ---------------------------------------------------------------------
 
   const calculateDistanceToRing = () => {
     if (!collisionRef.current) return Infinity;
@@ -94,11 +116,13 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPl
   };
 
   const handleClick = (e) => {
+    if (disableHighlight) return;
     e.stopPropagation();
     onPlanetSelect(isSelected ? null : planetName);
   };
 
   const handlePointerEnter = () => {
+    if (disableHighlight) return;
     // Add this ring to hover candidates
     const ringCandidate = {
       planetName,
@@ -110,6 +134,7 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPl
   };
 
   const handlePointerLeave = () => {
+    if (disableHighlight) return;
     // Remove this ring from hover candidates
     const candidateToRemove = Array.from(hoverCandidates).find(c => c.planetName === planetName);
     if (candidateToRemove) {
@@ -124,6 +149,13 @@ function OrbitRing({ radius, planetName, onPlanetSelect, isSelected, followingPl
       }
     }
   };
+
+  // If highlight is disabled, forcibly set hovered to false
+  useEffect(() => {
+    if (disableHighlight && hovered) {
+      setHovered(false);
+    }
+  }, [disableHighlight, hovered]);
 
   return (
     <group>

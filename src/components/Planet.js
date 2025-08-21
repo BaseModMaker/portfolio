@@ -66,9 +66,6 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
     document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
   }, [isSelected, hovered, planetName, followingPlanet]);
 
-  // Determine if labels should be visible (hide when following any planet)
-  const showLabels = !followingPlanet;
-
   return (
     <group>
       {/* Planet orbit */}

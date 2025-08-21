@@ -4,17 +4,9 @@ import OrbitRing from './OrbitRing';
 import Sun from './Sun';
 
 function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig, systemDropdownOpen = false }) {
-  // Determine if labels should be visible (hide when following any planet, including for sun)
-  const showLabels = !followingPlanet;
-
   // Track hovered state for sun and planets
   const [sunHovered, setSunHovered] = useState(false);
   const [hoveredPlanet, setHoveredPlanet] = useState(null);
-
-  // Callbacks to pass down
-  const handleSunHover = useCallback((hovered) => {
-    setSunHovered(hovered);
-  }, []);
 
   // Only set hoveredPlanet if hovered, otherwise clear
   const handlePlanetLabelHover = useCallback((planetNameOrBool) => {
@@ -25,14 +17,20 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
     }
   }, []);
 
+  // Disable orbit ring highlight if sun label is shown (sunHovered and no planet label hovered and dropdown not open)
+  const disableOrbitHighlight = sunHovered && !hoveredPlanet && !systemDropdownOpen;
+
+  // Show planet labels if not following a planet
+  const showLabels = !followingPlanet;
+
   return (
     <>
-      {/* Sun - only show label if no planet label is hovered and system dropdown is not open */}
+      {/* Sun - only show label if hovered and no planet label is hovered and system dropdown is not open */}
       <Sun 
         currentSystemName={currentSystemName}
         onSystemMenuOpen={onSystemMenuOpen}
         sunConfig={sunConfig}
-        showLabels={!followingPlanet && !hoveredPlanet && !systemDropdownOpen}
+        showLabels={sunHovered && !hoveredPlanet && !systemDropdownOpen}
         onHover={setSunHovered}
       />
       
@@ -45,10 +43,11 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
           onPlanetSelect={onPlanetSelect}
           isSelected={followingPlanet === planet.name}
           followingPlanet={followingPlanet}
+          disableHighlight={disableOrbitHighlight}
         />
       ))}
       
-      {/* Planets - only hide label if following a planet */}
+      {/* Planets - show label if not following a planet */}
       {planets.map((planet, index) => (
         <Planet
           key={index}
@@ -67,7 +66,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
               planetRefs.current[planet.name] = el;
             }
           }}
-          showLabel={!followingPlanet}
+          showLabel={showLabels}
           onLabelHover={handlePlanetLabelHover}
         />
       ))}
