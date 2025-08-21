@@ -171,7 +171,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
       <div style={{
         color: '#00ff88',
         fontFamily: "'Courier New', monospace",
-        fontSize: '2rem', // larger for sun
+        fontSize: '1.5rem', // larger for sun
         fontWeight: 'bold',
         margin: '0 0 0.2rem 0',
         textShadow: '0 0 10px rgba(0, 255, 136, 0.5)',
@@ -182,7 +182,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
       <div style={{
         color: '#88ffaa',
         fontFamily: "'Courier New', monospace",
-        fontSize: '1.8rem', // larger for sun
+        fontSize: '1.2rem', // larger for sun
         margin: '0',
         opacity: '0.8',
         whiteSpace: 'nowrap'
@@ -194,7 +194,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
     <p className="greeting-text" style={{
       color: 'var(--label-font-color-' + planetName + ', #ffffff)',
       fontFamily: "'Courier New', monospace",
-      fontSize: '2rem',
+      fontSize: '1.5rem',
       lineHeight: '1.4',
       margin: '0',
       textShadow: `0 0 10px var(--label-border-color-${planetName}, #64ffda)80`,
