@@ -1,0 +1,279 @@
+{
+  "solarSystems": [
+    {
+      "id": "personal",
+      "name": "Personal Projects",
+      "description": "Side projects and personal experiments",
+      "icon": "🚀",
+      "sunConfig": {
+        "color": "#FFA500",
+        "emissiveColor": "#FF6600",
+        "emissiveIntensity": 0.8,
+        "lightColor": "#FFA500",
+        "lightIntensity": 2,
+        "size": 1,
+        "rotationSpeed": 0.0005,
+        "cameraDistance": 30,
+        "cameraHeight": 25,
+        "fov": 40
+      },
+      "planets": [
+        {
+          "name": "Multi-Smelter",
+          "orbitRadius": 2,
+          "size": 0.1,
+          "orbitSpeed": 0.04,
+          "rotationSpeed": 0.02,
+          "startAngle": 0,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.9,
+            "metalness": 0.3,
+            "surfaceColor": "#8C7853"
+          }
+        },
+        {
+          "name": "Aquarium-Simulator",
+          "orbitRadius": 3,
+          "size": 0.15,
+          "orbitSpeed": 0.03,
+          "rotationSpeed": 0.015,
+          "startAngle": 1.2,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#FFA500",
+            "surfaceRoughness": 0.3,
+            "metalness": 0.1,
+            "surfaceColor": "#FFC649"
+          }
+        },
+        {
+          "name": "zangra-galaxy",
+          "orbitRadius": 4,
+          "size": 0.16,
+          "orbitSpeed": 0.02,
+          "rotationSpeed": 0.01,
+          "startAngle": 2.8,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#87CEEB",
+            "surfaceRoughness": 0.7,
+            "metalness": 0.2,
+            "surfaceColor": "#6B93D6"
+          }
+        },
+        {
+          "name": "sprite-stacking",
+          "orbitRadius": 5.5,
+          "size": 0.6,
+          "orbitSpeed": 0.003,
+          "rotationSpeed": 0.004,
+          "startAngle": 0.6,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#32CD32",
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#98FB98",
+            "hasRings": true,
+            "ringColor": "#228B22"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bachelor",
+      "name": "Bachelor Projects",
+      "description": "University coursework and bachelor thesis",
+      "icon": "🎓",
+      "sunConfig": {
+        "color": "#FFD700",
+        "emissiveColor": "#FFA500",
+        "emissiveIntensity": 0.9,
+        "lightColor": "#FFD700",
+        "lightIntensity": 2.2,
+        "size": 1.1,
+        "rotationSpeed": 0.0008,
+        "cameraDistance": 35,
+        "cameraHeight": 28,
+        "fov": 38
+      },
+      "planets": [
+        {
+          "name": "Factory-Simulator",
+          "orbitRadius": 2.5,
+          "size": 0.12,
+          "orbitSpeed": 0.015,
+          "rotationSpeed": 0.008,
+          "startAngle": 4.1,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.8,
+            "metalness": 0.1,
+            "surfaceColor": "#CD5C5C"
+          }
+        },
+        {
+          "name": "Maze-Generator",
+          "orbitRadius": 4,
+          "size": 0.5,
+          "orbitSpeed": 0.01,
+          "rotationSpeed": 0.012,
+          "startAngle": 5.7,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.4,
+            "metalness": 0.0,
+            "surfaceColor": "#D8CA9D"
+          }
+        },
+        {
+          "name": "Online-Java-Trainer",
+          "orbitRadius": 6,
+          "size": 0.4,
+          "orbitSpeed": 0.008,
+          "rotationSpeed": 0.01,
+          "startAngle": 0.9,
+          "props": {
+            "hasAtmosphere": false,
+            "hasRings": true,
+            "ringColor": "#DDD",
+            "surfaceRoughness": 0.4,
+            "metalness": 0.0,
+            "surfaceColor": "#FAD5A5"
+          }
+        }
+      ]
+    },
+    {
+      "id": "master",
+      "name": "Master Projects",
+      "description": "Advanced studies and master thesis",
+      "icon": "🎯",
+      "sunConfig": {
+        "color": "#FF4500",
+        "emissiveColor": "#FF6347",
+        "emissiveIntensity": 1.0,
+        "lightColor": "#FF4500",
+        "lightIntensity": 2.5,
+        "size": 1.2,
+        "rotationSpeed": 0.0006,
+        "cameraDistance": 40,
+        "cameraHeight": 30,
+        "fov": 35
+      },
+      "planets": [
+        {
+          "name": "CommitGenerator",
+          "orbitRadius": 3,
+          "size": 0.25,
+          "orbitSpeed": 0.006,
+          "rotationSpeed": 0.007,
+          "startAngle": 3.5,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#87CEEB",
+            "hasRings": true,
+            "ringColor": "#888",
+            "surfaceRoughness": 0.3,
+            "metalness": 0.0,
+            "surfaceColor": "#4FD0E7"
+          }
+        },
+        {
+          "name": "image-to-mosaic-template",
+          "orbitRadius": 5,
+          "size": 0.24,
+          "orbitSpeed": 0.005,
+          "rotationSpeed": 0.006,
+          "startAngle": 1.8,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#87CEEB",
+            "surfaceRoughness": 0.3,
+            "metalness": 0.0,
+            "surfaceColor": "#4B70DD"
+          }
+        },
+        {
+          "name": "ant-online-simulator",
+          "orbitRadius": 7,
+          "size": 0.5,
+          "orbitSpeed": 0.004,
+          "rotationSpeed": 0.005,
+          "startAngle": 2.5,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#FF69B4",
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#FFB6C1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "professional",
+      "name": "Professional Projects",
+      "description": "Work-related and commercial projects",
+      "icon": "💼",
+      "sunConfig": {
+        "color": "#DC143C",
+        "emissiveColor": "#B22222",
+        "emissiveIntensity": 0.7,
+        "lightColor": "#DC143C",
+        "lightIntensity": 1.8,
+        "size": 0.9,
+        "rotationSpeed": 0.0003,
+        "cameraDistance": 25,
+        "cameraHeight": 20,
+        "fov": 45
+      },
+      "planets": [
+        {
+          "name": "Cody",
+          "orbitRadius": 2.5,
+          "size": 0.1,
+          "orbitSpeed": 0.02,
+          "rotationSpeed": 0.03,
+          "startAngle": 1.5,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#9370DB",
+            "surfaceRoughness": 0.6,
+            "metalness": 0.2,
+            "surfaceColor": "#8A2BE2"
+          },
+          "projectData": {
+            "name": "Cody",
+            "description": "Cody is an AI-powered assistant that helps understanding pdfs. Features include summary generator, chat with a pdf, and an integrated file storage.",
+            "language": "Python 40%, HTML 20%, TypeScript 30%, SCSS 10%",
+            "size": 152400000,
+            "stars": 42,
+            "forks": 8,
+            "watchers": 3,
+            "issues": 0,
+            "topics": ["ai", "pdf-assistant", "typescript", "chat", "document-analysis"],
+            "created_at": "2025-02-15T14:30:00Z",
+            "updated_at": "2025-06-10T11:20:00Z"
+          }
+        },
+        {
+          "name": "portfolio",
+          "orbitRadius": 4.5,
+          "size": 0.7,
+          "orbitSpeed": 0.002,
+          "rotationSpeed": 0.003,
+          "startAngle": 4.8,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#8B0000",
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#B22222"
+          }
+        }
+      ]
+    }
+  ]
+}

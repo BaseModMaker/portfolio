@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import planetsData from '../data/planetsData.json';
 import { fetchSpecificRepo, fetchRepoLanguages, fetchRepoCommits } from '../services/githubService';
 import ScanCarousel from './ScanCarousel';
+import { getCurrentSystemData, getNextSystemId, getPreviousSystemId, getSystemConfig } from '../utils/solarSystemManager';
 import './SpaceshipDashboard.css';
 
-function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, onCarouselStateChange }) {
+function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, onCarouselStateChange, currentSystem, onSystemChange }) {
   const [repository, setRepository] = useState(null);
   const [languages, setLanguages] = useState({});
   const [commits, setCommits] = useState([]);
@@ -76,8 +76,9 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
     setLoading(true);
     setError(null);
     
-    // First, check if the planet has hardcoded project data
-    const planet = planetsData.planets.find(p => p.name === planetName);
+    // Get current system data to find the planet
+    const systemData = getCurrentSystemData(currentSystem);
+    const planet = systemData.planets.find(p => p.name === planetName);
     
     if (planet && planet.projectData) {
       // Use hardcoded data
@@ -180,14 +181,20 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
     setShowScanCarousel(false);
   };
 
-  // Get planets list for navigation
-  const planets = planetsData.planets;
+  // Get planets list for navigation from current system
+  const systemData = getCurrentSystemData(currentSystem);
+  const planets = systemData.planets;
   const currentPlanetIndex = planets.findIndex(p => p.name === planetName);
 
   const handlePreviousPlanet = () => {
     if (currentPlanetIndex > 0) {
       const previousPlanet = planets[currentPlanetIndex - 1];
       onPlanetNavigate(previousPlanet.name);
+    } else {
+      // Navigate to previous system's last planet
+      const previousSystemId = getPreviousSystemId(currentSystem);
+      const previousSystemData = getCurrentSystemData(previousSystemId);
+      onSystemChange(previousSystemId, previousSystemData.planets[previousSystemData.planets.length - 1].name);
     }
   };
 
@@ -195,6 +202,11 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
     if (currentPlanetIndex < planets.length - 1) {
       const nextPlanet = planets[currentPlanetIndex + 1];
       onPlanetNavigate(nextPlanet.name);
+    } else {
+      // Navigate to next system's first planet
+      const nextSystemId = getNextSystemId(currentSystem);
+      const nextSystemData = getCurrentSystemData(nextSystemId);
+      onSystemChange(nextSystemId, nextSystemData.planets[0].name);
     }
   };
 
@@ -215,6 +227,23 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
     }
     
     return [];
+  };
+
+  // Get button labels for system navigation
+  const getPrevButtonLabel = () => {
+    if (currentPlanetIndex > 0) {
+      return 'PREV';
+    }
+    const prevSystemConfig = getSystemConfig(getPreviousSystemId(currentSystem));
+    return prevSystemConfig.icon;
+  };
+
+  const getNextButtonLabel = () => {
+    if (currentPlanetIndex < planets.length - 1) {
+      return 'NEXT';
+    }
+    const nextSystemConfig = getSystemConfig(getNextSystemId(currentSystem));
+    return nextSystemConfig.icon;
   };
 
   if (!isVisible) return null;
@@ -474,12 +503,12 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
         {/* Navigation Controls */}
         <div className="navigation-controls">
           <button 
-            className={`nav-btn prev-btn ${currentPlanetIndex <= 0 ? 'disabled' : ''}`}
+            className="nav-btn prev-btn"
             onClick={handlePreviousPlanet}
-            disabled={currentPlanetIndex <= 0}
+            title={currentPlanetIndex <= 0 ? `Switch to ${getSystemConfig(getPreviousSystemId(currentSystem)).name}` : 'Previous planet'}
           >
             <span>‹</span>
-            <span className="nav-label">PREV</span>
+            <span className="nav-label">{getPrevButtonLabel()}</span>
           </button>
 
           {/* Close Button */}
@@ -489,12 +518,12 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
           </button>
 
           <button 
-            className={`nav-btn next-btn ${currentPlanetIndex >= planets.length - 1 ? 'disabled' : ''}`}
+            className="nav-btn next-btn"
             onClick={handleNextPlanet}
-            disabled={currentPlanetIndex >= planets.length - 1}
+            title={currentPlanetIndex >= planets.length - 1 ? `Switch to ${getSystemConfig(getNextSystemId(currentSystem)).name}` : 'Next planet'}
           >
             <span>›</span>
-            <span className="nav-label">NEXT</span>
+            <span className="nav-label">{getNextButtonLabel()}</span>
           </button>
         </div>
       </div>

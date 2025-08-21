@@ -3,11 +3,15 @@ import Planet from './Planet';
 import OrbitRing from './OrbitRing';
 import Sun from './Sun';
 
-function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs }) {
+function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig }) {
   return (
     <>
       {/* Sun */}
-      <Sun />
+      <Sun 
+        currentSystemName={currentSystemName}
+        onSystemMenuOpen={onSystemMenuOpen}
+        sunConfig={sunConfig}
+      />
       
       {/* Orbit rings */}
       {planets.map((planet, index) => (

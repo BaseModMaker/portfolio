@@ -1,25 +1,38 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import planetsData from '../data/planetsData.json';
 import SpaceshipDashboard from './SpaceshipDashboard';
 import CameraController from './CameraController';
 import Planets from './Planets';
+import SolarSystemDropdown from './SolarSystemDropdown';
+import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/solarSystemManager';
 
 function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
   const [showScanCarousel, setShowScanCarousel] = useState(false);
+  const [currentSystem, setCurrentSystem] = useState(SOLAR_SYSTEMS.PERSONAL);
+  const [showSystemDropdown, setShowSystemDropdown] = useState(false);
   const planetRefs = useRef({});
   const lastPlanetChangeTime = useRef(0);
   const isChangingPlanet = useRef(false);
 
   const orbitConstant = 0.1;
-  const planets = planetsData.planets.map(planet => ({
+  
+  // Get current system data
+  const systemData = getCurrentSystemData(currentSystem);
+  const systemConfig = getSystemConfig(currentSystem);
+  
+  const planets = systemData.planets.map(planet => ({
     ...planet,
     orbitSpeed: planet.orbitSpeed * orbitConstant,
     rotationSpeed: planet.rotationSpeed * orbitConstant
   }));
+
+  // Get camera settings from sun config
+  const sunConfig = systemData.sunConfig;
+  const cameraPosition = [0, sunConfig?.cameraHeight || 25, sunConfig?.cameraDistance || 30];
+  const cameraFov = sunConfig?.fov || 40;
 
   useEffect(() => {
     if (isVisible) {
@@ -92,6 +105,50 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
     }
   };
 
+  const handleSystemChange = (newSystemId, targetPlanetName = null) => {
+    const now = Date.now();
+    
+    if (isChangingPlanet.current || (now - lastPlanetChangeTime.current) < 500) {
+      return;
+    }
+    
+    isChangingPlanet.current = true;
+    lastPlanetChangeTime.current = now;
+    
+    // Clear current planet refs when switching systems
+    planetRefs.current = {};
+    
+    setCurrentSystem(newSystemId);
+    
+    if (targetPlanetName) {
+      setFollowingPlanet(targetPlanetName);
+      setShowDashboard(true);
+      
+      if (onDashboardStateChange) {
+        onDashboardStateChange(true);
+      }
+    } else {
+      setFollowingPlanet(null);
+      setShowDashboard(false);
+      
+      if (onDashboardStateChange) {
+        onDashboardStateChange(false);
+      }
+    }
+
+    setTimeout(() => {
+      isChangingPlanet.current = false;
+    }, 2100);
+  };
+
+  const handleSunClick = () => {
+    setShowSystemDropdown(true);
+  };
+
+  const handleCloseSystemDropdown = () => {
+    setShowSystemDropdown(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -107,7 +164,7 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
       overflow: 'hidden'
     }}>
       <Canvas 
-        camera={{ position: [0, 25, 30], fov: 40 }}
+        camera={{ position: cameraPosition, fov: cameraFov }}
       >
         <ambientLight intensity={0.2} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
@@ -117,6 +174,9 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
           onPlanetSelect={handlePlanetSelect}
           planets={planets}
           planetRefs={planetRefs}
+          currentSystemName={systemConfig.name}
+          onSystemMenuOpen={handleSunClick}
+          sunConfig={sunConfig}
         />
         
         <CameraController 
@@ -132,6 +192,15 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
         onClose={handleCloseDashboard}
         onPlanetNavigate={handlePlanetNavigate}
         onCarouselStateChange={onCarouselStateChange}
+        currentSystem={currentSystem}
+        onSystemChange={handleSystemChange}
+      />
+      
+      <SolarSystemDropdown
+        currentSystem={currentSystem}
+        onSystemChange={handleSystemChange}
+        isVisible={showSystemDropdown}
+        onClose={handleCloseSystemDropdown}
       />
     </div>
   );
