@@ -140,7 +140,7 @@ canvas {
 }
 
 /* Specifically target sun labels to remove animations */
-.rpg-textbox * {
+.sun-label * {
   animation: none !important;
   transition: none !important;
 }
