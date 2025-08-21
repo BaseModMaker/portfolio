@@ -31,8 +31,15 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
 
   // Get camera settings from sun config
   const sunConfig = systemData.sunConfig;
-  const cameraPosition = [0, sunConfig?.cameraHeight || 25, sunConfig?.cameraDistance || 30];
-  const cameraFov = sunConfig?.fov || 40;
+  const systemPosition = sunConfig?.sunPosition ?? [0, 0, 0]; // treat sunPosition as systemPosition
+
+  // Camera position and FOV should be relative to the local system, not offset by systemPosition
+  const cameraPosition = [
+    0,
+    sunConfig?.cameraHeight ?? 25,
+    sunConfig?.cameraDistance ?? 30
+  ];
+  const cameraFov = sunConfig?.fov ?? 40;
 
   useEffect(() => {
     if (isVisible) {
@@ -163,28 +170,32 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
       background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
       overflow: 'hidden'
     }}>
-      <Canvas 
+      <Canvas
+        key={cameraFov} // force remount on FOV change
         camera={{ position: cameraPosition, fov: cameraFov }}
       >
         <ambientLight intensity={0.2} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
-        
-        <Planets 
-          followingPlanet={followingPlanet}
-          onPlanetSelect={handlePlanetSelect}
-          planets={planets}
-          planetRefs={planetRefs}
-          currentSystemName={systemConfig.name}
-          onSystemMenuOpen={handleSunClick}
-          sunConfig={sunConfig}
-          systemDropdownOpen={showSystemDropdown}
-        />
-        
-        <CameraController 
-          followingPlanet={followingPlanet}
-          planets={planets}
-          planetRefs={planetRefs}
-        />
+        {/* Offset the whole solar system group */}
+        <group position={systemPosition}>
+          <Planets
+            followingPlanet={followingPlanet}
+            onPlanetSelect={handlePlanetSelect}
+            planets={planets}
+            planetRefs={planetRefs}
+            currentSystemName={systemConfig.name}
+            onSystemMenuOpen={handleSunClick}
+            sunConfig={sunConfig}
+            systemDropdownOpen={showSystemDropdown}
+            systemPosition={systemPosition}
+          />
+          <CameraController
+            followingPlanet={followingPlanet}
+            planets={planets}
+            planetRefs={planetRefs}
+            sunPosition={[0, 0, 0]} // always local origin for each system
+          />
+        </group>
       </Canvas>
       
       <SpaceshipDashboard 

@@ -3,7 +3,7 @@ import Planet from './Planet';
 import OrbitRing from './OrbitRing';
 import Sun from './Sun';
 
-function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig, systemDropdownOpen = false }) {
+function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig, systemDropdownOpen = false, systemPosition = [0,0,0] }) {
   // Track hovered state for sun and planets
   const [sunHovered, setSunHovered] = useState(false);
   const [hoveredPlanet, setHoveredPlanet] = useState(null);
@@ -32,6 +32,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
         sunConfig={sunConfig}
         showLabels={sunHovered && !hoveredPlanet && !systemDropdownOpen}
         onHover={setSunHovered}
+        systemPosition={systemPosition}
       />
       
       {/* Orbit rings */}

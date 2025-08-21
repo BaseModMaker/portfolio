@@ -13,14 +13,13 @@
         "lightIntensity": 2,
         "size": 1,
         "rotationSpeed": 0.0005,
-        "cameraDistance": 30,
-        "cameraHeight": 25,
-        "fov": 40
+        "fov": 20,
+        "sunPosition": [0, -3, 0]
       },
       "planets": [
         {
           "name": "Multi-Smelter",
-          "orbitRadius": 2,
+          "orbitRadius": 3,
           "size": 0.1,
           "orbitSpeed": 0.04,
           "rotationSpeed": 0.02,
@@ -33,38 +32,55 @@
           }
         },
         {
-          "name": "Aquarium-Simulator",
-          "orbitRadius": 3,
-          "size": 0.15,
-          "orbitSpeed": 0.03,
-          "rotationSpeed": 0.015,
-          "startAngle": 1.2,
-          "props": {
-            "hasAtmosphere": true,
-            "atmosphereColor": "#FFA500",
-            "surfaceRoughness": 0.3,
-            "metalness": 0.1,
-            "surfaceColor": "#FFC649"
-          }
-        },
-        {
-          "name": "zangra-galaxy",
+          "name": "CommitGenerator",
           "orbitRadius": 4,
-          "size": 0.16,
-          "orbitSpeed": 0.02,
-          "rotationSpeed": 0.01,
-          "startAngle": 2.8,
+          "size": 0.25,
+          "orbitSpeed": 0.006,
+          "rotationSpeed": 0.007,
+          "startAngle": 3.5,
           "props": {
             "hasAtmosphere": true,
             "atmosphereColor": "#87CEEB",
-            "surfaceRoughness": 0.7,
-            "metalness": 0.2,
-            "surfaceColor": "#6B93D6"
+            "hasRings": true,
+            "ringColor": "#888",
+            "surfaceRoughness": 0.3,
+            "metalness": 0.0,
+            "surfaceColor": "#4FD0E7"
+          }
+        },
+        {
+          "name": "image-to-mosaic-template",
+          "orbitRadius": 5.5,
+          "size": 0.24,
+          "orbitSpeed": 0.005,
+          "rotationSpeed": 0.006,
+          "startAngle": 1.8,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#87CEEB",
+            "surfaceRoughness": 0.3,
+            "metalness": 0.0,
+            "surfaceColor": "#4B70DD"
+          }
+        },
+        {
+          "name": "ant-online-simulator",
+          "orbitRadius": 6.5,
+          "size": 0.5,
+          "orbitSpeed": 0.004,
+          "rotationSpeed": 0.005,
+          "startAngle": 2.5,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#FF69B4",
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#FFB6C1"
           }
         },
         {
           "name": "sprite-stacking",
-          "orbitRadius": 5.5,
+          "orbitRadius": 9,
           "size": 0.6,
           "orbitSpeed": 0.003,
           "rotationSpeed": 0.004,
@@ -77,6 +93,21 @@
             "surfaceColor": "#98FB98",
             "hasRings": true,
             "ringColor": "#228B22"
+          }
+        },
+        {
+          "name": "portfolio",
+          "orbitRadius": 11,
+          "size": 0.7,
+          "orbitSpeed": 0.002,
+          "rotationSpeed": 0.003,
+          "startAngle": 4.8,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#8B0000",
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#B22222"
           }
         }
       ]
@@ -94,14 +125,28 @@
         "lightIntensity": 2.2,
         "size": 1.1,
         "rotationSpeed": 0.0008,
-        "cameraDistance": 35,
-        "cameraHeight": 28,
-        "fov": 38
+        "fov": 20,
+        "sunPosition": [0, -3, 0]
       },
       "planets": [
         {
+          "name": "Aquarium-Simulator",
+          "orbitRadius": 3,
+          "size": 0.15,
+          "orbitSpeed": 0.03,
+          "rotationSpeed": 0.015,
+          "startAngle": 1.2,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#FFA500",
+            "surfaceRoughness": 0.3,
+            "metalness": 0.1,
+            "surfaceColor": "#FFC649"
+          }
+        },
+        {
           "name": "Factory-Simulator",
-          "orbitRadius": 2.5,
+          "orbitRadius": 7.5,
           "size": 0.12,
           "orbitSpeed": 0.015,
           "rotationSpeed": 0.008,
@@ -158,58 +203,11 @@
         "lightIntensity": 2.5,
         "size": 1.2,
         "rotationSpeed": 0.0006,
-        "cameraDistance": 40,
-        "cameraHeight": 30,
-        "fov": 35
+        "fov": 20,
+        "sunPosition": [0, -3, 0]
       },
       "planets": [
-        {
-          "name": "CommitGenerator",
-          "orbitRadius": 3,
-          "size": 0.25,
-          "orbitSpeed": 0.006,
-          "rotationSpeed": 0.007,
-          "startAngle": 3.5,
-          "props": {
-            "hasAtmosphere": true,
-            "atmosphereColor": "#87CEEB",
-            "hasRings": true,
-            "ringColor": "#888",
-            "surfaceRoughness": 0.3,
-            "metalness": 0.0,
-            "surfaceColor": "#4FD0E7"
-          }
-        },
-        {
-          "name": "image-to-mosaic-template",
-          "orbitRadius": 5,
-          "size": 0.24,
-          "orbitSpeed": 0.005,
-          "rotationSpeed": 0.006,
-          "startAngle": 1.8,
-          "props": {
-            "hasAtmosphere": true,
-            "atmosphereColor": "#87CEEB",
-            "surfaceRoughness": 0.3,
-            "metalness": 0.0,
-            "surfaceColor": "#4B70DD"
-          }
-        },
-        {
-          "name": "ant-online-simulator",
-          "orbitRadius": 7,
-          "size": 0.5,
-          "orbitSpeed": 0.004,
-          "rotationSpeed": 0.005,
-          "startAngle": 2.5,
-          "props": {
-            "hasAtmosphere": true,
-            "atmosphereColor": "#FF69B4",
-            "surfaceRoughness": 0.5,
-            "metalness": 0.1,
-            "surfaceColor": "#FFB6C1"
-          }
-        }
+        
       ]
     },
     {
@@ -225,14 +223,56 @@
         "lightIntensity": 1.8,
         "size": 0.9,
         "rotationSpeed": 0.0003,
-        "cameraDistance": 25,
-        "cameraHeight": 20,
-        "fov": 45
+        "fov": 20,
+        "sunPosition": [0, -3, 0]
       },
       "planets": [
         {
-          "name": "Cody",
+          "name": "zangra-galaxy",
           "orbitRadius": 2.5,
+          "size": 0.16,
+          "orbitSpeed": 0.02,
+          "rotationSpeed": 0.01,
+          "startAngle": 2.8,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#87CEEB",
+            "surfaceRoughness": 0.7,
+            "metalness": 0.2,
+            "surfaceColor": "#6B93D6"
+          }
+        },
+        {
+          "name": "zangra-houses",
+          "orbitRadius": 3.5,
+          "size": 0.2,
+          "orbitSpeed": 0.018,
+          "rotationSpeed": 0.009,
+          "startAngle": 5.0,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.1,
+            "metalness": 0,
+            "surfaceColor": "#FFFFFF",
+            "ringColor": "#FFFFFF"
+          },
+          "projectData": {
+            "name": "zangra-houses",
+            "description": "A website showcasing Zangra rentals.",
+            "language": "Odoo 100%",
+            "size": 20480000,
+            "stars": 12,
+            "forks": 2,
+            "watchers": 5,
+            "issues": 0,
+            "topics": ["web", "design", "houses", "odoo"],
+            "created_at": "2024-02-15T14:30:00Z",
+            "updated_at": "2024-06-10T11:20:00Z"
+          }
+        },
+        {
+          "name": "Cody",
+          "orbitRadius": 5,
           "size": 0.1,
           "orbitSpeed": 0.02,
           "rotationSpeed": 0.03,
@@ -256,21 +296,6 @@
             "topics": ["ai", "pdf-assistant", "typescript", "chat", "document-analysis"],
             "created_at": "2025-02-15T14:30:00Z",
             "updated_at": "2025-06-10T11:20:00Z"
-          }
-        },
-        {
-          "name": "portfolio",
-          "orbitRadius": 4.5,
-          "size": 0.7,
-          "orbitSpeed": 0.002,
-          "rotationSpeed": 0.003,
-          "startAngle": 4.8,
-          "props": {
-            "hasAtmosphere": true,
-            "atmosphereColor": "#8B0000",
-            "surfaceRoughness": 0.5,
-            "metalness": 0.1,
-            "surfaceColor": "#B22222"
           }
         }
       ]

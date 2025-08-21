@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
 
-function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true, onHover }) {
+function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true, onHover, systemPosition }) {
   const meshRef = useRef();
   const actualSunRef = useRef();
   const labelRef = useRef();
@@ -48,6 +48,8 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
     subtitle: 'Click to change system'
   };
 
+  // Sun position from config, default to [0,0,0]
+  // Remove local sunPosition/group position if parent already offsets
   return (
     <group ref={meshRef}>
       {/* Sun mesh with click handler */}
