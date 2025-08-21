@@ -32,8 +32,8 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
         currentSystemName={currentSystemName}
         onSystemMenuOpen={onSystemMenuOpen}
         sunConfig={sunConfig}
-        showLabels={showLabels && !hoveredPlanet && !systemDropdownOpen}
-        onHover={handleSunHover}
+        showLabels={!followingPlanet && !hoveredPlanet && !systemDropdownOpen}
+        onHover={setSunHovered}
       />
       
       {/* Orbit rings */}
@@ -48,7 +48,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
         />
       ))}
       
-      {/* Planets - only show label if sun is not hovered */}
+      {/* Planets - only hide label if following a planet */}
       {planets.map((planet, index) => (
         <Planet
           key={index}
@@ -67,7 +67,7 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
               planetRefs.current[planet.name] = el;
             }
           }}
-          showLabel={showLabels && !sunHovered}
+          showLabel={!followingPlanet}
           onLabelHover={handlePlanetLabelHover}
         />
       ))}

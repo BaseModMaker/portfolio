@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
 
@@ -13,7 +13,7 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
     setHovered(false);
   }, [currentSystemName]);
   
-  const RealisticSun = createRealisticPlanet({
+  const RealisticSun = useMemo(() => createRealisticPlanet({
     size: sunConfig?.size || 1,
     rotationSpeed: sunConfig?.rotationSpeed || 0.0005,
     surfaceRoughness: 0.1,
@@ -21,7 +21,7 @@ function Sun({ currentSystemName, onSystemMenuOpen, sunConfig, showLabels = true
     emissive: sunConfig?.emissiveColor || '#FF6600',
     emissiveIntensity: sunConfig?.emissiveIntensity || 0.8,
     surfaceColor: sunConfig?.color || '#FFA500'
-  });
+  }), [sunConfig]);
 
   const handleClick = (e) => {
     e.stopPropagation();

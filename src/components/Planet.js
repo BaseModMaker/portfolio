@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
@@ -11,12 +11,12 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
   const labelRef = useRef();
   const [labelHovered, setLabelHovered] = useState(false);
 
-  // Create the realistic planet component
-  const RealisticPlanet = createRealisticPlanet({
+  // Memoize the component class so it's not recreated on every render
+  const RealisticPlanet = useMemo(() => createRealisticPlanet({
     size,
     rotationSpeed,
     ...planetProps
-  });
+  }), [size, rotationSpeed, planetProps]);
 
   // Set initial rotation based on startAngle
   useEffect(() => {
@@ -47,6 +47,7 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
   }, [labelHovered, planetName, onLabelHover]);
 
   useFrame((state) => {
+    // Always animate
     if (orbitRef.current) {
       orbitRef.current.rotation.y += orbitSpeed;
     }
