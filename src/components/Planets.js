@@ -3,7 +3,7 @@ import Planet from './Planet';
 import OrbitRing from './OrbitRing';
 import Sun from './Sun';
 
-function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig }) {
+function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, currentSystemName, onSystemMenuOpen, sunConfig, systemDropdownOpen = false }) {
   // Determine if labels should be visible (hide when following any planet, including for sun)
   const showLabels = !followingPlanet;
 
@@ -27,12 +27,12 @@ function Planets({ followingPlanet, onPlanetSelect, planets, planetRefs, current
 
   return (
     <>
-      {/* Sun - only show label if no planet label is hovered */}
+      {/* Sun - only show label if no planet label is hovered and system dropdown is not open */}
       <Sun 
         currentSystemName={currentSystemName}
         onSystemMenuOpen={onSystemMenuOpen}
         sunConfig={sunConfig}
-        showLabels={showLabels && !hoveredPlanet}
+        showLabels={showLabels && !hoveredPlanet && !systemDropdownOpen}
         onHover={handleSunHover}
       />
       

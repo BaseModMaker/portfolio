@@ -177,6 +177,7 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
           currentSystemName={systemConfig.name}
           onSystemMenuOpen={handleSunClick}
           sunConfig={sunConfig}
+          systemDropdownOpen={showSystemDropdown}
         />
         
         <CameraController 
