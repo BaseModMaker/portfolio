@@ -113,39 +113,34 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
   };
 
   const handleSystemChange = (newSystemId, targetPlanetName = null) => {
-    const now = Date.now();
-    
-    if (isChangingPlanet.current || (now - lastPlanetChangeTime.current) < 500) {
-      return;
-    }
-    
-    isChangingPlanet.current = true;
-    lastPlanetChangeTime.current = now;
-    
+    // Reset debounce and animation flags immediately on system change
+    isChangingPlanet.current = false;
+    lastPlanetChangeTime.current = 0;
+
     // Clear current planet refs when switching systems
     planetRefs.current = {};
-    
+
     setCurrentSystem(newSystemId);
-    
+
+    // Immediately close the dropdown after system change
+    setShowSystemDropdown(false);
+
     if (targetPlanetName) {
       setFollowingPlanet(targetPlanetName);
       setShowDashboard(true);
-      
+
       if (onDashboardStateChange) {
         onDashboardStateChange(true);
       }
     } else {
       setFollowingPlanet(null);
       setShowDashboard(false);
-      
+
       if (onDashboardStateChange) {
         onDashboardStateChange(false);
       }
     }
-
-    setTimeout(() => {
-      isChangingPlanet.current = false;
-    }, 2100);
+    // No debounce or animation timeout for system change
   };
 
   const handleSunClick = () => {

@@ -17,8 +17,10 @@ function SolarSystemDropdown({ currentSystem, onSystemChange, isVisible, onClose
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-        onClose();
+        if (isOpen) {
+          setIsOpen(false);
+          onClose();
+        }
       }
     };
 
@@ -34,7 +36,7 @@ function SolarSystemDropdown({ currentSystem, onSystemChange, isVisible, onClose
   const handleSystemSelect = (systemId) => {
     onSystemChange(systemId);
     setIsOpen(false);
-    onClose();
+    // Removed: onClose(); -- let parent handle closing after system change
   };
 
   if (!isVisible || !isOpen) return null;
