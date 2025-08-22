@@ -196,3 +196,45 @@ canvas {
   opacity: 0.8;
   white-space: nowrap;
 }
+
+.solar-system-transition-container {
+  /* No extra styles needed, just for structure */
+}
+
+.solar-system-slide {
+  will-change: transform;
+}
+
+.solar-system-slide.sliding-in.slide-right {
+  /* Start off-screen right, then animate in */
+  animation: solar-system-slide-in-right 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+.solar-system-slide.sliding-in.slide-left {
+  /* Start off-screen left, then animate in */
+  animation: solar-system-slide-in-left 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+.solar-system-slide.sliding-out.slide-right {
+  /* Animate out to left */
+  animation: solar-system-slide-out-right 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+.solar-system-slide.sliding-out.slide-left {
+  /* Animate out to right */
+  animation: solar-system-slide-out-left 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+
+@keyframes solar-system-slide-in-right {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(0); }
+}
+@keyframes solar-system-slide-in-left {
+  from { transform: translateX(-100vw); }
+  to { transform: translateX(0); }
+}
+@keyframes solar-system-slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100vw); }
+}
+@keyframes solar-system-slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(100vw); }
+}
