@@ -7,7 +7,6 @@ import SolarSystemDropdown from './SolarSystemDropdown';
 import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/solarSystemManager';
 
 // TODO Add master projects
-// TODO Make solar system change transition
 // TODO Import project data from GitHub
 // TODO Add cookies or localStorage so that data is keeped for 12h and dont call GitHub api all the time
 
@@ -225,7 +224,7 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
           if (onDashboardStateChange) onDashboardStateChange(false);
         }
         setPhase('slideIn');
-      }, 700); // match CSS animation duration
+      }, 350); // Wait between out and in
       return () => clearTimeout(timeout);
     }
     if (phase === 'slideIn') {

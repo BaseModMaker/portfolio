@@ -27,10 +27,6 @@
   opacity: 0;
 }
 
-.greeting-container.waiting {
-  /* Remove fallback background so starry canvas is visible */
-}
-
 .greeting-content {
   display: flex;
   flex-direction: column;

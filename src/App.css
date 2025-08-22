@@ -197,10 +197,6 @@ canvas {
   white-space: nowrap;
 }
 
-.solar-system-transition-container {
-  /* No extra styles needed, just for structure */
-}
-
 .solar-system-slide {
   will-change: transform;
 }
