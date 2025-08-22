@@ -12,6 +12,77 @@ import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/s
 // TODO Import project data from GitHub
 // TODO Add cookies or localStorage so that data is keeped for 12h and dont call GitHub api all the time
 
+// Starry background component
+function StarryBackground({ starCount = 400 }) {
+  const canvasRef = useRef();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+
+    // Fill background with a very dark blue color
+    ctx.fillStyle = "#0a0e16ff";
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw stars
+    for (let i = 0; i < starCount; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const r = Math.random() * 1.2 + 0.2;
+      const alpha = Math.random() * 0.7 + 0.3;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+      ctx.fillStyle = `rgba(255,255,${Math.floor(180 + Math.random() * 75)},${alpha})`;
+      ctx.shadowColor = "#fff";
+      ctx.shadowBlur = Math.random() * 2;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }, []);
+
+  // Redraw on resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (canvasRef.current) {
+        // Clear and redraw
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
+      // Trigger re-draw by updating key
+      // (force re-render by changing key)
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 0,
+        pointerEvents: 'none',
+        background: '#101624'
+      }}
+      aria-hidden="true"
+    />
+  );
+}
+
 function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
@@ -168,12 +239,14 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
       left: 0,
       opacity: systemOpacity,
       transition: 'opacity 1.5s ease-in',
-      background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      zIndex: 1
     }}>
+      {/* Remove StarryBackground from here */}
       <Canvas
         key={cameraFov} // force remount on FOV change
         camera={{ position: cameraPosition, fov: cameraFov }}
+        style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 1 }}
       >
         <ambientLight intensity={0.2} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
@@ -219,4 +292,6 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
   );
 }
 
+// Export StarryBackground for use in App.js
+export { StarryBackground };
 export default SolarSystem;

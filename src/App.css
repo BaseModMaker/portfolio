@@ -75,6 +75,8 @@ footer::-webkit-scrollbar {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   outline: none;
+  /* Remove background so starry canvas is visible */
+  background: transparent !important;
 }
 
 .App-logo {
@@ -89,7 +91,8 @@ footer::-webkit-scrollbar {
 }
 
 .App-header {
-  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+  /* Remove background so starry canvas is visible */
+  /* background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); */
   min-height: 100vh;
   height: 100vh;
   width: 100vw;
@@ -107,6 +110,7 @@ footer::-webkit-scrollbar {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   outline: none;
+  background: transparent !important;
 }
 
 /* Ensure canvas containers don't have overflow issues */
