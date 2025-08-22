@@ -6,11 +6,11 @@ import Planets from './Planets';
 import SolarSystemDropdown from './SolarSystemDropdown';
 import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/solarSystemManager';
 
-// Add master projets
-// Starry background?
-// Make solar system change transition
-// Import project data from GitHub
-// Add cookies or localStorage so that data is keeped for 12h and dont call GitHub api all the time
+// TODO Add master projects
+// TODO Starry background?
+// TODO Make solar system change transition
+// TODO Import project data from GitHub
+// TODO Add cookies or localStorage so that data is keeped for 12h and dont call GitHub api all the time
 
 function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
