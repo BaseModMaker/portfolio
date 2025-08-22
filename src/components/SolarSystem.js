@@ -1,25 +1,51 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import planetsData from '../data/planetsData.json';
 import SpaceshipDashboard from './SpaceshipDashboard';
 import CameraController from './CameraController';
 import Planets from './Planets';
+import SolarSystemDropdown from './SolarSystemDropdown';
+import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/solarSystemManager';
+
+// Add master projets
+// Starry background?
+// Make solar system change transition
+// Import project data from GitHub
+// Add cookies or localStorage so that data is keeped for 12h and dont call GitHub api all the time
 
 function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselStateChange }) {
   const [systemOpacity, setSystemOpacity] = useState(0);
   const [followingPlanet, setFollowingPlanet] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
   const [showScanCarousel, setShowScanCarousel] = useState(false);
+  const [currentSystem, setCurrentSystem] = useState(SOLAR_SYSTEMS.PERSONAL);
+  const [showSystemDropdown, setShowSystemDropdown] = useState(false);
   const planetRefs = useRef({});
   const lastPlanetChangeTime = useRef(0);
   const isChangingPlanet = useRef(false);
 
   const orbitConstant = 0.1;
-  const planets = planetsData.planets.map(planet => ({
+  
+  // Get current system data
+  const systemData = getCurrentSystemData(currentSystem);
+  const systemConfig = getSystemConfig(currentSystem);
+  
+  const planets = systemData.planets.map(planet => ({
     ...planet,
     orbitSpeed: planet.orbitSpeed * orbitConstant,
     rotationSpeed: planet.rotationSpeed * orbitConstant
   }));
+
+  // Get camera settings from sun config
+  const sunConfig = systemData.sunConfig;
+  const systemPosition = sunConfig?.sunPosition ?? [0, 0, 0]; // treat sunPosition as systemPosition
+
+  // Camera position and FOV should be relative to the local system, not offset by systemPosition
+  const cameraPosition = [
+    0,
+    sunConfig?.cameraHeight ?? 25,
+    sunConfig?.cameraDistance ?? 30
+  ];
+  const cameraFov = sunConfig?.fov ?? 40;
 
   useEffect(() => {
     if (isVisible) {
@@ -92,6 +118,45 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
     }
   };
 
+  const handleSystemChange = (newSystemId, targetPlanetName = null) => {
+    // Reset debounce and animation flags immediately on system change
+    isChangingPlanet.current = false;
+    lastPlanetChangeTime.current = 0;
+
+    // Clear current planet refs when switching systems
+    planetRefs.current = {};
+
+    setCurrentSystem(newSystemId);
+
+    // Immediately close the dropdown after system change
+    setShowSystemDropdown(false);
+
+    if (targetPlanetName) {
+      setFollowingPlanet(targetPlanetName);
+      setShowDashboard(true);
+
+      if (onDashboardStateChange) {
+        onDashboardStateChange(true);
+      }
+    } else {
+      setFollowingPlanet(null);
+      setShowDashboard(false);
+
+      if (onDashboardStateChange) {
+        onDashboardStateChange(false);
+      }
+    }
+    // No debounce or animation timeout for system change
+  };
+
+  const handleSunClick = () => {
+    setShowSystemDropdown(true);
+  };
+
+  const handleCloseSystemDropdown = () => {
+    setShowSystemDropdown(false);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -106,24 +171,32 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
       background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
       overflow: 'hidden'
     }}>
-      <Canvas 
-        camera={{ position: [0, 25, 30], fov: 40 }}
+      <Canvas
+        key={cameraFov} // force remount on FOV change
+        camera={{ position: cameraPosition, fov: cameraFov }}
       >
         <ambientLight intensity={0.2} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
-        
-        <Planets 
-          followingPlanet={followingPlanet}
-          onPlanetSelect={handlePlanetSelect}
-          planets={planets}
-          planetRefs={planetRefs}
-        />
-        
-        <CameraController 
-          followingPlanet={followingPlanet}
-          planets={planets}
-          planetRefs={planetRefs}
-        />
+        {/* Offset the whole solar system group */}
+        <group position={systemPosition}>
+          <Planets
+            followingPlanet={followingPlanet}
+            onPlanetSelect={handlePlanetSelect}
+            planets={planets}
+            planetRefs={planetRefs}
+            currentSystemName={systemConfig.name}
+            onSystemMenuOpen={handleSunClick}
+            sunConfig={sunConfig}
+            systemDropdownOpen={showSystemDropdown}
+            systemPosition={systemPosition}
+          />
+          <CameraController
+            followingPlanet={followingPlanet}
+            planets={planets}
+            planetRefs={planetRefs}
+            sunPosition={[0, 0, 0]} // always local origin for each system
+          />
+        </group>
       </Canvas>
       
       <SpaceshipDashboard 
@@ -132,6 +205,15 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
         onClose={handleCloseDashboard}
         onPlanetNavigate={handlePlanetNavigate}
         onCarouselStateChange={onCarouselStateChange}
+        currentSystem={currentSystem}
+        onSystemChange={handleSystemChange}
+      />
+      
+      <SolarSystemDropdown
+        currentSystem={currentSystem}
+        onSystemChange={handleSystemChange}
+        isVisible={showSystemDropdown}
+        onClose={handleCloseSystemDropdown}
       />
     </div>
   );

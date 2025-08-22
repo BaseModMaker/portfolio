@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
-function CameraController({ followingPlanet, planets, planetRefs }) {
+function CameraController({ followingPlanet, planets, planetRefs, sunPosition = [0, 0, 0] }) {
   const { camera } = useThree();
   const controlsRef = useRef();
   const [isAnimating, setIsAnimating] = useState(false);
@@ -13,10 +13,10 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
   const currentAnimationId = useRef(null);
   const pendingPlanet = useRef(null);
 
-  // Default camera position for comparison
-  const defaultPosition = new THREE.Vector3(0, 25, 30);
-  const defaultTarget = new THREE.Vector3(0, -4, 0);
-  const sunTarget = new THREE.Vector3(0, -4, 0); // Sun position
+  // Default camera position for comparison (local to system group)
+  const defaultPosition = new THREE.Vector3(sunPosition[0], 25 + sunPosition[1], 30 + sunPosition[2]);
+  const defaultTarget = new THREE.Vector3(sunPosition[0], sunPosition[1] - 4, sunPosition[2]);
+  const sunTarget = new THREE.Vector3(sunPosition[0], sunPosition[1] - 4, sunPosition[2]); // Sun position
   const positionTolerance = 0.5; // Tolerance for position comparison
 
   useFrame(() => {
@@ -55,9 +55,9 @@ function CameraController({ followingPlanet, planets, planetRefs }) {
     currentAnimationId.current = animationId;
     
     const startPos = camera.position.clone();
-    const endPos = new THREE.Vector3(0, 25, 45); // (x, y, z) where Y is view angle and Z is distance
+    const endPos = new THREE.Vector3(sunPosition[0], 25 + sunPosition[1], 45 + sunPosition[2]);
     const startTarget = controlsRef.current ? controlsRef.current.target.clone() : new THREE.Vector3();
-    const endTarget = new THREE.Vector3(0, -4, 0);
+    const endTarget = new THREE.Vector3(sunPosition[0], sunPosition[1] - 4, sunPosition[2]);
     
     let progress = 0;
     const duration = 2000; // 2 seconds

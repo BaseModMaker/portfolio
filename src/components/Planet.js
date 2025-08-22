@@ -1,21 +1,22 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { createRealisticPlanet } from './PlanetGenerator';
 import PlanetLabel from './PlanetLabel';
 import { getRingAppearance } from '../utils/planetAppearance';
 
-function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered, followingPlanet }) {
+function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startAngle, planetProps, planetRef, planetName, isSelected, hovered, followingPlanet, showLabel = true, onLabelHover }) {
   const orbitRef = useRef();
   const labelOrbitRef = useRef();
   const actualPlanetRef = useRef();
   const labelRef = useRef();
-  
-  // Create the realistic planet component
-  const RealisticPlanet = createRealisticPlanet({
+  const [labelHovered, setLabelHovered] = useState(false);
+
+  // Memoize the component class so it's not recreated on every render
+  const RealisticPlanet = useMemo(() => createRealisticPlanet({
     size,
     rotationSpeed,
     ...planetProps
-  });
+  }), [size, rotationSpeed, planetProps]);
 
   // Set initial rotation based on startAngle
   useEffect(() => {
@@ -34,7 +35,19 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
     }
   }, [planetRef]);
 
+  // Notify parent when label hover changes
+  useEffect(() => {
+    if (onLabelHover) {
+      if (labelHovered) {
+        onLabelHover(planetName);
+      } else {
+        onLabelHover(null);
+      }
+    }
+  }, [labelHovered, planetName, onLabelHover]);
+
   useFrame((state) => {
+    // Always animate
     if (orbitRef.current) {
       orbitRef.current.rotation.y += orbitSpeed;
     }
@@ -53,9 +66,6 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
     document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
   }, [isSelected, hovered, planetName, followingPlanet]);
 
-  // Determine if labels should be visible (hide when following any planet)
-  const showLabels = !followingPlanet;
-
   return (
     <group>
       {/* Planet orbit */}
@@ -68,12 +78,13 @@ function Planet({ position, size, orbitRadius, orbitSpeed, rotationSpeed, startA
       {/* Label orbit - always render but conditionally show content to maintain sync */}
       <group ref={labelOrbitRef} position={[labelOrbitOffset, 0, 0]}>
         <group position={[orbitRadius, 0, 0]}>
-          {showLabels && (
+          {showLabel && (
             <PlanetLabel 
               ref={labelRef}
               planetRef={actualPlanetRef} 
               planetName={planetName}
               planetSize={size}
+              onHover={setLabelHovered}
             />
           )}
         </group>
