@@ -207,7 +207,118 @@
         "sunPosition": [0, -3, 0]
       },
       "planets": [
-        
+        {
+          "name": "Belgium Public Transport Finder",
+          "orbitRadius": 3,
+          "size": 0.5,
+          "orbitSpeed": 0.01,
+          "rotationSpeed": 0.012,
+          "startAngle": 5.7,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.4,
+            "metalness": 0.0,
+            "surfaceColor": "#D8CA9D"
+          },
+          "projectData": {
+            "name": "Belgium Public Transport Finder",
+            "description": "A project to find the shortest path in the Belgian public transport system.",
+            "language": "Python 100%",
+            "size": 1024000,
+            "stars": 2,
+            "forks": 0,
+            "watchers": 0,
+            "issues": 0,
+            "topics": ["python", "transport", "shortest-path"],
+            "created_at": "2024-02-15T14:30:00Z",
+            "updated_at": "2024-06-10T11:20:00Z"
+          }
+        },
+        {
+          "name": "Compiler Construction",
+          "orbitRadius": 4,
+          "size": 0.4,
+          "orbitSpeed": 0.02,
+          "rotationSpeed": 0.01,
+          "startAngle": 1.5,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#B0C4DE"
+          },
+          "projectData": {
+            "name": "Compiler Construction",
+            "description": "A project focused on writing a compiler from scratch.",
+            "language": "Python 100%",
+            "size": 2048000,
+            "stars": 5,
+            "forks": 1,
+            "watchers": 2,
+            "issues": 0,
+            "topics": ["compiler", "language-theory", "python"],
+            "created_at": "2024-02-15T14:30:00Z",
+            "updated_at": "2024-06-10T11:20:00Z"
+          }
+        },
+        {
+          "name": "Real Time Operating System",
+          "orbitRadius": 5.5,
+          "size": 0.3,
+          "orbitSpeed": 0.015,
+          "rotationSpeed": 0.008,
+          "startAngle": 3.0,
+          "props": {
+            "hasAtmosphere": true,
+            "surfaceRoughness": 0.6,
+            "metalness": 0.2,
+            "surfaceColor": "#FFB6C1"
+          },
+          "projectData": {
+            "name": "Real Time Operating System",
+            "description": "Implementation of a Real Time Operating System to test different scheduling methods on real data.",
+            "language": "Python 100%",
+            "size": 3072000,
+            "stars": 8,
+            "forks": 2,
+            "watchers": 1,
+            "issues": 0,
+            "topics": ["rtos", "scheduling", "python"],
+            "created_at": "2024-02-15T14:30:00Z",
+            "updated_at": "2024-06-10T11:20:00Z"
+          }
+        },
+        {
+          "name": "Checkers AI",
+          "orbitRadius": 6.5,
+          "size": 0.2,
+          "orbitSpeed": 0.02,
+          "rotationSpeed": 0.01,
+          "startAngle": 2.0,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.3,
+            "metalness": 0.1,
+            "surfaceColor": "#FFD700",
+            "ringColor": "#FFD700",
+            "emissiveColor": "#FFD700",
+            "emissiveIntensity": 0.5,
+            "hasRings": true
+          },
+          "projectData": {
+            "name": "Checkers AI",
+            "description": "An AI that plays checkers using minimax algorithm.",
+            "language": "Python 100%",
+            "size": 512000,
+            "stars": 5,
+            "forks": 1,
+            "watchers": 2,
+            "issues": 0,
+            "topics": ["ai", "checkers", "minimax"],
+            "created_at": "2024-02-15T14:30:00Z",
+            "updated_at": "2024-06-10T11:20:00Z"
+          }
+        }
       ]
     },
     {

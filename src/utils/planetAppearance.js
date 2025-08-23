@@ -62,14 +62,18 @@ export function getRingAppearance(isSelected, hovered, planetName, followingPlan
     };
   }
 
+  // Sanitize planetName for CSS variable usage
+  const sanitizeName = (name) => name ? name.replace(/[^a-zA-Z0-9_-]/g, '_') : '';
+
   // Update CSS variables for this planet (skip for sun)
   if (planetName && !planetName.startsWith('sun-')) {
-    document.documentElement.style.setProperty(`--line-color-${planetName}`, appearance.lineColor);
-    document.documentElement.style.setProperty(`--label-border-color-${planetName}`, appearance.labelBorderColor);
-    document.documentElement.style.setProperty(`--label-bg-color-${planetName}`, appearance.labelBgColor);
-    document.documentElement.style.setProperty(`--label-font-color-${planetName}`, appearance.labelFontColor);
-    document.documentElement.style.setProperty(`--label-inner-border-color-${planetName}`, appearance.labelInnerBorderColor);
-    document.documentElement.style.setProperty(`--label-border-shadow-color-${planetName}`, appearance.labelBorderShadowColor);
+    const safePlanetName = sanitizeName(planetName);
+    document.documentElement.style.setProperty(`--line-color-${safePlanetName}`, appearance.lineColor);
+    document.documentElement.style.setProperty(`--label-border-color-${safePlanetName}`, appearance.labelBorderColor);
+    document.documentElement.style.setProperty(`--label-bg-color-${safePlanetName}`, appearance.labelBgColor);
+    document.documentElement.style.setProperty(`--label-font-color-${safePlanetName}`, appearance.labelFontColor);
+    document.documentElement.style.setProperty(`--label-inner-border-color-${safePlanetName}`, appearance.labelInnerBorderColor);
+    document.documentElement.style.setProperty(`--label-border-shadow-color-${safePlanetName}`, appearance.labelBorderShadowColor);
   }
 
   return appearance;

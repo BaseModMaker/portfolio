@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import SolarSystem from './components/SolarSystem';
+import SolarSystem, { StarryBackground } from './components/SolarSystem';
 import GreetingSequence from './components/GreetingSequence';
 import SpaceMusic from './components/SpaceMusic';
 import ProfileButton from './components/ProfileButton';
@@ -39,6 +39,8 @@ function App() {
 
   return (
     <div className="App">
+      {/* Starry background always visible */}
+      <StarryBackground starCount={400} />
       <header className="App-header">
         {!greetingComplete && (
           <GreetingSequence onComplete={handleGreetingComplete} />

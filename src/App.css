@@ -75,6 +75,8 @@ footer::-webkit-scrollbar {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   outline: none;
+  /* Remove background so starry canvas is visible */
+  background: transparent !important;
 }
 
 .App-logo {
@@ -89,7 +91,8 @@ footer::-webkit-scrollbar {
 }
 
 .App-header {
-  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+  /* Remove background so starry canvas is visible */
+  /* background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); */
   min-height: 100vh;
   height: 100vh;
   width: 100vw;
@@ -107,6 +110,7 @@ footer::-webkit-scrollbar {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   outline: none;
+  background: transparent !important;
 }
 
 /* Ensure canvas containers don't have overflow issues */
@@ -191,4 +195,42 @@ canvas {
   margin: 0;
   opacity: 0.8;
   white-space: nowrap;
+}
+
+.solar-system-slide {
+  will-change: transform;
+}
+
+.solar-system-slide.sliding-in.slide-right {
+  /* Start off-screen right, then animate in */
+  animation: solar-system-slide-in-right 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+.solar-system-slide.sliding-in.slide-left {
+  /* Start off-screen left, then animate in */
+  animation: solar-system-slide-in-left 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+.solar-system-slide.sliding-out.slide-right {
+  /* Animate out to left */
+  animation: solar-system-slide-out-right 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+.solar-system-slide.sliding-out.slide-left {
+  /* Animate out to right */
+  animation: solar-system-slide-out-left 0.7s cubic-bezier(0.7,0,0.3,1) forwards;
+}
+
+@keyframes solar-system-slide-in-right {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(0); }
+}
+@keyframes solar-system-slide-in-left {
+  from { transform: translateX(-100vw); }
+  to { transform: translateX(0); }
+}
+@keyframes solar-system-slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100vw); }
+}
+@keyframes solar-system-slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(100vw); }
 }
