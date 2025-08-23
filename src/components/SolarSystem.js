@@ -6,7 +6,6 @@ import Planets from './Planets';
 import SolarSystemDropdown from './SolarSystemDropdown';
 import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/solarSystemManager';
 
-// TODO Add master projects
 // TODO Import project data from GitHub
 // TODO Add cookies or localStorage so that data is keeped for 12h and dont call GitHub api all the time
 

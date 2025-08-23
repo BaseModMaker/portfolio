@@ -12,6 +12,10 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
   // Expose the label ref to parent
   React.useImperativeHandle(ref, () => labelRef.current);
 
+  // Sanitize planetName for use in CSS variable names and DOM element IDs
+  const sanitizeName = (name) => name ? name.replace(/[^a-zA-Z0-9_-]/g, '_') : '';
+  const safePlanetName = sanitizeName(planetName);
+
   useFrame(() => {
     if (!labelRef.current) return;
 
@@ -112,18 +116,17 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
     if (!connectionLine) return;
 
     // Find or create the connection line element
-    let lineElement = document.getElementById(`connection-line-${planetName}`);
-    
+    let lineElement = document.getElementById(`connection-line-${safePlanetName}`);
     if (!lineElement) {
       lineElement = document.createElement('div');
-      lineElement.id = `connection-line-${planetName}`;
+      lineElement.id = `connection-line-${safePlanetName}`;
       lineElement.className = 'planet-connection-line-global';
       document.body.appendChild(lineElement);
     }
 
     // For sun, use reduced opacity instead of 0, for planets use CSS variable
     const lineOpacity = isSun ? '0.4' : '0.8';
-    const lineColor = isSun ? '#00ff88' : `var(--line-color-${planetName}, rgba(100, 255, 218, 1))`;
+    const lineColor = isSun ? '#00ff88' : `var(--line-color-${safePlanetName}, rgba(100, 255, 218, 1))`;
 
     // Update the line element styles
     Object.assign(lineElement.style, {
@@ -143,7 +146,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
 
     // Cleanup function
     return () => {
-      const existingLine = document.getElementById(`connection-line-${planetName}`);
+      const existingLine = document.getElementById(`connection-line-${safePlanetName}`);
       if (existingLine) {
         existingLine.remove();
       }
@@ -153,7 +156,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      const existingLine = document.getElementById(`connection-line-${planetName}`);
+      const existingLine = document.getElementById(`connection-line-${safePlanetName}`);
       if (existingLine) {
         existingLine.remove();
       }
@@ -192,12 +195,12 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
     </div>
   ) : (
     <p className="greeting-text" style={{
-      color: 'var(--label-font-color-' + planetName + ', #ffffff)',
+      color: 'var(--label-font-color-' + safePlanetName + ', #ffffff)',
       fontFamily: "'Courier New', monospace",
       fontSize: '1.5rem',
       lineHeight: '1.4',
       margin: '0',
-      textShadow: `0 0 10px var(--label-border-color-${planetName}, #64ffda)80`,
+      textShadow: `0 0 10px var(--label-border-color-${safePlanetName}, #64ffda)80`,
       height: 'auto',
       textAlign: 'center',
       overflow: 'visible',
@@ -213,9 +216,9 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
   );
 
   // Determine label styles based on isSun
-  const labelOpacity = isSun ? 'rgba(0, 20, 40, 0.95)' : 'var(--label-bg-color-' + planetName + ', rgba(26, 26, 46, 0.9))';
-  const borderColor = isSun ? '#00ff88' : 'var(--label-inner-border-color-' + planetName + ', #64ffda)';
-  const shadowColor = isSun ? 'rgba(0, 255, 136, 0.3)' : 'var(--label-border-shadow-color-' + planetName + ', #64ffda)';
+  const labelOpacity = isSun ? 'rgba(0, 20, 40, 0.95)' : 'var(--label-bg-color-' + safePlanetName + ', rgba(26, 26, 46, 0.9))';
+  const borderColor = isSun ? '#00ff88' : 'var(--label-inner-border-color-' + safePlanetName + ', #64ffda)';
+  const shadowColor = isSun ? 'rgba(0, 255, 136, 0.3)' : 'var(--label-border-shadow-color-' + safePlanetName + ', #64ffda)';
 
   // Add mouse enter/leave handlers for label hover
   const handlePointerEnter = () => {
@@ -273,7 +276,7 @@ const PlanetLabel = forwardRef(({ planetRef, planetName, planetSize, isSun = fal
                 left: '8px',
                 right: '8px',
                 bottom: '8px',
-                border: `1px solid var(--label-inner-border-color-${planetName}, rgba(100, 255, 218, 0.3))`,
+                border: `1px solid var(--label-inner-border-color-${safePlanetName}, rgba(100, 255, 218, 0.3))`,
                 borderRadius: '8px',
                 pointerEvents: 'none'
               }} />
