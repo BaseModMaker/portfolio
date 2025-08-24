@@ -853,14 +853,14 @@
   }
   
   .left-panel {
-    order: 2;
+    order: 3;
     height: auto; /* Let content determine height */
     animation: slideInTop 0.5s ease-out 0.1s both;
     border-top: none;
   }
   
   .right-panel {
-    order: 3;
+    order: 2;
     height: auto; /* Let content determine height */
     animation: slideInTop 0.5s ease-out 0.2s both;
     border-top: none;
