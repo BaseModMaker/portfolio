@@ -11,10 +11,14 @@
 }
 
 .music-controls.dashboard-open {
-  right: 400px; /* Reduced from 410px to ensure it's visible */
   z-index: 1300; /* Higher z-index to be above dashboard */
   animation: slideInWithDashboard 0.5s ease-out;
   opacity: 1 !important; /* Force visibility when dashboard is open */
+}
+
+/* Only move left if .dashboard-panel.right-panel.has-overlap is present on the page */
+body.profile-overlap .music-controls.dashboard-open {
+  right: 400px;
 }
 
 .mute-toggle-btn {
@@ -67,7 +71,8 @@
     right: 15px;
   }
   
-  .music-controls.dashboard-open {
+  .music-controls.dashboard-open,
+  body.profile-overlap .music-controls.dashboard-open {
     right: 15px; /* Keep in normal position on mobile */
     bottom: 90px; /* Maintain spacing from navigation controls */
   }

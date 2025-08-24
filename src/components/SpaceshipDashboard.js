@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ScanCarousel from './ScanCarousel';
 import { getCurrentSystemData, getNextSystemId, getPreviousSystemId, getSystemConfig } from '../utils/solarSystemManager';
 import './SpaceshipDashboard.css';
@@ -8,6 +8,43 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [showScanCarousel, setShowScanCarousel] = useState(false); // <-- Add this line
+  const rightPanelRef = useRef(null);
+
+  // Detect if right panel overlaps the profile/music buttons
+  useEffect(() => {
+    if (!isVisible) {
+      document.body.classList.remove('profile-overlap');
+      return;
+    }
+    const checkOverlap = () => {
+      const panel = rightPanelRef.current;
+      if (!panel) {
+        document.body.classList.remove('profile-overlap');
+        return;
+      }
+      const panelRect = panel.getBoundingClientRect();
+      // Profile/music buttons are at bottom: 80px/right: 20px (desktop)
+      const windowHeight = window.innerHeight;
+      const windowWidth = window.innerWidth;
+      const btnBottom = 80;
+      const btnRight = 20;
+      // If panel covers the area where the button is
+      const overlap =
+        panelRect.right >= windowWidth - btnRight - 10 &&
+        panelRect.bottom >= windowHeight - btnBottom - 10;
+      if (overlap) {
+        document.body.classList.add('profile-overlap');
+      } else {
+        document.body.classList.remove('profile-overlap');
+      }
+    };
+    checkOverlap();
+    window.addEventListener('resize', checkOverlap);
+    return () => {
+      window.removeEventListener('resize', checkOverlap);
+      document.body.classList.remove('profile-overlap');
+    };
+  }, [isVisible, planetName, currentSystem]);
 
   // Get current system data to find the planet
   const systemData = getCurrentSystemData(currentSystem);
@@ -244,7 +281,7 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
         </div>
 
         {/* Repository Data Panel */}
-        <div className="dashboard-panel right-panel">
+        <div className="dashboard-panel right-panel" ref={rightPanelRef}>
           <div className="panel-header">
             <h3>REPOSITORY SCAN</h3>
             <div className="scan-line"></div>

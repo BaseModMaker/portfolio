@@ -21,10 +21,14 @@
 }
 
 .profile-btn.dashboard-open {
-  right: 400px; /* Reduced from 410px to ensure it's visible */
   z-index: 1300; /* Higher z-index to be above dashboard */
   opacity: 1 !important; /* Force visibility when dashboard is open */
   animation: slideInWithDashboard 0.5s ease-out;
+}
+
+/* Only move left if .dashboard-panel.right-panel.has-overlap is present on the page */
+body.profile-overlap .profile-btn.dashboard-open {
+  right: 400px;
 }
 
 .profile-btn:hover {
@@ -83,7 +87,8 @@
     height: 55px;
   }
   
-  .profile-btn.dashboard-open {
+  .profile-btn.dashboard-open,
+  body.profile-overlap .profile-btn.dashboard-open {
     right: 15px; /* Keep in normal position on mobile */
     bottom: 90px; /* Maintain spacing from navigation controls */
   }

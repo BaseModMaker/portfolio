@@ -13,7 +13,8 @@
   position: absolute;
   top: 4vh;
   width: 350px;
-  height: calc(100vh - 8vh);
+  /* height: calc(100vh - 8vh); */ /* Remove fixed height */
+  max-height: calc(100vh - 8vh);   /* Use max-height instead */
   background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(15, 15, 30, 0.98) 100%);
   border: 2px solid #64ffda;
   border-radius: 10px;
@@ -23,6 +24,9 @@
   box-shadow: 
     0 0 30px rgba(100, 255, 218, 0.3),
     inset 0 2px 0 rgba(255, 255, 255, 0.1);
+  /* Allow panel to shrink to fit content */
+  height: auto;
+  min-height: 0;
 }
 
 .satellite-panel {
@@ -40,7 +44,8 @@
 .left-panel {
   left: 30px;
   top: 41vh;
-  height: calc(100vh - 42vh - 3vh);
+  /* height: calc(100vh - 42vh - 3vh); */ /* Remove fixed height */
+  max-height: calc(100vh - 42vh - 3vh);   /* Use max-height instead */
   background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(15, 15, 30, 0.98) 100%);
   border: 2px solid #64ffda;
   animation: slideInLeft 0.5s ease-out 0.1s both;
@@ -48,6 +53,8 @@
 
 .right-panel {
   right: 30px;
+  /* height: calc(100vh - 8vh); */ /* Remove fixed height if present */
+  max-height: calc(100vh - 8vh);   /* Use max-height instead */
   animation: slideInRight 0.5s ease-out;
   z-index: 1201; /* Ensure panel is above buttons */
 }
