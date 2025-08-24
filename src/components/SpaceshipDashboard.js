@@ -29,6 +29,7 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
   const startScan = async () => {
     setScanning(true);
     setScanProgress(0);
+    // Shorten animation: increase increment and reduce interval
     const progressInterval = setInterval(() => {
       setScanProgress(prev => {
         if (prev >= 100) {
@@ -36,9 +37,10 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
           loadScanImage();
           return 100;
         }
-        return prev + 5;
+        // Was: return prev + 5;
+        return prev + 10; // Faster progress
       });
-    }, 50);
+    }, 30); // Faster interval
   };
 
   const loadScanImage = async () => {
