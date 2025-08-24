@@ -18,7 +18,7 @@
       },
       "planets": [
         {
-          "name": "Multi-Smelter",
+          "name": "Multi Smelter",
           "orbitRadius": 3,
           "size": 0.1,
           "orbitSpeed": 0.04,
@@ -36,11 +36,12 @@
             "size": 36,
             "topics": ["mindustry-mod"],
             "created_at": "2020-01-13T00:00:00Z",
-            "updated_at": "2020-01-15T11:20:00Z"
+            "updated_at": "2020-01-15T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Multi-Smelter"
           }
         },
         {
-          "name": "CommitGenerator",
+          "name": "Commit Generator",
           "orbitRadius": 4,
           "size": 0.25,
           "orbitSpeed": 0.006,
@@ -61,11 +62,13 @@
             "size": 2569,
             "topics": ["commit", "react", "javascript"],
             "created_at": "2024-02-07T00:00:00Z",
-            "updated_at": "2024-02-15T11:20:00Z"
+            "updated_at": "2024-02-15T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/CommitGenerator",
+            "homepage": "https://basemodmaker.github.io/CommitGenerator/"
           }
         },
         {
-          "name": "image-to-mosaic-template",
+          "name": "Image To Mosaic Template",
           "orbitRadius": 5.5,
           "size": 0.24,
           "orbitSpeed": 0.005,
@@ -79,16 +82,18 @@
             "surfaceColor": "#4B70DD"
           },
           "projectData": {
-            "description": "takes and image as input and spits out a mosaic template",
+            "description": "Takes and image as input and spits out a mosaic template.",
             "language": "JavaScript 95.4%, HTML 3.0%, CSS 1.6%",
             "size": 3930,
             "topics": ["dithering", "images", "mosaic", "mosaic-template", "pixelisation", "quantization"],
             "created_at": "2025-04-03T00:00:00Z",
-            "updated_at": "2025-04-05T11:20:00Z"
+            "updated_at": "2025-04-05T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/image-to-mosaic-template",
+            "homepage": "https://basemodmaker.github.io/image-to-mosaic-template/"
           }
         },
         {
-          "name": "ant-online-simulator",
+          "name": "Online Ant Simulator",
           "orbitRadius": 6.5,
           "size": 0.5,
           "orbitSpeed": 0.004,
@@ -107,11 +112,13 @@
             "size": 1240,
             "topics": ["ants", "simulation", "ecosystem", "javascript", "react"],
             "created_at": "2025-04-23T00:00:00Z",
-            "updated_at": "2025-04-25T11:20:00Z"
+            "updated_at": "2025-04-25T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/ant-online-simulator",
+            "homepage": "https://basemodmaker.github.io/ant-online-simulator/"
           }
         },
         {
-          "name": "sprite-stacking",
+          "name": "Sprite Stacking",
           "orbitRadius": 9,
           "size": 0.6,
           "orbitSpeed": 0.003,
@@ -132,11 +139,13 @@
             "size": 17350,
             "topics": ["game development", "sprite-stacking", "javascript", "webgl", "three.js"],
             "created_at": "2025-05-02T00:00:00Z",
-            "updated_at": "2025-05-25T11:20:00Z"
+            "updated_at": "2025-05-25T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/sprite-stacking",
+            "homepage": "https://basemodmaker.github.io/sprite-stacking/"
           }
         },
         {
-          "name": "portfolio",
+          "name": "Portfolio",
           "orbitRadius": 11,
           "size": 0.7,
           "orbitSpeed": 0.002,
@@ -155,7 +164,9 @@
             "size": 21960,
             "topics": ["portfolio", "portfolio-website", "reactjs", "space", "threejs"],
             "created_at": "2025-08-16T00:00:00Z",
-            "updated_at": "2025-08-24T11:20:00Z"
+            "updated_at": "2025-08-24T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/portfolio",
+            "homepage": "https://basemodmaker.github.io/portfolio/"
           }
         }
       ]
@@ -178,7 +189,7 @@
       },
       "planets": [
         {
-          "name": "Aquarium-Simulator",
+          "name": "Aquarium Simulator",
           "orbitRadius": 3,
           "size": 0.15,
           "orbitSpeed": 0.03,
@@ -197,11 +208,12 @@
             "size": 2169,
             "topics": ["java", "simulation"],
             "created_at": "2022-10-26T00:00:00Z",
-            "updated_at": "2022-12-15T11:20:00Z"
+            "updated_at": "2022-12-15T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Aquarium-Simulator"
           }
         },
         {
-          "name": "Maze-Generator",
+          "name": "Maze Generator",
           "orbitRadius": 4,
           "size": 0.5,
           "orbitSpeed": 0.01,
@@ -219,11 +231,12 @@
             "size": 942,
             "topics": ["java", "maze", "generation"],
             "created_at": "2023-02-21T14:30:00Z",
-            "updated_at": "2023-05-10T11:20:00Z"
+            "updated_at": "2023-05-10T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Maze-Generator"
           }
         },
         {
-          "name": "Online-Java-Trainer",
+          "name": "Online Java Trainer",
           "orbitRadius": 6,
           "size": 0.4,
           "orbitSpeed": 0.008,
@@ -243,11 +256,12 @@
             "size": 204800,
             "topics": ["java", "education", "web"],
             "created_at": "2023-09-21T14:30:00Z",
-            "updated_at": "2023-12-09T11:20:00Z"
+            "updated_at": "2023-12-09T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Online-Java-Trainer"
           }
         },
         {
-          "name": "Factory-Simulator",
+          "name": "Factory Simulator",
           "orbitRadius": 7.5,
           "size": 0.12,
           "orbitSpeed": 0.015,
@@ -265,7 +279,8 @@
             "size": 165,
             "topics": ["java", "javafx", "simulation", "factory"],
             "created_at": "2023-04-24T14:30:00Z",
-            "updated_at": "2024-07-18T11:20:00Z"
+            "updated_at": "2024-07-18T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Factory-Simulator"
           }
         }
       ]
@@ -399,7 +414,7 @@
       },
       "planets": [
         {
-          "name": "zangra-galaxy",
+          "name": "Zangra Galaxy",
           "orbitRadius": 2.5,
           "size": 0.16,
           "orbitSpeed": 0.02,
@@ -418,11 +433,12 @@
             "size": 20480000,
             "topics": ["web", "design", "zangra", "twig", "suluDB"],
             "created_at": "2022-07-15T14:30:00Z",
-            "updated_at": "2022-09-12T11:20:00Z"
+            "updated_at": "2022-09-12T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/zangra-galaxy"
           }
         },
         {
-          "name": "zangra-houses",
+          "name": "Zangra Houses",
           "orbitRadius": 3.5,
           "size": 0.2,
           "orbitSpeed": 0.018,
