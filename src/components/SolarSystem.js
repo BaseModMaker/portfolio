@@ -13,7 +13,8 @@ import { getCurrentSystemData, SOLAR_SYSTEMS, getSystemConfig } from '../utils/s
 function StarryBackground({ starCount = 400 }) {
   const canvasRef = useRef();
 
-  useEffect(() => {
+  // Draw stars on the canvas
+  const drawStars = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -45,22 +46,17 @@ function StarryBackground({ starCount = 400 }) {
       ctx.fill();
       ctx.shadowBlur = 0;
     }
-  }, []);
+  };
 
-  // Redraw on resize
   useEffect(() => {
+    drawStars();
+    // Redraw on resize
     const handleResize = () => {
-      if (canvasRef.current) {
-        // Clear and redraw
-        const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      }
-      // Trigger re-draw by updating key
-      // (force re-render by changing key)
+      drawStars();
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [starCount]);
 
   return (
     <canvas
