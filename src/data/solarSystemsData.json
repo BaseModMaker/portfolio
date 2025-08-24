@@ -18,7 +18,7 @@
       },
       "planets": [
         {
-          "name": "Multi-Smelter",
+          "name": "Multi Smelter",
           "orbitRadius": 3,
           "size": 0.1,
           "orbitSpeed": 0.04,
@@ -29,10 +29,19 @@
             "surfaceRoughness": 0.9,
             "metalness": 0.3,
             "surfaceColor": "#8C7853"
+          },
+          "projectData": {
+            "description": "Adds a multi-smelter to mindustry to smelt sand and coal faster but requires more power and slag to heat the mixture faster",
+            "language": "hjson 100%",
+            "size": 36,
+            "topics": ["mindustry-mod"],
+            "created_at": "2020-01-13T00:00:00Z",
+            "updated_at": "2020-01-15T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Multi-Smelter"
           }
         },
         {
-          "name": "CommitGenerator",
+          "name": "Commit Generator",
           "orbitRadius": 4,
           "size": 0.25,
           "orbitSpeed": 0.006,
@@ -46,10 +55,20 @@
             "surfaceRoughness": 0.3,
             "metalness": 0.0,
             "surfaceColor": "#4FD0E7"
+          },
+          "projectData": {
+            "description": "Generates conventional commit messages that you can copy and paste. Made following https://www.conventionalcommits.org/en/v1.0.0/",
+            "language": "JavaScript 62.4%, CSS 19.0%, HTML 18.6%",
+            "size": 2569,
+            "topics": ["commit", "react", "javascript"],
+            "created_at": "2024-02-07T00:00:00Z",
+            "updated_at": "2024-02-15T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/CommitGenerator",
+            "homepage": "https://basemodmaker.github.io/CommitGenerator/"
           }
         },
         {
-          "name": "image-to-mosaic-template",
+          "name": "Image To Mosaic Template",
           "orbitRadius": 5.5,
           "size": 0.24,
           "orbitSpeed": 0.005,
@@ -61,10 +80,20 @@
             "surfaceRoughness": 0.3,
             "metalness": 0.0,
             "surfaceColor": "#4B70DD"
+          },
+          "projectData": {
+            "description": "Takes and image as input and spits out a mosaic template.",
+            "language": "JavaScript 95.4%, HTML 3.0%, CSS 1.6%",
+            "size": 3930,
+            "topics": ["dithering", "images", "mosaic", "mosaic-template", "pixelisation", "quantization"],
+            "created_at": "2025-04-03T00:00:00Z",
+            "updated_at": "2025-04-05T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/image-to-mosaic-template",
+            "homepage": "https://basemodmaker.github.io/image-to-mosaic-template/"
           }
         },
         {
-          "name": "ant-online-simulator",
+          "name": "Online Ant Simulator",
           "orbitRadius": 6.5,
           "size": 0.5,
           "orbitSpeed": 0.004,
@@ -76,10 +105,20 @@
             "surfaceRoughness": 0.5,
             "metalness": 0.1,
             "surfaceColor": "#FFB6C1"
+          },
+          "projectData": {
+            "description": "A web-based ant simulator where you can create and customize your own ant species and watch them thrive in a dynamic ecosystem.",
+            "language": "JavaScript93.3%, HTML 4.1%, CSS 2.6%",
+            "size": 1240,
+            "topics": ["ants", "simulation", "ecosystem", "javascript", "react"],
+            "created_at": "2025-04-23T00:00:00Z",
+            "updated_at": "2025-04-25T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/ant-online-simulator",
+            "homepage": "https://basemodmaker.github.io/ant-online-simulator/"
           }
         },
         {
-          "name": "sprite-stacking",
+          "name": "Sprite Stacking",
           "orbitRadius": 9,
           "size": 0.6,
           "orbitSpeed": 0.003,
@@ -93,10 +132,20 @@
             "surfaceColor": "#98FB98",
             "hasRings": true,
             "ringColor": "#228B22"
+          },
+          "projectData": {
+            "description": "A game where you control a submarine and navigate through underwater caves, made with JavaScript and WebGL using a sprite stacking technique.",
+            "language": "JavaScript 80%, HTML 10%, CSS 10%",
+            "size": 17350,
+            "topics": ["game development", "sprite-stacking", "javascript", "webgl", "three.js"],
+            "created_at": "2025-05-02T00:00:00Z",
+            "updated_at": "2025-05-25T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/sprite-stacking",
+            "homepage": "https://basemodmaker.github.io/sprite-stacking/"
           }
         },
         {
-          "name": "portfolio",
+          "name": "Portfolio",
           "orbitRadius": 11,
           "size": 0.7,
           "orbitSpeed": 0.002,
@@ -108,6 +157,16 @@
             "surfaceRoughness": 0.5,
             "metalness": 0.1,
             "surfaceColor": "#B22222"
+          },
+          "projectData": {
+            "description": "An immersive 3D portfolio experience where each planet represents a project, complete with interactive exploration and spaceship-style dashboards.",
+            "language": "JavaScript 63.9%, CSS 35.0%, HTML 1.1%",
+            "size": 21960,
+            "topics": ["portfolio", "portfolio-website", "reactjs", "space", "threejs"],
+            "created_at": "2025-08-16T00:00:00Z",
+            "updated_at": "2025-08-24T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/portfolio",
+            "homepage": "https://basemodmaker.github.io/portfolio/"
           }
         }
       ]
@@ -130,7 +189,7 @@
       },
       "planets": [
         {
-          "name": "Aquarium-Simulator",
+          "name": "Aquarium Simulator",
           "orbitRadius": 3,
           "size": 0.15,
           "orbitSpeed": 0.03,
@@ -142,24 +201,19 @@
             "surfaceRoughness": 0.3,
             "metalness": 0.1,
             "surfaceColor": "#FFC649"
+          },
+          "projectData": {
+            "description": "An aquarium simulator with wildlife and different effects written in Java",
+            "language": "Java 99.9%, Shell 0.1%",
+            "size": 2169,
+            "topics": ["java", "simulation"],
+            "created_at": "2022-10-26T00:00:00Z",
+            "updated_at": "2022-12-15T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Aquarium-Simulator"
           }
         },
         {
-          "name": "Factory-Simulator",
-          "orbitRadius": 7.5,
-          "size": 0.12,
-          "orbitSpeed": 0.015,
-          "rotationSpeed": 0.008,
-          "startAngle": 4.1,
-          "props": {
-            "hasAtmosphere": false,
-            "surfaceRoughness": 0.8,
-            "metalness": 0.1,
-            "surfaceColor": "#CD5C5C"
-          }
-        },
-        {
-          "name": "Maze-Generator",
+          "name": "Maze Generator",
           "orbitRadius": 4,
           "size": 0.5,
           "orbitSpeed": 0.01,
@@ -170,10 +224,19 @@
             "surfaceRoughness": 0.4,
             "metalness": 0.0,
             "surfaceColor": "#D8CA9D"
+          },
+          "projectData": {
+            "description": "Android app that poses daily maze challenges with the difficulty based on the weather that are generated using various algorithms.",
+            "language": "Java 100%",
+            "size": 942,
+            "topics": ["java", "maze", "generation"],
+            "created_at": "2023-02-21T14:30:00Z",
+            "updated_at": "2023-05-10T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Maze-Generator"
           }
         },
         {
-          "name": "Online-Java-Trainer",
+          "name": "Online Java Trainer",
           "orbitRadius": 6,
           "size": 0.4,
           "orbitSpeed": 0.008,
@@ -186,6 +249,38 @@
             "surfaceRoughness": 0.4,
             "metalness": 0.0,
             "surfaceColor": "#FAD5A5"
+          },
+          "projectData": {
+            "description": "A React Native app that let's you complete online Java exercises that are corrected on a server.",
+            "language": "JavaScript 70.8%, Java 27.5%, Shell 0.9%, Python 0.8%",
+            "size": 204800,
+            "topics": ["java", "education", "web"],
+            "created_at": "2023-09-21T14:30:00Z",
+            "updated_at": "2023-12-09T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Online-Java-Trainer"
+          }
+        },
+        {
+          "name": "Factory Simulator",
+          "orbitRadius": 7.5,
+          "size": 0.12,
+          "orbitSpeed": 0.015,
+          "rotationSpeed": 0.008,
+          "startAngle": 4.1,
+          "props": {
+            "hasAtmosphere": false,
+            "surfaceRoughness": 0.8,
+            "metalness": 0.1,
+            "surfaceColor": "#CD5C5C"
+          },
+          "projectData": {
+            "description": "An assembly factory simulator to test different production chain management strategies written in Java.",
+            "language": "Java 99.4%, Shell 0.6%",
+            "size": 165,
+            "topics": ["java", "javafx", "simulation", "factory"],
+            "created_at": "2023-04-24T14:30:00Z",
+            "updated_at": "2024-07-18T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/Factory-Simulator"
           }
         }
       ]
@@ -221,14 +316,9 @@
             "surfaceColor": "#D8CA9D"
           },
           "projectData": {
-            "name": "Belgium Public Transport Finder",
             "description": "A project to find the shortest path in the Belgian public transport system.",
             "language": "Python 100%",
             "size": 1024000,
-            "stars": 2,
-            "forks": 0,
-            "watchers": 0,
-            "issues": 0,
             "topics": ["python", "transport", "shortest-path"],
             "created_at": "2024-02-15T14:30:00Z",
             "updated_at": "2024-06-10T11:20:00Z"
@@ -248,14 +338,9 @@
             "surfaceColor": "#B0C4DE"
           },
           "projectData": {
-            "name": "Compiler Construction",
             "description": "A project focused on writing a compiler from scratch.",
             "language": "Python 100%",
             "size": 2048000,
-            "stars": 5,
-            "forks": 1,
-            "watchers": 2,
-            "issues": 0,
             "topics": ["compiler", "language-theory", "python"],
             "created_at": "2024-02-15T14:30:00Z",
             "updated_at": "2024-06-10T11:20:00Z"
@@ -275,14 +360,9 @@
             "surfaceColor": "#FFB6C1"
           },
           "projectData": {
-            "name": "Real Time Operating System",
             "description": "Implementation of a Real Time Operating System to test different scheduling methods on real data.",
             "language": "Python 100%",
             "size": 3072000,
-            "stars": 8,
-            "forks": 2,
-            "watchers": 1,
-            "issues": 0,
             "topics": ["rtos", "scheduling", "python"],
             "created_at": "2024-02-15T14:30:00Z",
             "updated_at": "2024-06-10T11:20:00Z"
@@ -306,14 +386,9 @@
             "hasRings": true
           },
           "projectData": {
-            "name": "Checkers AI",
             "description": "An AI that plays checkers using minimax algorithm.",
             "language": "Python 100%",
             "size": 512000,
-            "stars": 5,
-            "forks": 1,
-            "watchers": 2,
-            "issues": 0,
             "topics": ["ai", "checkers", "minimax"],
             "created_at": "2024-02-15T14:30:00Z",
             "updated_at": "2024-06-10T11:20:00Z"
@@ -339,7 +414,7 @@
       },
       "planets": [
         {
-          "name": "zangra-galaxy",
+          "name": "Zangra Galaxy",
           "orbitRadius": 2.5,
           "size": 0.16,
           "orbitSpeed": 0.02,
@@ -351,10 +426,19 @@
             "surfaceRoughness": 0.7,
             "metalness": 0.2,
             "surfaceColor": "#6B93D6"
+          },
+          "projectData": {
+            "description": "A SuluDB webpage representing the Zangra Galaxy",
+            "language": "Twig 30.6%, JavaScript 29.3%, SCSS 19.8%, PHP 17.2%, Shell3.1%",
+            "size": 20480000,
+            "topics": ["web", "design", "zangra", "twig", "suluDB"],
+            "created_at": "2022-07-15T14:30:00Z",
+            "updated_at": "2022-09-12T11:20:00Z",
+            "url": "https://github.com/BaseModMaker/zangra-galaxy"
           }
         },
         {
-          "name": "zangra-houses",
+          "name": "Zangra Houses",
           "orbitRadius": 3.5,
           "size": 0.2,
           "orbitSpeed": 0.018,
@@ -368,14 +452,9 @@
             "ringColor": "#FFFFFF"
           },
           "projectData": {
-            "name": "zangra-houses",
             "description": "A website showcasing Zangra rentals.",
             "language": "Odoo 100%",
             "size": 20480000,
-            "stars": 12,
-            "forks": 2,
-            "watchers": 5,
-            "issues": 0,
             "topics": ["web", "design", "houses", "odoo"],
             "created_at": "2024-02-15T14:30:00Z",
             "updated_at": "2024-06-10T11:20:00Z"
@@ -396,14 +475,9 @@
             "surfaceColor": "#8A2BE2"
           },
           "projectData": {
-            "name": "Cody",
             "description": "Cody is an AI-powered assistant that helps understanding pdfs. Features include summary generator, chat with a pdf, and an integrated file storage.",
             "language": "Python 40%, HTML 20%, TypeScript 30%, SCSS 10%",
             "size": 152400000,
-            "stars": 42,
-            "forks": 8,
-            "watchers": 3,
-            "issues": 0,
             "topics": ["ai", "pdf-assistant", "typescript", "chat", "document-analysis"],
             "created_at": "2025-02-15T14:30:00Z",
             "updated_at": "2025-06-10T11:20:00Z"
