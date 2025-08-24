@@ -308,6 +308,14 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
                 </div>
               </div>
             </div>
+            
+            <div className="info-section">
+              <h4>DESCRIPTION</h4>
+              <p className="description">
+                {repository.description || 'No description available'}
+              </p>
+            </div>
+
             {getTags().length > 0 && (
               <div className="info-section">
                 <h4>TAGS</h4>
@@ -320,12 +328,6 @@ function SpaceshipDashboard({ isVisible, planetName, onClose, onPlanetNavigate, 
                 </div>
               </div>
             )}
-            <div className="info-section">
-              <h4>DESCRIPTION</h4>
-              <p className="description">
-                {repository.description || 'No description available'}
-              </p>
-            </div>
           </div>
         </div>
 
