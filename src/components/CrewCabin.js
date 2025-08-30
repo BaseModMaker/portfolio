@@ -4,12 +4,14 @@ import * as THREE from 'three';
 // default layer config (texture name, depth name, textureZ, depthZ)
 // note: texture names reference files in public/crew-cabin/textures/*.png
 // depth names reference public/crew-cabin/depth-maps/*.png
+const zposition = -300
+const zoffset = -20
 const DEFAULT_LAYERS = [
-  { id: 'room', texture: 'room', depth: 'room', textureZ: -300, depthZ: -320 },
-  { id: 'table', texture: 'table', depth: 'table', textureZ: -200, depthZ: -210 },
-  { id: 'typewriter', texture: 'typewriter-shadow', depth: 'typewriter', textureZ: -160, depthZ: -170 },
-  { id: 'chair', texture: 'chair', depth: 'chair', textureZ: -120, depthZ: -130 },
-  { id: 'picture', texture: 'picture-shadow', depth: 'picture', textureZ: -80, depthZ: -90 },
+  { id: 'room', texture: 'room', depth: 'room', textureZ: zposition, depthZ: zposition + zoffset},
+  { id: 'table', texture: 'table', depth: 'table', textureZ: zposition, depthZ: zposition + zoffset},
+  { id: 'typewriter', texture: 'typewriter-shadow', depth: 'typewriter', textureZ: zposition, depthZ: zposition + zoffset},
+  { id: 'chair', texture: 'chair', depth: 'chair', textureZ: zposition, depthZ: zposition + zoffset},
+  { id: 'picture', texture: 'picture-shadow', depth: 'picture', textureZ: zposition, depthZ: zposition + zoffset},
 ];
 
 function CrewCabin({ layers = DEFAULT_LAYERS }) {
@@ -126,7 +128,7 @@ function CrewCabin({ layers = DEFAULT_LAYERS }) {
               void main() {
                 float d = texture2D(u_depth, vUv).r;
                 // compute a small scale from the Z difference so you can control how much parallax depthmap contributes
-                float zFactor = (u_texZ - u_depthZ) * 0.005; // tuning constant
+                float zFactor = (u_texZ - u_depthZ) * 0.004; // tuning constant
                 vec2 center = u_mouse;
                 vec2 disp = (vUv - center) * u_strength * (1.0 - d) * zFactor;
                 vec2 uv = vUv + disp;
