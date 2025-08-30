@@ -5,6 +5,7 @@ import GreetingSequence from './components/GreetingSequence';
 import SpaceMusic from './components/SpaceMusic';
 import ProfileButton from './components/ProfileButton';
 import SocialMenu from './components/SocialMenu';
+import CrewCabin from './components/CrewCabin';
 
 function App() {
   const [greetingComplete, setGreetingComplete] = useState(false);
@@ -42,7 +43,8 @@ function App() {
       {/* Starry background always visible */}
       <StarryBackground starCount={400} />
       <header className="App-header">
-        {!greetingComplete && (
+        <CrewCabin />
+        {/* {!greetingComplete && (
           <GreetingSequence onComplete={handleGreetingComplete} />
         )}
         <SolarSystem 
@@ -65,7 +67,7 @@ function App() {
         <SocialMenu 
           isVisible={showSocialMenu}
           onClose={handleCloseSocialMenu}
-        />
+        /> */}
       </header>
     </div>
   );
