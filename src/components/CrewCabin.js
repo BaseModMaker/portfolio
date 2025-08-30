@@ -1,12 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 
-// If your app is served from /portfolio/, use process.env.PUBLIC_URL
 const IMAGE_URL = process.env.PUBLIC_URL + '/crew-cabin/textures/room.png';
 const DEPTH_URL = process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png';
-
-// const IMAGE_URL = window.location.protocol + "//" + window.location.host + "/portfolio/crew-cabin/textures/room.png";
-// const DEPTH_URL = window.location.protocol + "//" + window.location.host + "/portfolio/crew-cabin/depth-maps/room.png";
 
 function CrewCabin() {
   const mountRef = useRef();
@@ -16,8 +12,6 @@ function CrewCabin() {
     let renderer, scene, camera, uniforms, frameId, mesh, geometry, material, colorTexture, depthTexture;
     let isUnmounted = false;
 
-    // Ensure the container has a size
-    // Use getBoundingClientRect for more reliable sizing after refresh
     let width = 600, height = 400;
     if (mountRef.current) {
       const rect = mountRef.current.getBoundingClientRect();
@@ -25,29 +19,9 @@ function CrewCabin() {
       height = rect.height || 400;
     }
 
-    // Debug: Log container size
-    console.log('CrewCabin container size:', width, height);
-
-    // Test if images are accessible by creating Image objects
-    const testImage = new window.Image();
-    testImage.src = IMAGE_URL;
-    testImage.onload = () => console.log('Image loaded via <img>:', IMAGE_URL);
-    testImage.onerror = () => {
-      console.error('Image NOT found:', IMAGE_URL);
-      setShowFallback(true);
-    };
-    const testDepth = new window.Image();
-    testDepth.src = DEPTH_URL;
-    testDepth.onload = () => console.log('Depth map loaded via <img>:', DEPTH_URL);
-    testDepth.onerror = () => {
-      console.error('Depth map NOT found:', DEPTH_URL);
-      setShowFallback(true);
-    };
-
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
-    // Remove any existing children (canvas) before appending a new one
     while (mountRef.current && mountRef.current.firstChild) {
       mountRef.current.removeChild(mountRef.current.firstChild);
     }
@@ -65,13 +39,9 @@ function CrewCabin() {
       return new Promise((resolve, reject) => {
         loader.load(
           url,
-          texture => {
-            console.log('Loaded texture:', url);
-            resolve(texture);
-          },
+          texture => resolve(texture),
           undefined,
-          err => {
-            console.error('Failed to load texture:', url, err);
+          () => {
             setShowFallback(true);
             reject(new Error('Failed to load: ' + url));
           }
@@ -155,31 +125,35 @@ function CrewCabin() {
       };
 
       CrewCabin._cleanup = cleanup;
-    }).catch((err) => {
-      if (mountRef.current) {
-        mountRef.current.innerHTML = `<div style="color:white;text-align:center;padding:2em;">${err.message}</div>`;
-      }
-      console.error('CrewCabin texture load error:', err);
+    }).catch(() => {
+      setShowFallback(true);
     });
 
     return () => {
       isUnmounted = true;
       if (CrewCabin._cleanup) CrewCabin._cleanup();
     };
-    // eslint-disable-next-line
   }, []);
 
   if (showFallback) {
-    // Show fallback images for debugging
     return (
-      <div style={{textAlign: 'center', background: '#111', padding: 16}}>
-        <div style={{color: 'white'}}>Image or depth map not found.<br />Check the paths below:</div>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: '#111',
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div>Image or depth map not found.</div>
         <div>
           <img src={IMAGE_URL} alt="room" style={{maxWidth: 200, margin: 8, border: '1px solid #333'}} />
           <img src={DEPTH_URL} alt="depth" style={{maxWidth: 200, margin: 8, border: '1px solid #333'}} />
-        </div>
-        <div style={{color: '#aaa', fontSize: 12}}>
-          {IMAGE_URL}<br />{DEPTH_URL}
         </div>
       </div>
     );
@@ -189,16 +163,18 @@ function CrewCabin() {
     <div
       ref={mountRef}
       style={{
-        width: '100%',
-        maxWidth: 600,
-        minWidth: 300,
-        height: 400,
-        minHeight: 200,
-        margin: '0 auto',
-        borderRadius: '16px',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        minWidth: 0,
+        minHeight: 0,
+        margin: 0,
+        borderRadius: 0,
         overflow: 'hidden',
-        boxShadow: '0 4px 32px rgba(0,0,0,0.4)',
-        background: '#111'
+        boxShadow: 'none',
+        background: 'rgba(0, 0, 0, 0)'
       }}
     />
   );
