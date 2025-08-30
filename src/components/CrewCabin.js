@@ -5,6 +5,9 @@ import * as THREE from 'three';
 const IMAGE_URL = process.env.PUBLIC_URL + '/crew-cabin/textures/room.png';
 const DEPTH_URL = process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png';
 
+// const IMAGE_URL = window.location.protocol + "//" + window.location.host + "/portfolio/crew-cabin/textures/room.png";
+// const DEPTH_URL = window.location.protocol + "//" + window.location.host + "/portfolio/crew-cabin/depth-maps/room.png";
+
 function CrewCabin() {
   const mountRef = useRef();
   const [showFallback, setShowFallback] = useState(false);
@@ -14,8 +17,13 @@ function CrewCabin() {
     let isUnmounted = false;
 
     // Ensure the container has a size
-    const width = mountRef.current?.offsetWidth || 600;
-    const height = mountRef.current?.offsetHeight || 400;
+    // Use getBoundingClientRect for more reliable sizing after refresh
+    let width = 600, height = 400;
+    if (mountRef.current) {
+      const rect = mountRef.current.getBoundingClientRect();
+      width = rect.width || 600;
+      height = rect.height || 400;
+    }
 
     // Debug: Log container size
     console.log('CrewCabin container size:', width, height);
@@ -39,6 +47,10 @@ function CrewCabin() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, height);
+    // Remove any existing children (canvas) before appending a new one
+    while (mountRef.current && mountRef.current.firstChild) {
+      mountRef.current.removeChild(mountRef.current.firstChild);
+    }
     mountRef.current.appendChild(renderer.domElement);
 
     scene = new THREE.Scene();
