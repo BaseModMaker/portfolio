@@ -1,160 +1,201 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 
-const IMAGE_URL = process.env.PUBLIC_URL + '/crew-cabin/textures/room.png';
-const DEPTH_URL = process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png';
+// default layer config (texture name, depth name, textureZ, depthZ)
+// note: texture names reference files in public/crew-cabin/textures/*.png
+// depth names reference public/crew-cabin/depth-maps/*.png
+const DEFAULT_LAYERS = [
+  { id: 'room', texture: 'room', depth: 'room', textureZ: -300, depthZ: -320 },
+  { id: 'table', texture: 'table', depth: 'table', textureZ: -200, depthZ: -210 },
+  { id: 'typewriter', texture: 'typewriter-shadow', depth: 'typewriter', textureZ: -160, depthZ: -170 },
+  { id: 'chair', texture: 'chair', depth: 'chair', textureZ: -120, depthZ: -130 },
+  { id: 'picture', texture: 'picture-shadow', depth: 'picture', textureZ: -80, depthZ: -90 },
+];
 
-function CrewCabin() {
+function CrewCabin({ layers = DEFAULT_LAYERS }) {
   const mountRef = useRef();
   const [showFallback, setShowFallback] = useState(false);
 
   useEffect(() => {
-    let renderer, scene, camera, uniforms, frameId, mesh, geometry, material, colorTexture, depthTexture;
+    let renderer, scene, camera, frameId;
+    const meshCleanup = [];
     let isUnmounted = false;
 
-    let width = 600, height = 400;
+    // size from mount; fallback to viewport
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     if (mountRef.current) {
       const rect = mountRef.current.getBoundingClientRect();
-      width = rect.width || 600;
-      height = rect.height || 400;
+      width = rect.width || width;
+      height = rect.height || height;
     }
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
+    // ensure mount is cleared
     while (mountRef.current && mountRef.current.firstChild) {
       mountRef.current.removeChild(mountRef.current.firstChild);
     }
+
+    // renderer
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0); // transparent background
     mountRef.current.appendChild(renderer.domElement);
 
-    scene = new THREE.Scene();
+    // orthographic camera keeps layers same size regardless of Z (depthmap controls parallax)
     camera = new THREE.OrthographicCamera(
-      width / -2, width / 2, height / 2, height / -2, 1, 1000
+      width / -2, width / 2, height / 2, height / -2, -1000, 1000
     );
-    camera.position.z = 2;
+    camera.position.z = 1;
 
+    scene = new THREE.Scene();
+
+    // texture cache to avoid duplicate loads
     const loader = new THREE.TextureLoader();
-
-    function loadTexture(url) {
-      return new Promise((resolve, reject) => {
+    const cache = new Map();
+    function loadTextureCached(url) {
+      if (cache.has(url)) return cache.get(url);
+      const p = new Promise((resolve, reject) => {
         loader.load(
           url,
-          texture => resolve(texture),
+          tex => {
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            resolve(tex);
+          },
           undefined,
-          () => {
-            setShowFallback(true);
-            reject(new Error('Failed to load: ' + url));
-          }
+          () => reject(new Error('Failed to load: ' + url))
         );
       });
+      cache.set(url, p);
+      return p;
     }
 
-    Promise.all([
-      loadTexture(IMAGE_URL),
-      loadTexture(DEPTH_URL)
-    ]).then(([color, depth]) => {
+    // build promises for each layer (texture + depth)
+    const layerPromises = layers.map(layer => {
+      const texUrl = process.env.PUBLIC_URL + `/crew-cabin/textures/${layer.texture}.png`;
+      const depthUrl = process.env.PUBLIC_URL + `/crew-cabin/depth-maps/${layer.depth}.png`;
+      return Promise.all([loadTextureCached(texUrl), loadTextureCached(depthUrl)])
+        .then(([tex, depth]) => ({ layer, tex, depth }))
+        .catch(err => {
+          console.error(err.message);
+          setShowFallback(true);
+          throw err;
+        });
+    });
+
+    Promise.all(layerPromises).then(results => {
       if (isUnmounted) return;
-      colorTexture = color;
-      depthTexture = depth;
-      colorTexture.minFilter = THREE.LinearFilter;
-      depthTexture.minFilter = THREE.LinearFilter;
 
-      uniforms = {
-        u_image: { value: colorTexture },
-        u_depth: { value: depthTexture },
-        u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-        u_strength: { value: 0.15 },
-        u_resolution: { value: new THREE.Vector2(width, height) }
-      };
+      // shared mouse uniform
+      const mouse = new THREE.Vector2(0.5, 0.5);
 
-      material = new THREE.ShaderMaterial({
-        uniforms,
-        vertexShader: `
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform sampler2D u_image;
-          uniform sampler2D u_depth;
-          uniform vec2 u_mouse;
-          uniform float u_strength;
-          uniform vec2 u_resolution;
-          varying vec2 vUv;
-          void main() {
-            float depth = texture2D(u_depth, vUv).r;
-            vec2 center = u_mouse;
-            vec2 disp = (vUv - center) * u_strength * (1.0 - depth);
-            vec2 uv = vUv + disp;
-            vec4 color = texture2D(u_image, uv);
-            gl_FragColor = color;
-          }
-        `
-      });
+      // create a shader per layer; depthmaps do not interact
+      results
+        .sort((a, b) => (a.layer.textureZ - b.layer.textureZ)) // far -> near
+        .forEach(({ layer, tex, depth }) => {
+          const uniforms = {
+            u_image: { value: tex },
+            u_depth: { value: depth },
+            u_mouse: { value: mouse },
+            u_strength: { value: 0.15 },
+            u_texZ: { value: layer.textureZ || 0.0 },
+            u_depthZ: { value: layer.depthZ || 0.0 },
+            u_resolution: { value: new THREE.Vector2(width, height) }
+          };
 
-      geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-      mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
+          const material = new THREE.ShaderMaterial({
+            uniforms,
+            transparent: true,
+            vertexShader: `
+              varying vec2 vUv;
+              void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+              }
+            `,
+            // displacement uses only this layer's depth texture; u_texZ and u_depthZ allow per-layer tuning.
+            fragmentShader: `
+              uniform sampler2D u_image;
+              uniform sampler2D u_depth;
+              uniform vec2 u_mouse;
+              uniform float u_strength;
+              uniform float u_texZ;
+              uniform float u_depthZ;
+              varying vec2 vUv;
+              void main() {
+                float d = texture2D(u_depth, vUv).r;
+                // compute a small scale from the Z difference so you can control how much parallax depthmap contributes
+                float zFactor = (u_texZ - u_depthZ) * 0.005; // tuning constant
+                vec2 center = u_mouse;
+                vec2 disp = (vUv - center) * u_strength * (1.0 - d) * zFactor;
+                vec2 uv = vUv + disp;
+                vec4 color = texture2D(u_image, uv);
+                gl_FragColor = color;
+              }
+            `
+          });
 
+          const plane = new THREE.PlaneGeometry(width, height);
+          const mesh = new THREE.Mesh(plane, material);
+          mesh.position.set(0, 0, layer.textureZ || 0);
+          scene.add(mesh);
+          meshCleanup.push(() => {
+            if (mesh.geometry) mesh.geometry.dispose();
+            if (mesh.material) mesh.material.dispose();
+            scene.remove(mesh);
+          });
+        });
+
+      // mouse handling updates shared mouse uniform for all materials
       function onMouseMove(e) {
         const rect = renderer.domElement.getBoundingClientRect();
-        uniforms.u_mouse.value.x = (e.clientX - rect.left) / rect.width;
-        uniforms.u_mouse.value.y = 1.0 - (e.clientY - rect.top) / rect.height;
+        mouse.x = (e.clientX - rect.left) / rect.width;
+        mouse.y = 1.0 - (e.clientY - rect.top) / rect.height;
       }
       renderer.domElement.addEventListener('mousemove', onMouseMove);
 
+      // animation
       const animate = () => {
         renderer.render(scene, camera);
         frameId = requestAnimationFrame(animate);
       };
       animate();
 
+      // cleanup function
       const cleanup = () => {
         renderer.domElement.removeEventListener('mousemove', onMouseMove);
         cancelAnimationFrame(frameId);
-        renderer.dispose();
-        if (geometry) geometry.dispose();
-        if (material) material.dispose();
-        if (colorTexture) colorTexture.dispose();
-        if (depthTexture) depthTexture.dispose();
-        if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
-          mountRef.current.removeChild(renderer.domElement);
+        meshCleanup.forEach(fn => { try { fn(); } catch(e){} });
+        if (renderer) {
+          renderer.dispose();
+          if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
+            mountRef.current.removeChild(renderer.domElement);
+          }
         }
       };
 
       CrewCabin._cleanup = cleanup;
     }).catch(() => {
-      setShowFallback(true);
+      // already handled by showing fallback
     });
 
     return () => {
       isUnmounted = true;
       if (CrewCabin._cleanup) CrewCabin._cleanup();
     };
-  }, []);
+    // eslint-disable-next-line
+  }, [layers]);
 
   if (showFallback) {
+    // minimal fallback display
     return (
       <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: '#111',
-        color: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
+        position: 'fixed', inset: 0, background: '#111', color: 'white',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'
       }}>
-        <div>Image or depth map not found.</div>
-        <div>
-          <img src={IMAGE_URL} alt="room" style={{maxWidth: 200, margin: 8, border: '1px solid #333'}} />
-          <img src={DEPTH_URL} alt="depth" style={{maxWidth: 200, margin: 8, border: '1px solid #333'}} />
-        </div>
+        <div>Image or depth map not found. Check public/crew-cabin/textures and depth-maps files.</div>
+        <div style={{opacity: 0.6, fontSize: 12, marginTop: 8}}>{JSON.stringify(layers)}</div>
       </div>
     );
   }
@@ -164,17 +205,8 @@ function CrewCabin() {
       ref={mountRef}
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        minWidth: 0,
-        minHeight: 0,
-        margin: 0,
-        borderRadius: 0,
-        overflow: 'hidden',
-        boxShadow: 'none',
-        background: 'rgba(0, 0, 0, 0)'
+        top: 0, left: 0, width: '100vw', height: '100vh',
+        margin: 0, overflow: 'hidden', background: 'transparent'
       }}
     />
   );
