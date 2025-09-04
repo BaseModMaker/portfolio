@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 const imageDepthPairs = [
@@ -46,11 +46,49 @@ const imageDepthPairs = [
   },
 ];
 
+// Define screen partitions and their descriptions
+const hoverRegions = [
+  {
+    id: 'space',
+    left: '30%',
+    top: '20%',
+    width: '30%',
+    height: '40%',
+    description: 'Space'
+  },
+  {
+    id: 'typewriter',
+    left: '35%',
+    top: '55%',
+    width: '21%',
+    height: '20%',
+    description: 'Typewriter'
+  },
+  {
+    id: 'picture',
+    left: '21%',
+    top: '55%',
+    width: '11%',
+    height: '19%',
+    description: 'Picture on the table'
+  },
+  {
+    id: 'calendar',
+    left: '64%',
+    top: '30%',
+    width: '12%',
+    height: '24%',
+    description: 'Calendar on the wall'
+  },
+];
+
 const CrewCabin = () => {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
   const animationRef = useRef(null);
+  const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -220,13 +258,13 @@ const CrewCabin = () => {
       };
       document.addEventListener('mousemove', handleMouseMove);
 
-      // Animation loop
-      let time = 0;
+      // Animation loop (use THREE.Clock for accurate timing)
+      const clock = new THREE.Clock();
       const animate = () => {
         animationRef.current = requestAnimationFrame(animate);
-        time += 0.016;
+        const elapsed = clock.getElapsedTime();
         materials.forEach(mat => {
-          if (mat.uniforms.u_time) mat.uniforms.u_time.value = time;
+          if (mat.uniforms.u_time) mat.uniforms.u_time.value = elapsed;
         });
         renderer.render(scene, camera);
       };
@@ -281,7 +319,50 @@ const CrewCabin = () => {
         height: '100%',
         zIndex: 1
       }} 
-    />
+    >
+      {/* Overlay hover regions */}
+      {hoverRegions.map(region => (
+        <div
+          key={region.id}
+          style={{
+            position: 'absolute',
+            left: region.left,
+            top: region.top,
+            width: region.width,
+            height: region.height,
+            zIndex: 2,
+            cursor: 'pointer',
+            background: hoveredRegion === region.id ? 'rgba(255,255,255,0.00)' : 'transparent'
+          }}
+          onMouseEnter={e => {
+            setHoveredRegion(region.id);
+            setMousePos({ x: e.clientX, y: e.clientY });
+          }}
+          onMouseMove={e => setMousePos({ x: e.clientX, y: e.clientY })}
+          onMouseLeave={() => setHoveredRegion(null)}
+        />
+      ))}
+      {/* Tooltip textbox */}
+      {hoveredRegion && (
+        <div
+          style={{
+            position: 'fixed',
+            left: mousePos.x + 10,
+            top: mousePos.y + 10,
+            background: 'rgba(0,0,0,0.85)',
+            color: '#fff',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            zIndex: 10,
+            pointerEvents: 'none',
+            fontSize: '1rem',
+            maxWidth: '220px'
+          }}
+        >
+          {hoverRegions.find(r => r.id === hoveredRegion)?.description}
+        </div>
+      )}
+    </div>
   );
 };
 
