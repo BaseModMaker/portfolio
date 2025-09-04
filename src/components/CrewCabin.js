@@ -1,323 +1,240 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-// Max. Depth Map Size: Blocky & Fast <--- 1536 ---> Detailed & Slow
-const MAX_DEPTH_MAP_SIZE = 1536;
-
-// Depth Map Expansion: For better background separation. Only affects rendering. Tweak to avoid stretchy lines.
-const DEPTH_MAP_EXPANSION = 0;
-
-// Depth Map Scale: Tweak the scale of depth displacement.
-const DEPTH_MAP_SCALE = 5.0;
-
-// default layer config (texture name, depth name, textureZ, depthZ)
-// note: texture names reference files in public/crew-cabin/textures/*.png
-// depth names reference public/crew-cabin/depth-maps/*.png
-const zposition = -300
-const zoffset = -20
-const DEFAULT_LAYERS = [
-  { id: 'room', texture: 'room', depth: 'room', textureZ: zposition, depthZ: zposition + zoffset},
-  { id: 'table', texture: 'table', depth: 'table', textureZ: zposition, depthZ: zposition + zoffset},
-  { id: 'typewriter', texture: 'typewriter-shadow', depth: 'typewriter', textureZ: zposition, depthZ: zposition + zoffset},
-  { id: 'chair', texture: 'chair', depth: 'chair-min', textureZ: zposition, depthZ: zposition + zoffset},
-  { id: 'picture', texture: 'picture-shadow', depth: 'picture', textureZ: zposition, depthZ: zposition + zoffset},
-];
-
-function CrewCabin({ layers = DEFAULT_LAYERS }) {
-  const mountRef = useRef();
-  const [showFallback, setShowFallback] = useState(false);
+const CrewCabin = () => {
+  const mountRef = useRef(null);
+  const sceneRef = useRef(null);
+  const rendererRef = useRef(null);
+  const animationRef = useRef(null);
 
   useEffect(() => {
-    let renderer, scene, camera, frameId;
-    const meshCleanup = [];
-    let isUnmounted = false;
+    if (!mountRef.current) return;
 
-    // size from mount; fallback to viewport
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    if (mountRef.current) {
-      const rect = mountRef.current.getBoundingClientRect();
-      width = rect.width || width;
-      height = rect.height || height;
-    }
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.z = 5;
 
-    // ensure mount is cleared
-    while (mountRef.current && mountRef.current.firstChild) {
-      mountRef.current.removeChild(mountRef.current.firstChild);
-    }
-
-    // renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio || 1);
-    renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0); // transparent background
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0); // Transparent background
     mountRef.current.appendChild(renderer.domElement);
 
-    // use a perspective camera and compute plane sizes so each plane fills the view
-    const fov = 45; // degrees
-    camera = new THREE.PerspectiveCamera(fov, width / height, 0.1, 5000);
-    camera.position.z = 0; // in front of the layers (layers use negative Z)
-    // fixed focus point the camera always looks at (keeps the same lookAt target)
-    const focusPoint = new THREE.Vector3(0, 0, zposition);
-    // camera smoothing/tween state
-    const cameraTarget = new THREE.Vector3(0, 0, 0);
-    const cameraLerp = 0.08;
+    // Store refs
+    sceneRef.current = scene;
+    rendererRef.current = renderer;
 
-    scene = new THREE.Scene();
+    // Create light
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(2, -2, 5);
+    scene.add(light);
 
-    // texture cache to avoid duplicate loads
-    const loader = new THREE.TextureLoader();
-    const cache = new Map();
-    function loadTextureCached(url) {
-      if (cache.has(url)) return cache.get(url);
-      const p = new Promise((resolve, reject) => {
-        loader.load(
-          url,
-          tex => {
-            tex.minFilter = THREE.LinearFilter;
-            tex.magFilter = THREE.LinearFilter;
-            resolve(tex);
-          },
-          undefined,
-          () => reject(new Error('Failed to load: ' + url))
-        );
-      });
-      cache.set(url, p);
-      return p;
-    }
+    const textureLoader = new THREE.TextureLoader();
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Load texture and depth map from public folder
+    let imageTexture, depthTexture;
+    let geometry, material, uniforms;
+    let handleMouseMove;
 
-    // build promises for each layer (texture + depth)
-    const layerPromises = layers.map(layer => {
-      const texUrl = process.env.PUBLIC_URL + `/crew-cabin/textures/${layer.texture}.png`;
-      const depthUrl = process.env.PUBLIC_URL + `/crew-cabin/depth-maps/${layer.depth}.png`;
-      return Promise.all([loadTextureCached(texUrl), loadTextureCached(depthUrl)])
-        .then(([tex, depth]) => ({ layer, tex, depth }))
-        .catch(err => {
-          console.error(err.message);
-          setShowFallback(true);
-          throw err;
-        });
-    });
+    // Wait for both textures to load before proceeding
+    let texturesLoaded = 0;
+    const onTextureLoad = () => {
+      texturesLoaded++;
+      if (texturesLoaded === 2) {
+        // Ensure textures are loaded before rendering
+        imageTexture.wrapS = imageTexture.wrapT = THREE.ClampToEdgeWrapping;
+        depthTexture.wrapS = depthTexture.wrapT = THREE.ClampToEdgeWrapping;
+        imageTexture.minFilter = THREE.LinearFilter;
+        depthTexture.minFilter = THREE.LinearFilter;
 
-    // Helper to expand a depth map by DEPTH_MAP_EXPANSION pixels, using edge pixels
-    function expandDepthMapTexture(depthTex, expansion) {
-      if (!depthTex || !depthTex.image) return depthTex;
-      const src = depthTex.image;
-      const srcW = src.width, srcH = src.height;
-      const dstW = srcW + 2 * expansion, dstH = srcH + 2 * expansion;
+        // Create plane geometry that dynamically fits the screen
+        const aspect = window.innerWidth / window.innerHeight;
+        const planeHeight = 4;
+        const planeWidth = planeHeight * aspect;
+        geometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 256, 256);
 
-      // Create a canvas to draw the expanded image
-      const canvas = document.createElement('canvas');
-      canvas.width = dstW;
-      canvas.height = dstH;
-      const ctx = canvas.getContext('2d');
+        // Shader uniforms
+        uniforms = {
+          u_image: { value: imageTexture },
+          u_depth: { value: depthTexture },
+          u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
+          u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+          u_aspectRatio: { value: 1.0 },
+          u_time: { value: 0 },
+          u_lightPos: { value: light.position },
+          u_lightColor: { value: new THREE.Color(light.color) },
+          u_lightIntensity: { value: 1.0 },
+          u_lightEnabled: { value: true }
+        };
 
-      // Draw the center
-      ctx.drawImage(src, expansion, expansion);
+        // Vertex shader
+        const vertexShader = `
+          uniform sampler2D u_depth;
+          uniform vec2 u_mouse;
+          uniform float u_aspectRatio;
+          varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec3 vPosition;
 
-      // Top and bottom borders
-      ctx.drawImage(src, 0, 0, srcW, 1, expansion, 0, srcW, expansion); // top
-      ctx.drawImage(src, 0, srcH - 1, srcW, 1, expansion, expansion + srcH, srcW, expansion); // bottom
+          void main() {
+            vUv = uv;
+            vNormal = normal;
 
-      // Left and right borders
-      ctx.drawImage(src, 0, 0, 1, srcH, 0, expansion, expansion, srcH); // left
-      ctx.drawImage(src, srcW - 1, 0, 1, srcH, expansion + srcW, expansion, expansion, srcH); // right
+            vec4 depth = texture2D(u_depth, uv);
+            float height = depth.r;
 
-      // Corners
-      ctx.drawImage(src, 0, 0, 1, 1, 0, 0, expansion, expansion); // top-left
-      ctx.drawImage(src, srcW - 1, 0, 1, 1, expansion + srcW, 0, expansion, expansion); // top-right
-      ctx.drawImage(src, 0, srcH - 1, 1, 1, 0, expansion + srcH, expansion, expansion); // bottom-left
-      ctx.drawImage(src, srcW - 1, srcH - 1, 1, 1, expansion + srcW, expansion + srcH, expansion, expansion); // bottom-right
+            vec3 newPosition = position + normal * height * 0.5;
 
-      // Create a new texture from the canvas
-      const expandedTex = new THREE.Texture(canvas);
-      expandedTex.needsUpdate = true;
-      expandedTex.minFilter = depthTex.minFilter;
-      expandedTex.magFilter = depthTex.magFilter;
-      expandedTex.generateMipmaps = depthTex.generateMipmaps;
-      expandedTex.anisotropy = depthTex.anisotropy;
-      return expandedTex;
-    }
+            float parallaxX = (u_mouse.x - 0.5) * 0.2;
+            float parallaxY = (u_mouse.y - 0.5) * 0.2;
+            newPosition.x += parallaxX * (1.0 - height);
+            newPosition.y += parallaxY * (1.0 - height) * u_aspectRatio;
 
-    Promise.all(layerPromises).then(results => {
-      if (isUnmounted) return;
-
-      // create textured, displaced planes (depthmap used in vertex shader)
-      // sort far -> near
-      results
-        .sort((a, b) => (a.layer.textureZ - b.layer.textureZ))
-        .forEach(({ layer, tex, depth }) => {
-          const distance = Math.abs((layer.textureZ || 0) - camera.position.z);
-          const fovRad = (fov * Math.PI) / 180;
-          const planeHeight = 2 * distance * Math.tan(fovRad / 2);
-          const planeWidth = planeHeight * (width / height);
-
-          // improve texture sampling quality (mipmaps + anisotropy)
-          try {
-            const maxAniso = (renderer.capabilities && renderer.capabilities.getMaxAnisotropy)
-              ? renderer.capabilities.getMaxAnisotropy()
-              : (THREE.MathUtils ? THREE.MathUtils.clamp(1,1,16) : 1);
-            if (depth) {
-              depth.minFilter = THREE.LinearMipMapLinearFilter;
-              depth.magFilter = THREE.LinearFilter;
-              depth.generateMipmaps = true;
-              depth.anisotropy = maxAniso;
-              depth.needsUpdate = true;
-            }
-            if (tex) {
-              tex.minFilter = THREE.LinearMipMapLinearFilter;
-              tex.magFilter = THREE.LinearFilter;
-              tex.generateMipmaps = true;
-              tex.anisotropy = maxAniso;
-              tex.needsUpdate = true;
-            }
-          } catch (e) { /* non-fatal */ }
-
-          // Expand the depth map with a border of DEPTH_MAP_EXPANSION pixels
-          const expandedDepth = expandDepthMapTexture(depth, DEPTH_MAP_EXPANSION);
-
-          // adapt segments to depth-map resolution for finer displacement detail
-          // clamp depth map size for performance
-          const depthImgW = Math.min(
-            (expandedDepth && expandedDepth.image && expandedDepth.image.width) ? expandedDepth.image.width : 1024,
-            MAX_DEPTH_MAP_SIZE
-          );
-          const depthImgH = Math.min(
-            (expandedDepth && expandedDepth.image && expandedDepth.image.height) ? expandedDepth.image.height : 1024,
-            MAX_DEPTH_MAP_SIZE
-          );
-          const pxPerVertex = 3; // smaller -> more detail; tune for performance
-          let segX = Math.max(Math.floor(depthImgW / pxPerVertex), 64);
-          let segY = Math.max(Math.floor(depthImgH / pxPerVertex), 64);
-          const MAX_SEGMENTS = 512; // clamp to avoid massive geometry
-          segX = Math.min(segX, MAX_SEGMENTS);
-          segY = Math.min(segY, MAX_SEGMENTS);
-          const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight, segX, segY);
-
-          // depth scale derived from texture/depth Z difference (tunable multiplier)
-          const depthDiff = Math.abs((layer.textureZ || 0) - (layer.depthZ || layer.textureZ || 0));
-          const depthScale = depthDiff * DEPTH_MAP_SCALE;
-
-          const uniforms = {
-            u_map: { value: tex },
-            u_depth: { value: expandedDepth },
-            u_depthScale: { value: depthScale }
-          };
-
-          const material = new THREE.ShaderMaterial({
-            uniforms,
-            transparent: true,
-            depthTest: true,
-            depthWrite: false,
-            vertexShader: `
-              varying vec2 vUv;
-              uniform sampler2D u_depth;
-              uniform float u_depthScale;
-              void main() {
-                vUv = uv;
-                float d = texture2D(u_depth, uv).r;
-                float disp = (1.0 - d) * u_depthScale;
-                vec3 displaced = position - normal * disp;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
-              }
-            `,
-            fragmentShader: `
-              varying vec2 vUv;
-              uniform sampler2D u_map;
-              void main() {
-                gl_FragColor = texture2D(u_map, vUv);
-              }
-            `
-          });
-
-          const mesh = new THREE.Mesh(geometry, material);
-          mesh.position.set(0, 0, layer.textureZ || 0);
-          scene.add(mesh);
-          meshCleanup.push(() => {
-            if (mesh.geometry) mesh.geometry.dispose();
-            if (mesh.material) mesh.material.dispose();
-            scene.remove(mesh);
-          });
-        });
-
-      // shared mouse state (normalized 0..1)
-      const mouse = { x: 0.5, y: 0.5 };
-
-      // mouse handling updates camera target (not shader uniforms)
-      function onMouseMove(e) {
-        const rect = renderer.domElement.getBoundingClientRect();
-        mouse.x = (e.clientX - rect.left) / rect.width;
-        mouse.y = 1.0 - (e.clientY - rect.top) / rect.height;
-      }
-      renderer.domElement.addEventListener('mousemove', onMouseMove);
-
-      // animate: smoothly move camera according to mouse to produce parallax, but always lookAt(focusPoint)
-      const animate = () => {
-        const maxOffsetX = 100;
-        const maxOffsetY = 60;
-        cameraTarget.x = (mouse.x - 0.5) * maxOffsetX;
-        cameraTarget.y = (mouse.y - 0.5) * -maxOffsetY;
-
-        // smooth camera position toward target
-        camera.position.x += (cameraTarget.x - camera.position.x) * cameraLerp;
-        camera.position.y += (cameraTarget.y - camera.position.y) * cameraLerp;
-
-        // always look at the same focus point (keeps focal point constant)
-        camera.lookAt(focusPoint);
-
-        renderer.render(scene, camera);
-        frameId = requestAnimationFrame(animate);
-      };
-      animate();
-
-      // cleanup function
-      const cleanup = () => {
-        renderer.domElement.removeEventListener('mousemove', onMouseMove);
-        cancelAnimationFrame(frameId);
-        meshCleanup.forEach(fn => { try { fn(); } catch(e){} });
-        if (renderer) {
-          renderer.dispose();
-          if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
-            mountRef.current.removeChild(renderer.domElement);
+            vPosition = newPosition;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
           }
-        }
-      };
+        `;
 
-      CrewCabin._cleanup = cleanup;
-    }).catch(() => {
-      // already handled by showing fallback
-    });
+        // Fragment shader
+        const fragmentShader = `
+          uniform sampler2D u_image;
+          uniform sampler2D u_depth;
+          uniform vec2 u_resolution;
+          uniform vec3 u_lightPos;
+          uniform vec3 u_lightColor;
+          uniform float u_lightIntensity;
+          uniform bool u_lightEnabled;
+          varying vec2 vUv;
+          varying vec3 vNormal;
+          varying vec3 vPosition;
 
-    return () => {
-      isUnmounted = true;
-      if (CrewCabin._cleanup) CrewCabin._cleanup();
+          vec3 calculateNormal(vec2 uv) {
+            vec2 texelSize = 1.0 / u_resolution;
+            float left = texture2D(u_depth, uv - vec2(texelSize.x, 0.0)).r;
+            float right = texture2D(u_depth, uv + vec2(texelSize.x, 0.0)).r;
+            float top = texture2D(u_depth, uv + vec2(0.0, texelSize.y)).r;
+            float bottom = texture2D(u_depth, uv - vec2(0.0, texelSize.y)).r;
+            return normalize(vec3(left - right, bottom - top, 0.1));
+          }
+
+          void main() {
+            vec4 color = texture2D(u_image, vUv);
+            vec3 normal = calculateNormal(vUv);
+
+            vec3 lightDir = normalize(u_lightPos - vPosition);
+
+            float lightIntensity = u_lightEnabled ? max(dot(normal, lightDir), 0.0) * u_lightIntensity : 0.0;
+
+            vec3 ambient = vec3(0.2);
+            vec3 diffuse = u_lightColor * lightIntensity;
+
+            vec3 finalColor = color.rgb * (ambient + diffuse);
+
+            gl_FragColor = vec4(finalColor, color.a);
+          }
+        `;
+
+        // Create material
+        material = new THREE.ShaderMaterial({
+          uniforms: uniforms,
+          vertexShader: vertexShader,
+          fragmentShader: fragmentShader,
+          side: THREE.DoubleSide,
+          transparent: true
+        });
+
+        // Create mesh
+        const planeMesh = new THREE.Mesh(geometry, material);
+        scene.add(planeMesh);
+
+        // Mouse interaction
+        handleMouseMove = (event) => {
+          uniforms.u_mouse.value.x = event.clientX / window.innerWidth;
+          uniforms.u_mouse.value.y = 1.0 - event.clientY / window.innerHeight;
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+
+        // Animation loop
+        let time = 0;
+        const animate = () => {
+          animationRef.current = requestAnimationFrame(animate);
+          
+          time += 0.016;
+          uniforms.u_time.value = time;
+
+          renderer.render(scene, camera);
+        };
+
+        animate();
+
+        // Handle resize
+        const handleResize = () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup
+        animationRef.current = {
+          dispose: () => {
+            if (animationRef.current) {
+              cancelAnimationFrame(animationRef.current);
+            }
+            document.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('resize', handleResize);
+            
+            if (mountRef.current && renderer.domElement) {
+              mountRef.current.removeChild(renderer.domElement);
+            }
+            
+            geometry.dispose();
+            material.dispose();
+            imageTexture.dispose();
+            depthTexture.dispose();
+            renderer.dispose();
+          }
+        };
+      }
     };
-    // eslint-disable-next-line
-  }, [layers]);
 
-  if (showFallback) {
-    // minimal fallback display
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, background: '#111', color: 'white',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'
-      }}>
-        <div>Image or depth map not found. Check public/crew-cabin/textures and depth-maps files.</div>
-        <div style={{opacity: 0.6, fontSize: 12, marginTop: 8}}>{JSON.stringify(layers)}</div>
-      </div>
+    imageTexture = textureLoader.load(
+      process.env.PUBLIC_URL + '/crew-cabin/textures/room.png',
+      onTextureLoad
     );
-  }
+    depthTexture = textureLoader.load(
+      process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png',
+      onTextureLoad
+    );
+
+    // Cleanup
+    return () => {
+      if (animationRef.current && typeof animationRef.current.dispose === 'function') {
+        animationRef.current.dispose();
+      }
+    };
+  }, []);
 
   return (
-    <div
-      ref={mountRef}
-      style={{
+    <div 
+      ref={mountRef} 
+      style={{ 
         position: 'fixed',
-        top: 0, left: 0, width: '100vw', height: '100vh',
-        margin: 0, overflow: 'hidden', background: 'transparent'
-      }}
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 1
+      }} 
     />
   );
-}
+};
 
 export default CrewCabin;
