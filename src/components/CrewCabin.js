@@ -4,12 +4,46 @@ import * as THREE from 'three';
 const imageDepthPairs = [
   {
     image: process.env.PUBLIC_URL + '/crew-cabin/textures/room.png',
-    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png'
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png',
+    zIndex: 0,
+    depthStart: 0.0
   },
   {
-    image: process.env.PUBLIC_URL + '/crew-cabin/textures/chair.png',
-    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/chair.png'
-  }
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/table-legs.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/table-legs.png',
+    zIndex: 0.1,
+    depthStart: 0.1
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/table-no-legs.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/table-no-legs.png',
+    zIndex: 0.1,
+    depthStart: 0.11
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/picture-shadow.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/picture.png',
+    zIndex: 0.3,
+    depthStart: 0.2
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/typewriter-shadow.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/typewriter.png',
+    zIndex: 0.3,
+    depthStart: 0.2
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/chair-no-arm.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/chair-no-arm.png',
+    zIndex: 0.5,
+    depthStart: 0.3
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/chair-arm.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/chair-arm.png',
+    zIndex: 0.5,
+    depthStart: 0.18
+  },
 ];
 
 const CrewCabin = () => {
@@ -89,7 +123,8 @@ const CrewCabin = () => {
           u_lightPos: { value: light.position },
           u_lightColor: { value: new THREE.Color(light.color) },
           u_lightIntensity: { value: 1.0 },
-          u_lightEnabled: { value: true }
+          u_lightEnabled: { value: true },
+          u_depthStart: { value: imageDepthPairs[idx].depthStart ?? 0.0 }
         };
 
         // Vertex shader
@@ -97,6 +132,7 @@ const CrewCabin = () => {
           uniform sampler2D u_depth;
           uniform vec2 u_mouse;
           uniform float u_aspectRatio;
+          uniform float u_depthStart;
           varying vec2 vUv;
           varying vec3 vNormal;
           varying vec3 vPosition;
@@ -106,7 +142,7 @@ const CrewCabin = () => {
             vNormal = normal;
 
             vec4 depth = texture2D(u_depth, uv);
-            float height = depth.r;
+            float height = depth.r + u_depthStart;
 
             vec3 newPosition = position + normal * height * 0.5;
 
@@ -169,7 +205,7 @@ const CrewCabin = () => {
 
         // Stack meshes with slight z-offset to avoid z-fighting
         const planeMesh = new THREE.Mesh(geometry, material);
-        planeMesh.position.z = idx * 0.2; // Each mesh slightly in front of previous
+        planeMesh.position.z = imageDepthPairs[idx].zIndex; // Set the z position based on the zIndex
         scene.add(planeMesh);
 
         meshes.push(planeMesh);
