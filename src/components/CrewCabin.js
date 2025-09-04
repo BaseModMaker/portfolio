@@ -1,6 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
+const imageDepthPairs = [
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/room.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png'
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/chair.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/chair.png'
+  }
+];
+
 const CrewCabin = () => {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
@@ -20,49 +31,59 @@ const CrewCabin = () => {
     renderer.setClearColor(0x000000, 0); // Transparent background
     mountRef.current.appendChild(renderer.domElement);
 
-    // Store refs
     sceneRef.current = scene;
     rendererRef.current = renderer;
 
     // Create light
     const light = new THREE.PointLight(0xffffff, 1, 100);
-    light.position.set(2, -2, 5);
+    light.position.set(0, 5, 15);
     scene.add(light);
 
     const textureLoader = new THREE.TextureLoader();
-    
-    const canvas = document.createElement('canvas');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    // Load texture and depth map from public folder
-    let imageTexture, depthTexture;
-    let geometry, material, uniforms;
-    let handleMouseMove;
 
-    // Wait for both textures to load before proceeding
-    let texturesLoaded = 0;
-    const onTextureLoad = () => {
-      texturesLoaded++;
-      if (texturesLoaded === 2) {
-        // Ensure textures are loaded before rendering
-        imageTexture.wrapS = imageTexture.wrapT = THREE.ClampToEdgeWrapping;
-        depthTexture.wrapS = depthTexture.wrapT = THREE.ClampToEdgeWrapping;
-        imageTexture.minFilter = THREE.LinearFilter;
-        depthTexture.minFilter = THREE.LinearFilter;
+    // Mouse interaction uniforms
+    const mouseUniform = { value: new THREE.Vector2(0.5, 0.5) };
+    const resolutionUniform = { value: new THREE.Vector2(window.innerWidth, window.innerHeight) };
 
-        // Create plane geometry that dynamically fits the screen
+    // Store all meshes/resources for cleanup
+    const meshes = [];
+    const geometries = [];
+    const materials = [];
+    const imageTextures = [];
+    const depthTextures = [];
+
+    // Helper to load a texture and return a promise
+    const loadTexture = (url) =>
+      new Promise((resolve) => {
+        textureLoader.load(url, (texture) => {
+          texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+          texture.minFilter = THREE.LinearFilter;
+          resolve(texture);
+        });
+      });
+
+    // Load all image/depth pairs
+    Promise.all(
+      imageDepthPairs.map(pair =>
+        Promise.all([loadTexture(pair.image), loadTexture(pair.depth)])
+      )
+    ).then((loadedPairs) => {
+      loadedPairs.forEach(([imageTexture, depthTexture], idx) => {
+        imageTextures.push(imageTexture);
+        depthTextures.push(depthTexture);
+
+        // Plane geometry
         const aspect = window.innerWidth / window.innerHeight;
         const planeHeight = 4;
         const planeWidth = planeHeight * aspect;
-        geometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 256, 256);
+        const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 256, 256);
 
         // Shader uniforms
-        uniforms = {
+        const uniforms = {
           u_image: { value: imageTexture },
           u_depth: { value: depthTexture },
-          u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-          u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+          u_mouse: mouseUniform,
+          u_resolution: resolutionUniform,
           u_aspectRatio: { value: 1.0 },
           u_time: { value: 0 },
           u_lightPos: { value: light.position },
@@ -138,81 +159,72 @@ const CrewCabin = () => {
           }
         `;
 
-        // Create material
-        material = new THREE.ShaderMaterial({
+        const material = new THREE.ShaderMaterial({
           uniforms: uniforms,
-          vertexShader: vertexShader,
-          fragmentShader: fragmentShader,
+          vertexShader,
+          fragmentShader,
           side: THREE.DoubleSide,
           transparent: true
         });
 
-        // Create mesh
+        // Stack meshes with slight z-offset to avoid z-fighting
         const planeMesh = new THREE.Mesh(geometry, material);
+        planeMesh.position.z = idx * 0.2; // Each mesh slightly in front of previous
         scene.add(planeMesh);
 
-        // Mouse interaction
-        handleMouseMove = (event) => {
-          uniforms.u_mouse.value.x = event.clientX / window.innerWidth;
-          uniforms.u_mouse.value.y = 1.0 - event.clientY / window.innerHeight;
-        };
+        meshes.push(planeMesh);
+        geometries.push(geometry);
+        materials.push(material);
+      });
 
-        document.addEventListener('mousemove', handleMouseMove);
+      // Mouse interaction
+      const handleMouseMove = (event) => {
+        mouseUniform.value.x = event.clientX / window.innerWidth;
+        mouseUniform.value.y = 1.0 - event.clientY / window.innerHeight;
+      };
+      document.addEventListener('mousemove', handleMouseMove);
 
-        // Animation loop
-        let time = 0;
-        const animate = () => {
-          animationRef.current = requestAnimationFrame(animate);
-          
-          time += 0.016;
-          uniforms.u_time.value = time;
+      // Animation loop
+      let time = 0;
+      const animate = () => {
+        animationRef.current = requestAnimationFrame(animate);
+        time += 0.016;
+        materials.forEach(mat => {
+          if (mat.uniforms.u_time) mat.uniforms.u_time.value = time;
+        });
+        renderer.render(scene, camera);
+      };
+      animate();
 
-          renderer.render(scene, camera);
-        };
+      // Handle resize
+      const handleResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        resolutionUniform.value.set(window.innerWidth, window.innerHeight);
+      };
+      window.addEventListener('resize', handleResize);
 
-        animate();
-
-        // Handle resize
-        const handleResize = () => {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        // Cleanup
-        animationRef.current = {
-          dispose: () => {
-            if (animationRef.current) {
-              cancelAnimationFrame(animationRef.current);
-            }
-            document.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('resize', handleResize);
-            
-            if (mountRef.current && renderer.domElement) {
-              mountRef.current.removeChild(renderer.domElement);
-            }
-            
-            geometry.dispose();
-            material.dispose();
-            imageTexture.dispose();
-            depthTexture.dispose();
-            renderer.dispose();
+      // Cleanup
+      animationRef.current = {
+        dispose: () => {
+          if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
           }
-        };
-      }
-    };
-
-    imageTexture = textureLoader.load(
-      process.env.PUBLIC_URL + '/crew-cabin/textures/room.png',
-      onTextureLoad
-    );
-    depthTexture = textureLoader.load(
-      process.env.PUBLIC_URL + '/crew-cabin/depth-maps/room.png',
-      onTextureLoad
-    );
+          document.removeEventListener('mousemove', handleMouseMove);
+          window.removeEventListener('resize', handleResize);
+          if (mountRef.current && renderer.domElement) {
+            mountRef.current.removeChild(renderer.domElement);
+          }
+          meshes.forEach(mesh => scene.remove(mesh));
+          geometries.forEach(g => g.dispose());
+          materials.forEach(m => m.dispose());
+          imageTextures.forEach(t => t.dispose());
+          depthTextures.forEach(t => t.dispose());
+          renderer.dispose();
+        }
+      };
+    });
 
     // Cleanup
     return () => {
