@@ -9,6 +9,18 @@ const imageDepthPairs = [
     depthStart: 0.0
   },
   {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/space.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/black.png',
+    zIndex: 0.1,
+    depthStart: 0.0
+  },
+  {
+    image: process.env.PUBLIC_URL + '/crew-cabin/textures/calendar.png',
+    depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/black.png',
+    zIndex: 0.1,
+    depthStart: 0.0
+  },
+  {
     image: process.env.PUBLIC_URL + '/crew-cabin/textures/table-legs.png',
     depth: process.env.PUBLIC_URL + '/crew-cabin/depth-maps/table-legs.png',
     zIndex: 0.1,
@@ -88,7 +100,14 @@ const CrewCabin = () => {
   const rendererRef = useRef(null);
   const animationRef = useRef(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [materialsReady, setMaterialsReady] = useState(false);
+
+  // Use refs for materials, meshes, etc.
+  const meshesRef = useRef([]);
+  const materialsRef = useRef([]);
+  const geometriesRef = useRef([]);
+  const imageTexturesRef = useRef([]);
+  const depthTexturesRef = useRef([]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -162,7 +181,8 @@ const CrewCabin = () => {
           u_lightColor: { value: new THREE.Color(light.color) },
           u_lightIntensity: { value: 1.0 },
           u_lightEnabled: { value: true },
-          u_depthStart: { value: imageDepthPairs[idx].depthStart ?? 0.0 }
+          u_depthStart: { value: imageDepthPairs[idx].depthStart ?? 0.0 },
+          u_highlight: { value: false }, // highlight uniform
         };
 
         // Vertex shader
@@ -203,6 +223,7 @@ const CrewCabin = () => {
           uniform vec3 u_lightColor;
           uniform float u_lightIntensity;
           uniform bool u_lightEnabled;
+          uniform bool u_highlight;
           varying vec2 vUv;
           varying vec3 vNormal;
           varying vec3 vPosition;
@@ -229,6 +250,11 @@ const CrewCabin = () => {
 
             vec3 finalColor = color.rgb * (ambient + diffuse);
 
+            // Highlight effect: blend with yellow if highlighted
+            if(u_highlight) {
+              finalColor = mix(finalColor, vec3(1.0, 1.0, 0.2), 0.5);
+            }
+
             gl_FragColor = vec4(finalColor, color.a);
           }
         `;
@@ -250,6 +276,15 @@ const CrewCabin = () => {
         geometries.push(geometry);
         materials.push(material);
       });
+
+      // Save to refs for access in highlight effect
+      meshesRef.current = meshes;
+      materialsRef.current = materials;
+      geometriesRef.current = geometries;
+      imageTexturesRef.current = imageTextures;
+      depthTexturesRef.current = depthTextures;
+
+      setMaterialsReady(true); // <-- Mark materials as ready
 
       // Mouse interaction
       const handleMouseMove = (event) => {
@@ -308,6 +343,42 @@ const CrewCabin = () => {
     };
   }, []);
 
+  // Highlight logic: update highlight uniforms on hoveredRegion change
+  useEffect(() => {
+    if (!materialsReady) return; // Only run when materials are ready
+    const materials = materialsRef.current;
+    // Map region id to mesh index in imageDepthPairs
+    const regionToImageIdx = {
+      space: 1,
+      calendar: 2,
+      'table-legs': 3,
+      'table-no-legs': 4,
+      picture: 5,
+      typewriter: 6,
+      'chair-no-arm': 7,
+      'chair-arm': 8,
+    };
+    // Find the mesh index for the hovered region
+    let highlightIdx = null;
+    if (hoveredRegion && regionToImageIdx[hoveredRegion] !== undefined) {
+      highlightIdx = regionToImageIdx[hoveredRegion];
+    }
+    // Set highlight uniforms
+    if (highlightIdx !== null && highlightIdx < materials.length) {
+      materials.forEach((mat, idx) => {
+        if (mat.uniforms && mat.uniforms.u_highlight) {
+          mat.uniforms.u_highlight.value = idx === highlightIdx;
+        }
+      });
+    } else {
+      materials.forEach(mat => {
+        if (mat.uniforms && mat.uniforms.u_highlight) {
+          mat.uniforms.u_highlight.value = false;
+        }
+      });
+    }
+  }, [hoveredRegion, materialsReady]);
+
   return (
     <div 
       ref={mountRef} 
@@ -332,36 +403,13 @@ const CrewCabin = () => {
             height: region.height,
             zIndex: 2,
             cursor: 'pointer',
-            background: hoveredRegion === region.id ? 'rgba(255,255,255,0.00)' : 'transparent'
+            background: 'transparent'
           }}
-          onMouseEnter={e => {
-            setHoveredRegion(region.id);
-            setMousePos({ x: e.clientX, y: e.clientY });
-          }}
-          onMouseMove={e => setMousePos({ x: e.clientX, y: e.clientY })}
+          onMouseEnter={() => setHoveredRegion(region.id)}
           onMouseLeave={() => setHoveredRegion(null)}
         />
       ))}
-      {/* Tooltip textbox */}
-      {hoveredRegion && (
-        <div
-          style={{
-            position: 'fixed',
-            left: mousePos.x + 10,
-            top: mousePos.y + 10,
-            background: 'rgba(0,0,0,0.85)',
-            color: '#fff',
-            padding: '8px 12px',
-            borderRadius: '6px',
-            zIndex: 10,
-            pointerEvents: 'none',
-            fontSize: '1rem',
-            maxWidth: '220px'
-          }}
-        >
-          {hoverRegions.find(r => r.id === hoveredRegion)?.description}
-        </div>
-      )}
+      {/* No tooltip */}
     </div>
   );
 };
