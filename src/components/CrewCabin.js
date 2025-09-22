@@ -337,6 +337,14 @@ const CrewCabin = () => {
 
     // Cleanup
     return () => {
+      // Reset highlight uniforms to false on unmount
+      if (materialsRef.current && materialsRef.current.length > 0) {
+        materialsRef.current.forEach(mat => {
+          if (mat.uniforms && mat.uniforms.u_highlight) {
+            mat.uniforms.u_highlight.value = false;
+          }
+        });
+      }
       if (animationRef.current && typeof animationRef.current.dispose === 'function') {
         animationRef.current.dispose();
       }
