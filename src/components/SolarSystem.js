@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { useNavigate } from 'react-router-dom';
 import SpaceshipDashboard from './SpaceshipDashboard';
 import CameraController from './CameraController';
 import Planets from './Planets';
@@ -90,6 +91,7 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
   const planetRefs = useRef({});
   const lastPlanetChangeTime = useRef(0);
   const isChangingPlanet = useRef(false);
+  const navigate = useNavigate();
 
   const orbitConstant = 0.1;
   
@@ -254,6 +256,29 @@ function SolarSystem({ isVisible = true, onDashboardStateChange, onCarouselState
       overflow: 'hidden',
       zIndex: 1
     }}>
+      {/* Back to Crew Cabin Button */}
+      <button
+        style={{
+          position: 'fixed',
+          top: 24,
+          left: 24,
+          zIndex: 100,
+          background: 'rgba(26,26,46,0.85)',
+          color: '#64ffda',
+          border: '2px solid #64ffda',
+          borderRadius: '8px',
+          padding: '0.7rem 1.2rem',
+          fontFamily: 'Courier New, monospace',
+          fontWeight: 'bold',
+          fontSize: '1rem',
+          boxShadow: '0 0 10px rgba(100,255,218,0.2)',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+        onClick={() => navigate('/crew-cabin')}
+      >
+        ← Crew Cabin
+      </button>
       {/* Solar system transition container */}
       <div
         className={`solar-system-transition-container${phase !== 'idle' ? ' transitioning' : ''} slide-'${transitionDirection}'`}
