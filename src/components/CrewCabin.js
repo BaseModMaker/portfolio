@@ -415,6 +415,10 @@ const CrewCabin = () => {
           }}
           onMouseEnter={() => setHoveredRegion(region.id)}
           onMouseLeave={() => setHoveredRegion(null)}
+          onClick={() => {
+            const url = '/' + region.description.toLowerCase().replace(/\s+/g, '-');
+            window.location.href = url;
+          }}
         />
       ))}
       {/* No tooltip */}
