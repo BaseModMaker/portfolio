@@ -108,6 +108,14 @@ const CrewCabin = () => {
   const geometriesRef = useRef([]);
   const imageTexturesRef = useRef([]);
   const depthTexturesRef = useRef([]);
+  // Camera ref and navigation state for zoom transitions
+  const cameraRef = useRef(null);
+  const isNavigatingRef = useRef(false);
+
+  // Zoom configuration
+  const DEFAULT_CAMERA_Z = 5;
+  const ZOOMED_IN_Z = 1.5;
+  const ZOOM_DURATION = 800; // ms
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -116,6 +124,8 @@ const CrewCabin = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.z = 5;
+    // expose camera to other handlers
+    cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -286,6 +296,17 @@ const CrewCabin = () => {
 
       setMaterialsReady(true); // <-- Mark materials as ready
 
+      // If we are returning from the space view, start zoomed in and animate back out
+      if (sessionStorage.getItem('fromSpace') === 'true') {
+        sessionStorage.removeItem('fromSpace');
+        if (cameraRef.current) {
+          cameraRef.current.position.z = ZOOMED_IN_Z;
+          console.debug('Returned from space: animating camera zoom out from', ZOOMED_IN_Z, 'to', DEFAULT_CAMERA_Z);
+          // animate back to default on mount
+          animateCameraZoom(ZOOMED_IN_Z, DEFAULT_CAMERA_Z, ZOOM_DURATION);
+        }
+      }
+
       // Mouse interaction
       const handleMouseMove = (event) => {
         mouseUniform.value.x = event.clientX / window.innerWidth;
@@ -387,42 +408,34 @@ const CrewCabin = () => {
     }
   }, [hoveredRegion, materialsReady]);
 
+  // Camera zoom animator (uses easing)
+  const animateCameraZoom = (startZ, endZ, duration = 600, onComplete) => {
+    console.debug('animateCameraZoom start:', startZ, '->', endZ, 'duration(ms):', duration);
+    if (!cameraRef.current) {
+      if (onComplete) onComplete();
+      return;
+    }
+    const startTime = performance.now();
+    const animate = (now) => {
+      const t = Math.min(1, (now - startTime) / duration);
+      // easeInOutQuad
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      cameraRef.current.position.z = startZ + (endZ - startZ) * ease;
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        console.debug('animateCameraZoom complete:', endZ);
+        if (onComplete) onComplete();
+      }
+    };
+    requestAnimationFrame(animate);
+  };
+
   return (
-    <div 
-      ref={mountRef} 
-      style={{ 
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 1
-      }} 
-    >
-      {/* Overlay hover regions */}
-      {hoverRegions.map(region => (
-        <div
-          key={region.id}
-          style={{
-            position: 'absolute',
-            left: region.left,
-            top: region.top,
-            width: region.width,
-            height: region.height,
-            zIndex: 2,
-            cursor: 'pointer',
-            background: 'transparent'
-          }}
-          onMouseEnter={() => setHoveredRegion(region.id)}
-          onMouseLeave={() => setHoveredRegion(null)}
-          onClick={() => {
-            const url = '/' + region.description.toLowerCase().replace(/\s+/g, '-');
-            window.location.href = url;
-          }}
-        />
-      ))}
-      {/* No tooltip */}
-    </div>
+    <div
+      ref={mountRef}
+      style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
+    />
   );
 };
 
