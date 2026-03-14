@@ -393,6 +393,28 @@
             "created_at": "2024-02-15T14:30:00Z",
             "updated_at": "2024-06-10T11:20:00Z"
           }
+        },
+        {
+          "name": "DNA Postgres extension",
+          "orbitRadius": 8,
+          "size": 0.25,
+          "orbitSpeed": 0.01,
+          "rotationSpeed": 0.005,
+          "startAngle": 4.5,
+          "props": {
+            "hasAtmosphere": true,
+            "surfaceRoughness": 0.4,
+            "metalness": 0.1,
+            "surfaceColor": "#ADD8E6"
+          },
+          "projectData": {
+            "description": "A project that explores the design and implementation of a Postgres extension for efficient storage and querying of DNA sequences, enabling advanced bioinformatics analyses.",
+            "language": "C 94.7%, Makefile 4.9%, Shell 0.4%",
+            "size": 4096000,
+            "topics": ["postgresql", "bioinformatics", "c"],
+            "created_at": "2025-02-15T14:30:00Z",
+            "updated_at": "2025-06-10T11:20:00Z"
+          }
         }
       ]
     },
