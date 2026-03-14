@@ -6,14 +6,34 @@ import SpaceMusic from './components/SpaceMusic';
 import ProfileButton from './components/ProfileButton';
 import SocialMenu from './components/SocialMenu';
 
+const GREETING_PLAYED_KEY = 'greetingSequencePlayed';
+
 function App() {
-  const [greetingComplete, setGreetingComplete] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
+  const [greetingComplete, setGreetingComplete] = useState(() => {
+    try {
+      return localStorage.getItem(GREETING_PLAYED_KEY) === 'true';
+    } catch (error) {
+      return false;
+    }
+  });
+  const [showProfile, setShowProfile] = useState(() => {
+    try {
+      return localStorage.getItem(GREETING_PLAYED_KEY) === 'true';
+    } catch (error) {
+      return false;
+    }
+  });
   const [showSocialMenu, setShowSocialMenu] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [carouselOpen, setCarouselOpen] = useState(false);
 
   const handleGreetingComplete = () => {
+    try {
+      localStorage.setItem(GREETING_PLAYED_KEY, 'true');
+    } catch (error) {
+      // Ignore localStorage failures and continue app flow.
+    }
+
     setGreetingComplete(true);
     // Show profile button after the transformation animation completes
     setTimeout(() => {
