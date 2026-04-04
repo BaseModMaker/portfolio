@@ -168,6 +168,31 @@
             "url": "https://github.com/BaseModMaker/portfolio",
             "homepage": "https://basemodmaker.github.io/portfolio/"
           }
+        },
+        {
+          "name": "Hell's Quartet",
+          "orbitRadius": 13,
+          "size": 0.8,
+          "orbitSpeed": 0.001,
+          "rotationSpeed": 0.002,
+          "startAngle": 3.2,
+          "props": {
+            "hasAtmosphere": true,
+            "atmosphereColor": "#4B0082",
+            "surfaceRoughness": 0.5,
+            "metalness": 0.1,
+            "surfaceColor": "#6A5ACD"
+          },
+          "projectData": {
+            "description": "A short point and click adventure made to introduce music to children. Made with ReactJs during the 2026 edition of the CSLabs hackathon.",
+            "language": "JavaScript 89%, CSS 10%, HTML 1%",
+            "size": 5160,
+            "topics": ["music", "reactjs"],
+            "created_at": "2026-03-23T00:00:00Z",
+            "updated_at": "2026-03-26T11:20:00Z",
+            "url": "https://xkapedani.github.io/hells-quartet/",
+            "homepage": "https://xkapedani.github.io/hells-quartet/"
+          }
         }
       ]
     },
